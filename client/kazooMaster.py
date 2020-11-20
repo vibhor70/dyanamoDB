@@ -32,12 +32,14 @@ class kazooMaster(object):
             logging.error("PATH EMPTY")
         else:
             if self.zk.exists(self.path) == None:
-                self.zk.create(self.path,value=b"",makepath=True)
-                self.zk.create(self.path,self.operation.encode(),sequence=True)
+                self.zk.create(self.path,value=b"version 1",makepath=True)
+                #self.zk.create(self.path,self.operation.encode(),sequence=True)
             else:
-                self.zk.create(self.path,self.operation.encode(),sequence=True)
+                data,stat = zk.get(self.path)
+                zk.set(self.path,str(stat.version).encode())
+                #self.zk.create(self.path,self.operation.encode(),sequence=True)
         self.zk.stop()
-
+#stat is blocking ,control will return to called object after ephemeral node crashes
     def stat(self,node):
         stop=4
 
