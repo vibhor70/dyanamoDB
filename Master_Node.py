@@ -3,19 +3,18 @@ import json
 import os
 import base64
 import threading
-
+import sys
 def send_all(target,data):
     json_data = data
     target.sendall(json_data)
 
-
-def shell(target,ip):
-    def reliable_send(data):
-        json_data = data
-        print(json_data)
+def reliable_send(target,ip,command,c_data):
+        json_data = command + c_data
+        print("Command send:",json_data)
         target.sendall(json_data.encode())
 
-    def reliable_recv():
+
+def reliable_recv(target):
         data=""
         cter=True
         while cter:
@@ -34,35 +33,7 @@ def shell(target,ip):
         print("end of reliable recv")
         return data
 
-    while True:
 
-        command = input("Shell#~%s"%str(ip))
-        print("before reliable send command")
-        reliable_send(command)
-        print("After rel send")
-        if command == 'q':
-            break
-        elif command == "exit":
-            target.close()
-            targets.remove(target)
-            ips.remove(ip)
-            break
-        elif command[:2] == "cd" and len(command)>1:
-            continue
-        elif command[:8] == "download":
-            with open(command[9:]+"_copy","wb") as file:
-                file_data = reliable_recv()
-                file.write(base64.b64decode(file_data))
-        elif command[:6] == "upload":
-            try:
-                with open(command[:7],"rb") as fin:
-                    reliable_send(base64.b64encode(fin.read()))
-            except:
-                failed = "Failed to open"
-                reliable_send(base64.b64encode(failed))
-        else:
-            message = reliable_recv()
-            print(message)
 
 
 
@@ -78,6 +49,7 @@ def server():
             ips.append(ip[0])
 			#print(str(targets[clients]) + "..."+str(ips[clients])+"has connected")
             print(str(ips[clients])+"has connected")
+            print(ips)
             clients +=1
         except:
             pass
@@ -92,44 +64,40 @@ targets =[]
 s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 s.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
 
-s.bind(("172.17.229.88",54321))
+s.bind(("192.168.30.118",54321))
 s.listen(5)
 
 clients = 0
 stop_threads = False
-print("[+] waiting for target to connect")
+print("[+] waiting for Data Nodes to connect")
 t1 = threading.Thread(target = server)
 t1.start()
 
-while True:
-    command = input("Center: ")
-    if command == "targets":
-        count =0
-        for ip in ips:
-            print("session" + str(count) + "<--->"+str(ip))
-            count +=1
-    elif command[:7] == "session":
-        num = int(command[8:])
-        tarnum = targets[num]
-        tarip = ips[num]
-        shell(tarnum,tarip)
-		# except Exception as e:
-		# 	print("[+]No session with that IP :exception",e)
-    elif command =="exit":
-        for target in targets:
-            target.close()
-        s.close()
-        stop_threads = True
-        t1.join()
-        break
-    elif command[:7] == "sendall":
-        length_of_targets = len(targets)
-        i =0
-        try:
-            while i<length_of_targets:
-                tarnumber = targets[i]
-                print(tarnumber)
-                send_all(tarnumber,command)
-                i +=1
-        except:
-            print("cant send to all")
+def command(ips_list,command,c_data):
+    print(ips_list)
+    for id_,ip in enumerate(ips):
+        if ip in ips_list:
+            reliable_send(targets[id_],ips[id_],command,c_data)
+
+
+
+
+
+
+
+
+while len(ips) ==0:
+    continue
+
+cter = "NONE"
+def main_command(ip_to_send,input_):
+    
+    if cter != input_:
+        cter = input_
+        if len(ips)>0:
+            print("ips cter",ips)
+            if input_ == "SEND" and len(ips)!=0 :
+                print(input_,len(ips))
+                command(ip_to_send,"INSERT","APPLE")
+            
+           
