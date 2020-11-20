@@ -16,7 +16,7 @@ class kazooMaster(object):
         if type_ == "e" or type_ == "E":
             self.path = "/"+self.node
         else:
-            self.path = "/"+self.node+"/"+self.cartID+"/"+self.userID
+            self.path = "/"+self.userID+"/"+self.cartID+"/"+self.node
         self.version=""
 
         self.start_client()
