@@ -1,0 +1,4 @@
+tinydb
+kazoo
+fastapi
+uvicorn
