@@ -78,7 +78,13 @@ class kazooMaster(object):
 
         self.zk.stop()
 
-
+    def retrieve(self):
+        if self.zk.exists(self.path) == None:
+            return -1
+        else:
+            data,version_number = self.zk.get(self.path)
+            version_number = str(version_number.version)
+            return version_number
 
 a=kazooMaster("172.17.0.3","p","1","usr1","cart1","ADD")
 val=a.create()
