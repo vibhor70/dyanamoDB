@@ -4,7 +4,6 @@ from kazoo.protocol.states import KazooState
 import logging
 
 
-
 class kazooMaster(object):
 
     def __init__(self,ip,type_,node,userID,cartID,operation):
@@ -13,13 +12,18 @@ class kazooMaster(object):
         self.type=type_
         self.userID = userID
         self.cartID = cartID
-        self.operation =operation
+        self.operation = operation
         if type_ == "e" or type_ == "E":
             self.path = "/"+self.node
         else:
             self.path = "/"+self.node+"/"+self.cartID+"/"+self.userID
         self.version=""
-        
+
+        self.start_client()
+
+    def start_client(self):
+        self.zk = KazooClient(hosts='{}:2181'.format(self.ip), read_only = False)
+        self.zk.start()
 
     def create(self):
         logging.basicConfig(filename='logs/connection.log', filemode='w', level=logging.DEBUG)
@@ -27,40 +31,50 @@ class kazooMaster(object):
         if(self.path == ""):
             logging.error("PATH EMPTY")
         else:
-            zk = KazooClient(hosts='{}:2181'.format(self.ip), read_only = False)
-            zk.start()
-            if zk.exists(self.path) == None:
-                zk.create(self.path,value=b"",makepath=True)
-                zk.create(self.path,self.operation.encode(),sequence=True)
+            if self.zk.exists(self.path) == None:
+                self.zk.create(self.path,value=b"",makepath=True)
+                self.zk.create(self.path,self.operation.encode(),sequence=True)
             else:
-                zk.create(self.path,self.operation.encode(),sequence=True)
-        zk.stop()
+                self.zk.create(self.path,self.operation.encode(),sequence=True)
+        self.zk.stop()
+
     def stat(self,node):
         stop=4
-        zk = KazooClient(hosts='{}:2181'.format(self.ip), read_only = False)
-        zk.start()
 
-        @zk.DataWatch("{}".format(self.path))
+        @self.zk.DataWatch("{}".format(self.path))
         def my_func(data,stat):
             nonlocal stop
-            stop =stop -1
+            stop = stop -1
             if stat is None:
                 return 
             print("changed")
             print("Data is {} ".format(data))
             print("Version is {} ".format(stat.version))
 
-        if zk.exists(self.path) !=None:
-            val=DataWatch(zk,self.path,func=my_func)
+        if self.zk.exists(self.path) !=None:
+            val=DataWatch(self.zk,self.path,func=my_func)
             print(type(val),"VAL:",val)
-
             if not val:
                 return -1
             while stop > 0:
                 continue
         else:
             print("PATH INVALID")
+        
+        self.zk.stop()
 
+    def delete(self, node_name):
+        if self.zk.exists(node_name):
+            print("Node {} in ip {} exists".format(node_name))
+        else:
+            print("Node {} in ip {} does not exists".format(node_name))
+            raise Exception("Node does not exists")
+        try:
+            self.zk.delete(node_name, recursive = True)
+        except Exception as e:
+            logging.info("Error whle updating Node " + node_name)
+
+        self.zk.stop()
 
 
 
