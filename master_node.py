@@ -85,7 +85,7 @@ class MasterNode(object):
 
 a = MasterNode()
 a.connection_accept()
-a.send_command(["127.0.0.1"], "SEND")
+a.send_command(["127.0.0.1"], "ADD", "yogurt")
 
 
             
