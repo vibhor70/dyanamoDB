@@ -35,8 +35,8 @@ class kazooMaster(object):
                 self.zk.create(self.path,value=b"version 1",makepath=True)
                 #self.zk.create(self.path,self.operation.encode(),sequence=True)
             else:
-                data,stat = zk.get(self.path)
-                zk.set(self.path,str(stat.version).encode())
+                data,stat = self.zk.get(self.path)
+                self.zk.set(self.path,str(stat.version).encode())
                 #self.zk.create(self.path,self.operation.encode(),sequence=True)
         self.zk.stop()
 #stat is blocking ,control will return to called object after ephemeral node crashes
@@ -80,8 +80,8 @@ class kazooMaster(object):
 
 
 
-a=kazooMaster("172.17.0.3","epe1","","","")
-val=a.stat("/epe1")
+a=kazooMaster("172.17.0.3","p","1","usr1","cart1","ADD")
+val=a.create()
 
 print("Node Lost")
 
