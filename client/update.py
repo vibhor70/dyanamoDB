@@ -1,4 +1,5 @@
 from kazoo.recipe.watchers import DataWatch
+from kazoo.client import KazooClient
 import logging
 import sys
 

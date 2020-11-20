@@ -1,4 +1,6 @@
 from kazoo.recipe.watchers import DataWatch
+from kazoo.client import KazooClient
+from kazoo.protocol.states import KazooState
 import logging
 
 zk = KazooClient(hosts='172.17.0.2:2181', read_only=True)
@@ -9,7 +11,7 @@ def my_listener(state):
         logging.info('Session lost')
     elif state == KazooState.SUSPENDED:
         logging.info('Disconnected')
-    elif state == kazooState.CONNECTED:
+    elif state == KazooState.CONNECTED:
         print("Connected to client")
         logging.info('Connected to Client')
         if zk.client_state == state.CONNECTED_RO:

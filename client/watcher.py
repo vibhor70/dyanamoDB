@@ -1,4 +1,6 @@
 from kazoo.recipe.watchers import DataWatch
+from kazoo.client import KazooClient
+from kazoo.protocol.states import KazooState
 import logging
 
 
