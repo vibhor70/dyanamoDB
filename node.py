@@ -4,7 +4,10 @@ import subprocess
 import json
 import os
 import base64
-from tinydb import TinyDB,Query
+from tinydb import TinyDB, Query
+
+db = TinyDB('db/db.json')
+
 IP_CONNECT = "127.0.0.1"
 DEVICE = "1"
 record = TinyDB("records.json")
@@ -17,39 +20,32 @@ def reliable_send(data):
 	sock.sendall(json_data)
 
 def reliable_recv():
-	data=""
+	data= b""
 	while True:
 		try:
-			data =""
-			data =  sock.recv(1024).decode()
-			
-			#print(data.split(">"))
-			data = data.split(">")
-			for value in range(len(data)):
-				print(data[value-1])
-				print(data[value-1].split("|")[0])
-				# userID = data[value-1].split("|")[0]
-				# pid = data[value-1].split("|")[1]
-				# price = data[value-1].split("|")[4]
-
-				# category = data[value-1].split("|")[5]
-				# record.insert({userID:{"VALUE":data}})
-				# #print(userID," ",data)
-				# secondary_index.insert({"PRODUCTID":pid,"PRICE":price,"CATEGORY":category})
-			#print(pid," ",price," ",category)
-
-			#return json.loads(data)
-			return data
+			data = data + sock.recv(1024)
+			if len(data) < 1024:
+				break
 		except ValueError as e:
-			print("caught")
+			print("caught", e)
 			print(e)
-			return "error" 
+
+	try:
+		data = json.loads(data.decode())
+		print(data)
+	except Exception as e:
+		print(e, "exception")
+		return None
+
+	return data
 
 
 def shell():
 	while True:
 		print("Listening")
-		command = reliable_recv()
+		data_recv = reliable_recv()
+		if data_recv is not None:
+			db.insert(data_recv)
 		#print(command)
 		
 

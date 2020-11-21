@@ -63,9 +63,18 @@ class MasterNode(object):
             except Exception as e:
                 pass
 
-    def send_command(self, ips_list,userid,productid, operation, item,price="",category="",recv = ">"):
-        to_send = "{} | {} | {} | {} | {} | {} | {}".format(userid,productid,operation, item,price,category,recv)
-        print(ips_list)
+
+    def send_command(self, ips_list,userid,productid, operation, item,price="",category=""):
+        to_send = {
+            "userid": userid,
+            "productid": productid,
+            "operation": operation,
+            "item": item,
+            "price": price,
+            "category": category
+        }
+        to_send = json.dumps(to_send)
+        # print(ips_list)
         for id_,ip in enumerate(self.ips):
             if ip in ips_list:
                 self.reliable_send(self.targets[id_], self.ips[id_], to_send)
@@ -87,9 +96,9 @@ a = MasterNode()
 #Blocking Call
 a.connection_accept()
 
+
 a.send_command(["127.0.0.1"], "USERID", "PRODUCTID","OPERATION","PRODUCT","120","category 3")
 a.send_command(["127.0.0.1"], "USERID2", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
 a.send_command(["127.0.0.1"], "USERID3", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")
-
-            
+      
            
