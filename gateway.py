@@ -17,9 +17,12 @@ import subprocess
 import binascii
 import hashlib
 import json
+import threading
+import time
 
 class Gateway():
     def __init__(self):
+        self.thread_instances = []
         pass
     
     @staticmethod
@@ -48,11 +51,36 @@ class Gateway():
 
         return device_id
 
-    def kazoo_master_thread(self):
-        a = kazooMaster("172.17.0.3","p","dev1","","","",True)
+    def kazoo_master_thread(self, kazoo_instance, i):
+        result = kazoo_instance.stat()
+        self.thread_instances[i].down = True
+
+    # def monitor_thread(self):
+    #     for thread_instance in self.thread_instances:
+    #         if thread_instance.completed
+    #         thread_instance["object"].join()
 
     def run(self):
         device_config = self.get_config()
+        for i, device in enumerate(device_config["nodes"]):
+            kmaster_instance = kazooMaster(
+                device["ip"], "e", device["device_id"]
+            )
+            self.thread_instances.append({
+                "down": False,
+                "object": threading.Thread(target = self.kazoo_master_thread, args=(kmaster_instance, i))
+            })
+        
+        for thread_instance in self.thread_instances:
+            thread_instance["object"].start()
 
-        t1 = threading.Thread(target = self.server)
-        t1.start()
+        # for i, thread_instance in self.thread_instances:
+        #     thread_instance["object"].join()
+
+        time.sleep(3)
+        for thread_instance in self.thread_instances:
+            if thread_instance.down == True:
+                print(thread_instance, "is down")
+                # kmaster_instance = kazooMaster(
+                #     device["ip"], "e", device["device_id"]
+                # )
