@@ -9,7 +9,11 @@ from tinydb import TinyDB, Query
 db = TinyDB('db/db.json')
 
 IP_CONNECT = "127.0.0.1"
+DEVICE = "1"
+record = TinyDB("records.json")
+secondary_index = TinyDB("secondary.json")
 
+# TO DO SET INDIVIDUAL DEVICE ID's FOR EACH CONTAINER
 def reliable_send(data):
 	json_data = data
 	print(json_data)
@@ -22,7 +26,6 @@ def reliable_recv():
 			data = data + sock.recv(1024)
 			if len(data) < 1024:
 				break
-
 		except ValueError as e:
 			print("caught", e)
 			print(e)

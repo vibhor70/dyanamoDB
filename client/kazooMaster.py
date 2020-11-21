@@ -102,7 +102,9 @@ class kazooMaster(object):
             subChild = self.zk.get_children(subChildren)
             for val in subChild:
                 print("KEY: ",keys," DEVICES: ",val)
+                #TO DO find version vector of KEY and DEVICES
 
+#give only Device Id for remapping
     def reMap(self):
         remap_data=[]
         print(self.remap)
@@ -116,6 +118,7 @@ class kazooMaster(object):
                 allItems = self.zk.get_children(user_name)
                 for items in allItems:
                     remap_data.append((users,items))
+                    #TO DO:delete user key pairs here
                     print(users,items)
 
             #print(remap_data)

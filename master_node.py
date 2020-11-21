@@ -63,6 +63,7 @@ class MasterNode(object):
             except Exception as e:
                 pass
 
+
     def send_command(self, ips_list,userid,productid, operation, item,price="",category=""):
         to_send = {
             "userid": userid,
@@ -95,9 +96,9 @@ a = MasterNode()
 #Blocking Call
 a.connection_accept()
 
-for i in range(2):
-    a.send_command(["127.0.0.1"], "USERID", "PRODUCTID","OPERATION","PRODUCT","120","category 3")
 
-
-            
+a.send_command(["127.0.0.1"], "USERID", "PRODUCTID","OPERATION","PRODUCT","120","category 3")
+a.send_command(["127.0.0.1"], "USERID2", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
+a.send_command(["127.0.0.1"], "USERID3", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")
+      
            
