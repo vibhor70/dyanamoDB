@@ -6,19 +6,21 @@ import logging
 
 class kazooMaster(object):
 
-    def __init__(self,ip,type_,node,userID,cartID,operation):
+    def __init__(self,ip,type_="p",node="",userID="",key="",operation="",remap=False):
         self.ip = ip
         self.node = node
         self.type=type_
         self.userID = userID
-        self.cartID = cartID
+        self.productID = key
         self.operation = operation
+        self.path_rev = ""
         if type_ == "e" or type_ == "E":
             self.path = "/"+self.node
         else:
-            self.path = "/"+self.userID+"/"+self.cartID+"/"+self.node
+            self.path_rev = "/"+self.node+"/"+self.userID+"/"+self.productID
+            self.path = "/"+self.userID+"/"+self.productID+"/"+self.node
         self.version=""
-
+        self.remap = remap
         self.start_client()
 
     def start_client(self):
@@ -33,10 +35,13 @@ class kazooMaster(object):
         else:
             if self.zk.exists(self.path) == None:
                 self.zk.create(self.path,value=b"version 1",makepath=True)
+                self.zk.create(self.path_rev,value=b"version 1",makepath=True)
                 #self.zk.create(self.path,self.operation.encode(),sequence=True)
             else:
                 data,stat = self.zk.get(self.path)
+                data_rev,stat_rev = self.zk.get(self.path_rev)
                 self.zk.set(self.path,str(stat.version).encode())
+                self.zk.set(self.path_rev,str(stat_rev.version).encode())
                 #self.zk.create(self.path,self.operation.encode(),sequence=True)
         self.zk.stop()
 #stat is blocking ,control will return to called object after ephemeral node crashes
@@ -86,9 +91,47 @@ class kazooMaster(object):
             version_number = str(version_number.version)
             return version_number
 
-a=kazooMaster("172.17.0.3","p","1","usr1","cart1","ADD")
-val=a.create()
+#Give only user ID for finding mapping
+    def getmap(self):
+        parent = self.path.split("/")[1]
+        parent = "/"+parent
+        children = self.zk.get_children(parent)
+        for keys in children:
+            #print("KEY: ",keys)
+            subChildren = parent+"/"+keys
+            subChild = self.zk.get_children(subChildren)
+            for val in subChild:
+                print("KEY: ",keys," DEVICES: ",val)
 
-print("Node Lost")
+    def reMap(self):
+        remap_data=[]
+        print(self.remap)
+        if self.remap == True:
+           
+            dev_down=self.node
+            dev_down = "/"+dev_down
+            val = self.zk.get_children(dev_down)
+            for users in val:
+                user_name = dev_down+"/"+users
+                allItems = self.zk.get_children(user_name)
+                for items in allItems:
+                    remap_data.append((users,items))
+                    print(users,items)
+
+            #print(remap_data)
+        else:
+            print("REMAP PARAMETER FALSE")
+        
+
+
+
+a = kazooMaster("172.17.0.3","p","dev1","","","",True)
+a.reMap()
+
+
+# a=kazooMaster("172.17.0.3","p","","usr1","key1","ADD")
+# val=a.getmap()
+
+print("Version updated")
 
 

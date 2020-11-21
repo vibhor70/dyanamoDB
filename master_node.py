@@ -63,8 +63,8 @@ class MasterNode(object):
             except Exception as e:
                 pass
 
-    def send_command(self, ips_list, operation, item):
-        to_send = "{} | {}".format(operation, item)
+    def send_command(self, ips_list,userid,productid, operation, item,price="",category=""):
+        to_send = "{} | {} | {} | {} | {} | {}".format(userid,productid,operation, item,price,category)
         print(ips_list)
         for id_,ip in enumerate(self.ips):
             if ip in ips_list:
@@ -76,7 +76,7 @@ class MasterNode(object):
         t1 = threading.Thread(target = self.server)
         t1.start()
         while len(self.ips) == 0:
-            # print(self.ips)
+            # TO DO ADD CONDITION FOR CHECKING DATA NODE CONTAINERS ARE ACTIVE OR NOT
             continue
 
     def get_ips(self):
@@ -84,8 +84,10 @@ class MasterNode(object):
         
 
 a = MasterNode()
+#Blocking Call
 a.connection_accept()
-a.send_command(["127.0.0.1"], "ADD", "yogurt")
+
+a.send_command(["127.0.0.1"], "USERID", "PRODUCTID","OPERATION","PRODUCT","120","category 3")
 
 
             
