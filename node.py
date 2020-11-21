@@ -24,6 +24,7 @@ def reliable_recv():
 	while True:
 		try:
 			data = data + sock.recv(1024)
+			
 			if len(data) < 1024:
 				break
 		except ValueError as e:
@@ -44,6 +45,7 @@ def shell():
 	while True:
 		print("Listening")
 		data_recv = reliable_recv()
+		print(data_recv)
 		if data_recv is not None:
 			db.insert(data_recv)
 		#print(command)
