@@ -19,12 +19,12 @@ import hashlib
 import json
 import threading
 import time
+import os 
 
-class Watcher():
+class Gateway():
     def __init__(self):
         self.thread_instances = []
-        self.downs = []
-        pass
+        self.downs = -1
     
     @staticmethod
     def get_config():
@@ -56,17 +56,31 @@ class Watcher():
         result = kazoo_instance.stat()
         self.thread_instances[i]["down"] = True
         print(i, kazoo_instance, "is down")
-        self.downs.append({
-            "instance": kazoo_instance,
-            "index": i
-        })
+        self.downs = i
+        # r, w = os.pipe() 
+        # processid = os.fork() 
+        # if processid: 
+        #     # This is the parent process 
+        #     # Closes file descriptor w 
+        #     os.close(w) 
+        #     r = os.fdopen(r) 
+        #     print ("Parent reading") 
+        #     self.down = int(r.read()) 
+        #     print( "Parent reads =", self.down) 
+        # else: 
+        #     # This is the child process 
+        #     os.close(r) 
+        #     w = os.fdopen(w, 'w') 
+        #     print("Child writing") 
+        #     w.write(str(i)) 
+        #     w.close() 
 
     # def monitor_thread(self):
     #     for thread_instance in self.thread_instances:
     #         if thread_instance.completed
     #         thread_instance["object"].join()
 
-    def run(self):
+    def run_watcher(self):
         device_config = self.get_config()
         for i, device in enumerate(device_config["nodes"]):
             kmaster_instance = kazooMaster(
@@ -91,5 +105,17 @@ class Watcher():
                 #     device["ip"], "e", device["device_id"]
                 # )
 
-w = Watcher()
-w.run()
+    def run_gateway(self):
+        t = threading.Thread(target = self.run_watcher)
+        t.start()
+        if self.down == -1:
+            print("Hello")
+        else:
+            print(self.downs)
+            t.join()
+        
+            
+
+
+w = Gateway()
+w.run_gateway()
