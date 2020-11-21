@@ -12,7 +12,7 @@ METHOD OF KAZOOMASTER
 
 """
 
-from client.kazooMaster import kazooMaster
+from kazooMaster import kazooMaster
 import subprocess
 import binascii
 import hashlib
