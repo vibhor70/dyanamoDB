@@ -25,7 +25,7 @@ from master_node import MasterNode
 REPLICATION_COUNT = 2
 
 
-class Gatway():
+class Gateway():
     def __init__(self):
         pass
     
@@ -85,5 +85,5 @@ class Gatway():
 
 
 
-# w = Gatway()
+# w = Gateway()
 # w.run_gateway()
