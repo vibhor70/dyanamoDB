@@ -63,8 +63,8 @@ class MasterNode(object):
             except Exception as e:
                 pass
 
-    def send_command(self, ips_list,userid,productid, operation, item,price="",category=""):
-        to_send = "{} | {} | {} | {} | {} | {}".format(userid,productid,operation, item,price,category)
+    def send_command(self, ips_list,userid,productid, operation, item,price="",category="",recv = ">"):
+        to_send = "{} | {} | {} | {} | {} | {} | {}".format(userid,productid,operation, item,price,category,recv)
         print(ips_list)
         for id_,ip in enumerate(self.ips):
             if ip in ips_list:
@@ -88,7 +88,8 @@ a = MasterNode()
 a.connection_accept()
 
 a.send_command(["127.0.0.1"], "USERID", "PRODUCTID","OPERATION","PRODUCT","120","category 3")
-
+a.send_command(["127.0.0.1"], "USERID2", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
+a.send_command(["127.0.0.1"], "USERID3", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")
 
             
            
