@@ -5,6 +5,7 @@ import json
 import os
 import base64
 from tinydb import TinyDB, Query
+import struct
 
 db = TinyDB('db/db.json')
 
@@ -19,38 +20,32 @@ def reliable_send(data):
 	print(json_data)
 	sock.sendall(json_data)
 
+
+def recvall(sock, n):
+    # Helper function to recv n bytes or return None if EOF is hit
+    data = bytearray()
+    while len(data) < n:
+        packet = sock.recv(n - len(data))
+        if not packet:
+            return None
+        data.extend(packet)
+    return data
+
 def reliable_recv():
-	data= b""
-	while True:
-		try:
-			data = data + sock.recv(1024)
-			if len(data) < 1024:
-				break
-		except ValueError as e:
-			print("caught in data", e)
-			print(e)
-	try:
-		data = data.decode().split("\n")
-		to_return = []
-		for d in data :
-			if len(d)>0:
-				to_return.append(json.loads(d))
-
-		return to_return
-	except Exception as e:
-		print(e, "exception in loads")
-		return []
-
-
+	raw_msglen = recvall(sock, 4)
+	if not raw_msglen:
+		return None
+	msglen = struct.unpack('>I', raw_msglen)[0]
+	data = recvall(sock, msglen)
+	return json.loads(data.decode())
 
 def shell():
 	while True:
 		print("Listening")
 		data_recv = reliable_recv()
-		print(data_recv)
 		if data_recv is not None:
 			try:
-				db.insert_multiple(data_recv)
+				db.insert(data_recv)
 			except ValueError as e:
 				print(e, "exception in db insert")
 		

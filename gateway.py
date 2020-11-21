@@ -15,24 +15,44 @@ METHOD OF KAZOOMASTER
 from client.kazooMaster import kazooMaster
 import subprocess
 import binascii
+import hashlib
+import json
 
 class Gateway():
     def __init__(self):
         pass
     
+    @staticmethod
+    def get_config():
+        with open("./config.json") as fin:
+            return json.loads(fin.read())
 
-    def run_crush(self, val, rcount):
+    def create_hash(self,user_id:str, pid:str):
+        m = hashlib.sha256()
+        m.update(user_id.encode())
+        m.update(pid.encode())
+        digest = m.digest()
+        encoded = int(binascii.hexlify(digest).decode())
+        # decoded = binascii.unhexlify(str(encoded).encode()).decode()
+        return encoded
+
+    def run_crush(self, user_id:str, pid:str, rcount:int):
+        val = self.create_hash()
         proc = subprocess.Popen(['python2', 'utils/crush_runner.py', str(val), str(rcount)], 
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE,
                                 stdin=subprocess.PIPE,
                             )
-
         stdout_value = proc.communicate()
-        return stdout_value[0].decode()
+        device_id = stdout_value[0].decode()
 
-    
+        return device_id
 
-encoded = int(binascii.hexlify("user1".encode()).decode())
-decoded = binascii.unhexlify(str(encoded).encode()).decode()
-# kmaster = kazooMaster()
+    def kazoo_master_thread(self):
+        a = kazooMaster("172.17.0.3","p","dev1","","","",True)
+
+    def run(self):
+        device_config = self.get_config()
+
+        t1 = threading.Thread(target = self.server)
+        t1.start()
