@@ -32,18 +32,23 @@ class kazooMaster(object):
 
         if(self.path == ""):
             logging.error("PATH EMPTY")
+            return False
         else:
             if self.zk.exists(self.path) == None:
                 self.zk.create(self.path,value=b"version 1",makepath=True)
                 self.zk.create(self.path_rev,value=b"version 1",makepath=True)
+                return True
                 #self.zk.create(self.path,self.operation.encode(),sequence=True)
             else:
                 data,stat = self.zk.get(self.path)
                 data_rev,stat_rev = self.zk.get(self.path_rev)
                 self.zk.set(self.path,str(stat.version).encode())
                 self.zk.set(self.path_rev,str(stat_rev.version).encode())
+                return True
                 #self.zk.create(self.path,self.operation.encode(),sequence=True)
         self.zk.stop()
+        return False
+
 #stat is blocking ,control will return to called object after ephemeral node crashes
     def stat(self,node):
         stop=4
@@ -83,33 +88,44 @@ class kazooMaster(object):
 
         self.zk.stop()
 
-    def retrieve(self):
+    def retrieve(self, custom_path = None):
+        if not custom_path:
+            custom_path = self.path
+            
         if self.zk.exists(self.path) == None:
             return -1
         else:
-            data,version_number = self.zk.get(self.path)
+            data,version_number = self.zk.get(custom_path)
             version_number = str(version_number.version)
             return version_number
 
-#Give only user ID for finding mapping
+    #Give only user ID for finding mapping
     def getmap(self):
         parent = self.path.split("/")[1]
         parent = "/"+parent
         children = self.zk.get_children(parent)
+        to_return = []
         for keys in children:
             #print("KEY: ",keys)
             subChildren = parent+"/"+keys
             subChild = self.zk.get_children(subChildren)
             for val in subChild:
                 print("KEY: ",keys," DEVICES: ",val)
+                path = subChildren+"/"+val
+                to_return.append({
+                    "key": keys,
+                    "device": val, 
+                    "version": self.retrieve(path)
+                })
                 #TO DO find version vector of KEY and DEVICES
 
-#give only Device Id for remapping
+        return to_return
+
+    #give only Device Id for remapping
     def reMap(self):
         remap_data=[]
         print(self.remap)
         if self.remap == True:
-           
             dev_down=self.node
             dev_down = "/"+dev_down
             val = self.zk.get_children(dev_down)
@@ -118,7 +134,7 @@ class kazooMaster(object):
                 allItems = self.zk.get_children(user_name)
                 for items in allItems:
                     remap_data.append((users,items))
-                    #TO DO:delete user key pairs here
+                    #TODO:delete user key pairs here
                     print(users,items)
 
             #print(remap_data)
@@ -128,13 +144,13 @@ class kazooMaster(object):
 
 
 
-a = kazooMaster("172.17.0.3","p","dev1","","","",True)
-a.reMap()
+# a = kazooMaster("172.17.0.3","p","dev1","","","",True)
+# a.reMap()
 
 
-# a=kazooMaster("172.17.0.3","p","","usr1","key1","ADD")
-# val=a.getmap()
+# # a=kazooMaster("172.17.0.3","p","","usr1","key1","ADD")
+# # val=a.getmap()
 
-print("Version updated")
+# print("Version updated")
 
 
