@@ -25,10 +25,9 @@ from master_node import MasterNode
 REPLICATION_COUNT = 2
 
 
-class WatcherPipe():
+class Gatway():
     def __init__(self):
-        self.thread_instances = []
-        self.downs = -1
+        pass
     
     @staticmethod
     def get_config():
@@ -86,5 +85,5 @@ class WatcherPipe():
 
 
 
-w = WatcherPipe()
-w.run_gateway()
+# w = Gatway()
+# w.run_gateway()
