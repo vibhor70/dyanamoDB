@@ -23,14 +23,12 @@ def reliable_recv():
 	data= b""
 	while True:
 		try:
-			sck_recv = sock.recv(1024)
-			data = data + sck_recv
+			data = data + sock.recv(1024)
 			if len(data) < 1024:
 				break
 		except ValueError as e:
 			print("caught in data", e)
 			print(e)
-
 	try:
 		data = data.decode().split("\n")
 		to_return = []
@@ -49,6 +47,7 @@ def shell():
 	while True:
 		print("Listening")
 		data_recv = reliable_recv()
+		print(data_recv)
 		if data_recv is not None:
 			try:
 				db.insert_multiple(data_recv)

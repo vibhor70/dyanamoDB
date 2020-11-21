@@ -101,5 +101,6 @@ a.connection_accept()
 a.send_command(["127.0.0.1"], "USERID1", "PRODUCTID","OPERATION","PRODUCT","120","category 3")
 a.send_command(["127.0.0.1"], "USERID2", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
 a.send_command(["127.0.0.1"], "USERID3", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")
-      
+a.send_command(["127.0.0.1"], "USERID5", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
+a.send_command(["127.0.0.1"], "USERID7", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")   
            
