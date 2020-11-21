@@ -10,8 +10,8 @@ db = TinyDB('db/db.json')
 
 IP_CONNECT = "127.0.0.1"
 DEVICE = "1"
-record = TinyDB("records.json")
-secondary_index = TinyDB("secondary.json")
+# record = TinyDB("records.json")
+# secondary_index = TinyDB("secondary.json")
 
 # TO DO SET INDIVIDUAL DEVICE ID's FOR EACH CONTAINER
 def reliable_send(data):
@@ -23,21 +23,26 @@ def reliable_recv():
 	data= b""
 	while True:
 		try:
-			data = data + sock.recv(1024)
+			sck_recv = sock.recv(1024)
+			data = data + sck_recv
 			if len(data) < 1024:
 				break
 		except ValueError as e:
-			print("caught", e)
+			print("caught in data", e)
 			print(e)
 
 	try:
-		data = json.loads(data.decode())
-		print(data)
-	except Exception as e:
-		print(e, "exception")
-		return None
+		data = data.decode().split("\n")
+		to_return = []
+		for d in data :
+			if len(d)>0:
+				to_return.append(json.loads(d))
 
-	return data
+		return to_return
+	except Exception as e:
+		print(e, "exception in loads")
+		return []
+
 
 
 def shell():
@@ -45,8 +50,10 @@ def shell():
 		print("Listening")
 		data_recv = reliable_recv()
 		if data_recv is not None:
-			db.insert(data_recv)
-		#print(command)
+			try:
+				db.insert_multiple(data_recv)
+			except ValueError as e:
+				print(e, "exception in db insert")
 		
 
 sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)

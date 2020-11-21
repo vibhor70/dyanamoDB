@@ -31,10 +31,10 @@ class MasterNode(object):
         while cter:
             try:
                 print("Recieving")
-                new_recv = target.recv(1024)
+                new_recv = target.recv(4048)
                 print(new_recv.decode())
                 data += new_recv.decode() 
-                if(not new_recv or len(new_recv.decode()) < 1024 ):
+                if(not new_recv or len(new_recv.decode()) < 4048 ):
                     cter=False
                     break
                 print(data)
@@ -74,6 +74,7 @@ class MasterNode(object):
             "category": category
         }
         to_send = json.dumps(to_send)
+        to_send += "\n"
         # print(ips_list)
         for id_,ip in enumerate(self.ips):
             if ip in ips_list:
@@ -97,7 +98,7 @@ a = MasterNode()
 a.connection_accept()
 
 
-a.send_command(["127.0.0.1"], "USERID", "PRODUCTID","OPERATION","PRODUCT","120","category 3")
+a.send_command(["127.0.0.1"], "USERID1", "PRODUCTID","OPERATION","PRODUCT","120","category 3")
 a.send_command(["127.0.0.1"], "USERID2", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
 a.send_command(["127.0.0.1"], "USERID3", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")
       
