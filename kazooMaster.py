@@ -101,7 +101,7 @@ class kazooMaster(object):
 
     #Give only user ID for finding mapping
     def getmap(self):
-        parent = self.path.split("/")[1]
+        parent = self.userID
         parent = "/"+parent
         children = self.zk.get_children(parent)
         to_return = []
@@ -117,7 +117,7 @@ class kazooMaster(object):
                     "device": val, 
                     "version": self.retrieve(path)
                 })
-                #TO DO find version vector of KEY and DEVICES
+                
 
         return to_return
 
@@ -141,7 +141,13 @@ class kazooMaster(object):
         else:
             print("REMAP PARAMETER FALSE")
         
-
+    def setVersion(self,path,value):
+        
+        if self.zk.exists(path) == None:
+            print("NODE ERROR")
+        
+        else :
+            self.zk.set(path=path,value=str(value).encode())
 
 
 # a = kazooMaster("172.17.0.3","p","dev1","","","",True)

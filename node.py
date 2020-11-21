@@ -6,8 +6,8 @@ import os
 import base64
 from tinydb import TinyDB, Query
 import struct
-
-db = TinyDB('db/db.json')
+from kazooMaster import kazooMaster
+db = TinyDB('db.json')
 
 IP_CONNECT = "127.0.0.1"
 DEVICE = "1"
@@ -37,6 +37,24 @@ def reliable_recv():
 		return None
 	msglen = struct.unpack('>I', raw_msglen)[0]
 	data = recvall(sock, msglen)
+	#print(data.decode())
+	criteria = data.decode()
+	criteria = json.loads(criteria)
+
+	"""
+	implement concurrency here
+	read from saved file version number and than from zookeeper if fault tell client
+	"""
+	#print(criteria["DevID"])
+	# for val in criteria["DevID"]:
+	# 	kmaster = kazooMaster(
+	# 				"172.17.0.3", "p", val, criteria["userid"], 
+	# 				criteria["productid"], criteria["operation"]
+	# 			)
+	# 	kmaster.start_client()
+	# 	#         
+	# 	#use version vectors for concurrency
+	# 	if kmaster 
 	return json.loads(data.decode())
 
 def shell():
