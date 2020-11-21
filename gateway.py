@@ -20,9 +20,10 @@ import json
 import threading
 import time
 
-class Gateway():
+class Watcher():
     def __init__(self):
         self.thread_instances = []
+        self.downs = []
         pass
     
     @staticmethod
@@ -53,7 +54,12 @@ class Gateway():
 
     def kazoo_master_thread(self, kazoo_instance, i):
         result = kazoo_instance.stat()
-        self.thread_instances[i].down = True
+        self.thread_instances[i]["down"] = True
+        print(i, kazoo_instance, "is down")
+        self.downs.append({
+            "instance": kazoo_instance,
+            "index": i
+        })
 
     # def monitor_thread(self):
     #     for thread_instance in self.thread_instances:
@@ -77,10 +83,13 @@ class Gateway():
         # for i, thread_instance in self.thread_instances:
         #     thread_instance["object"].join()
 
-        time.sleep(3)
+        # time.sleep(3)
         for thread_instance in self.thread_instances:
-            if thread_instance.down == True:
+            if thread_instance["down"] == True:
                 print(thread_instance, "is down")
                 # kmaster_instance = kazooMaster(
                 #     device["ip"], "e", device["device_id"]
                 # )
+
+w = Watcher()
+w.run()

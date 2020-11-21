@@ -50,7 +50,7 @@ class kazooMaster(object):
         return False
 
 #stat is blocking ,control will return to called object after ephemeral node crashes
-    def stat(self,node):
+    def stat(self):
         stop=4
 
         @self.zk.DataWatch("{}".format(self.path))
