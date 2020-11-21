@@ -64,16 +64,8 @@ class MasterNode(object):
                 pass
 
 
-    def send_command(self, ips_list,userid,productid, operation, item,price="",category=""):
-        to_send = {
-            "userid": userid,
-            "productid": productid,
-            "operation": operation,
-            "item": item,
-            "price": price,
-            "category": category
-        }
-        to_send = json.dumps(to_send).encode()
+    def send_command(self, ips_list, data):
+        to_send = json.dumps(data).encode()
         to_send = struct.pack('>I', len(to_send))  + to_send
         # print(ips_list)
         for id_,ip in enumerate(self.ips):
@@ -93,85 +85,85 @@ class MasterNode(object):
         return self.ips
         
 
-a = MasterNode()
-#Blocking Call
-a.connection_accept()
+# a = MasterNode()
+# #Blocking Call
+# a.connection_accept()
 
 
-a.send_command(["127.0.0.1"], "USERID1", "PRODUCTID","OPERATION","PRODUCT","120","category 3")
-a.send_command(["127.0.0.1"], "USERID2", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
-a.send_command(["127.0.0.1"], "USERID3", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")
-a.send_command(["127.0.0.1"], "USERID5", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
-a.send_command(["127.0.0.1"], "USERID7", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")   
+# a.send_command(["127.0.0.1"], "USERID1", "PRODUCTID","OPERATION","PRODUCT","120","category 3")
+# a.send_command(["127.0.0.1"], "USERID2", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
+# a.send_command(["127.0.0.1"], "USERID3", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")
+# a.send_command(["127.0.0.1"], "USERID5", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
+# a.send_command(["127.0.0.1"], "USERID7", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")   
            
-a.send_command(["127.0.0.1"], "USERID11", "PRODUCTID","OPERATION","PRODUCT","120","category 3")
-a.send_command(["127.0.0.1"], "USERID22", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
-a.send_command(["127.0.0.1"], "USERID33", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")
-a.send_command(["127.0.0.1"], "USERID54", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
-a.send_command(["127.0.0.1"], "USERID77", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")   
-           
-
-a.send_command(["127.0.0.1"], "USERID1", "PRODUCTID","OPERATION","PRODUCT","120","category 3")
-a.send_command(["127.0.0.1"], "USERID2", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
-a.send_command(["127.0.0.1"], "USERID3", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")
-a.send_command(["127.0.0.1"], "USERID5", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
-a.send_command(["127.0.0.1"], "USERID7", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")   
-
-a.send_command(["127.0.0.1"], "USERID1", "PRODUCTID","OPERATION","PRODUCT","120","category 3")
-a.send_command(["127.0.0.1"], "USERID2", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
-a.send_command(["127.0.0.1"], "USERID3", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")
-a.send_command(["127.0.0.1"], "USERID5", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
-a.send_command(["127.0.0.1"], "USERID7", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")   
-           
-a.send_command(["127.0.0.1"], "USERID11", "PRODUCTID","OPERATION","PRODUCT","120","category 3")
-a.send_command(["127.0.0.1"], "USERID22", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
-a.send_command(["127.0.0.1"], "USERID33", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")
-a.send_command(["127.0.0.1"], "USERID54", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
-a.send_command(["127.0.0.1"], "USERID77", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")   
+# a.send_command(["127.0.0.1"], "USERID11", "PRODUCTID","OPERATION","PRODUCT","120","category 3")
+# a.send_command(["127.0.0.1"], "USERID22", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
+# a.send_command(["127.0.0.1"], "USERID33", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")
+# a.send_command(["127.0.0.1"], "USERID54", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
+# a.send_command(["127.0.0.1"], "USERID77", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")   
            
 
-a.send_command(["127.0.0.1"], "USERID1", "PRODUCTID","OPERATION","PRODUCT","120","category 3")
-a.send_command(["127.0.0.1"], "USERID2", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
-a.send_command(["127.0.0.1"], "USERID3", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")
-a.send_command(["127.0.0.1"], "USERID5", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
-a.send_command(["127.0.0.1"], "USERID7", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")   
+# a.send_command(["127.0.0.1"], "USERID1", "PRODUCTID","OPERATION","PRODUCT","120","category 3")
+# a.send_command(["127.0.0.1"], "USERID2", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
+# a.send_command(["127.0.0.1"], "USERID3", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")
+# a.send_command(["127.0.0.1"], "USERID5", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
+# a.send_command(["127.0.0.1"], "USERID7", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")   
+
+# a.send_command(["127.0.0.1"], "USERID1", "PRODUCTID","OPERATION","PRODUCT","120","category 3")
+# a.send_command(["127.0.0.1"], "USERID2", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
+# a.send_command(["127.0.0.1"], "USERID3", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")
+# a.send_command(["127.0.0.1"], "USERID5", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
+# a.send_command(["127.0.0.1"], "USERID7", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")   
+           
+# a.send_command(["127.0.0.1"], "USERID11", "PRODUCTID","OPERATION","PRODUCT","120","category 3")
+# a.send_command(["127.0.0.1"], "USERID22", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
+# a.send_command(["127.0.0.1"], "USERID33", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")
+# a.send_command(["127.0.0.1"], "USERID54", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
+# a.send_command(["127.0.0.1"], "USERID77", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")   
+           
+
+# a.send_command(["127.0.0.1"], "USERID1", "PRODUCTID","OPERATION","PRODUCT","120","category 3")
+# a.send_command(["127.0.0.1"], "USERID2", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
+# a.send_command(["127.0.0.1"], "USERID3", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")
+# a.send_command(["127.0.0.1"], "USERID5", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
+# a.send_command(["127.0.0.1"], "USERID7", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")   
  
-a.send_command(["127.0.0.1"], "USERID1", "PRODUCTID","OPERATION","PRODUCT","120","category 3")
-a.send_command(["127.0.0.1"], "USERID2", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
-a.send_command(["127.0.0.1"], "USERID3", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")
-a.send_command(["127.0.0.1"], "USERID5", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
-a.send_command(["127.0.0.1"], "USERID7", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")   
+# a.send_command(["127.0.0.1"], "USERID1", "PRODUCTID","OPERATION","PRODUCT","120","category 3")
+# a.send_command(["127.0.0.1"], "USERID2", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
+# a.send_command(["127.0.0.1"], "USERID3", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")
+# a.send_command(["127.0.0.1"], "USERID5", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
+# a.send_command(["127.0.0.1"], "USERID7", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")   
            
-a.send_command(["127.0.0.1"], "USERID11", "PRODUCTID","OPERATION","PRODUCT","120","category 3")
-a.send_command(["127.0.0.1"], "USERID22", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
-a.send_command(["127.0.0.1"], "USERID33", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")
-a.send_command(["127.0.0.1"], "USERID54", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
-a.send_command(["127.0.0.1"], "USERID77", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")   
-           
-
-a.send_command(["127.0.0.1"], "USERID1", "PRODUCTID","OPERATION","PRODUCT","120","category 3")
-a.send_command(["127.0.0.1"], "USERID2", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
-a.send_command(["127.0.0.1"], "USERID3", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")
-a.send_command(["127.0.0.1"], "USERID5", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
-a.send_command(["127.0.0.1"], "USERID7", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")   
-
-
-a.send_command(["127.0.0.1"], "USERID1", "PRODUCTID","OPERATION","PRODUCT","120","category 3")
-a.send_command(["127.0.0.1"], "USERID2", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
-a.send_command(["127.0.0.1"], "USERID3", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")
-a.send_command(["127.0.0.1"], "USERID5", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
-a.send_command(["127.0.0.1"], "USERID7", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")   
-           
-a.send_command(["127.0.0.1"], "USERID11", "PRODUCTID","OPERATION","PRODUCT","120","category 3")
-a.send_command(["127.0.0.1"], "USERID22", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
-a.send_command(["127.0.0.1"], "USERID33", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")
-a.send_command(["127.0.0.1"], "USERID54", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
-a.send_command(["127.0.0.1"], "USERID77", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")   
+# a.send_command(["127.0.0.1"], "USERID11", "PRODUCTID","OPERATION","PRODUCT","120","category 3")
+# a.send_command(["127.0.0.1"], "USERID22", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
+# a.send_command(["127.0.0.1"], "USERID33", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")
+# a.send_command(["127.0.0.1"], "USERID54", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
+# a.send_command(["127.0.0.1"], "USERID77", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")   
            
 
-a.send_command(["127.0.0.1"], "USERID1", "PRODUCTID","OPERATION","PRODUCT","120","category 3")
-a.send_command(["127.0.0.1"], "USERID2", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
-a.send_command(["127.0.0.1"], "USERID3", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")
-a.send_command(["127.0.0.1"], "USERID5", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
-a.send_command(["127.0.0.1"], "USERID7", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")   
+# a.send_command(["127.0.0.1"], "USERID1", "PRODUCTID","OPERATION","PRODUCT","120","category 3")
+# a.send_command(["127.0.0.1"], "USERID2", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
+# a.send_command(["127.0.0.1"], "USERID3", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")
+# a.send_command(["127.0.0.1"], "USERID5", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
+# a.send_command(["127.0.0.1"], "USERID7", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")   
+
+
+# a.send_command(["127.0.0.1"], "USERID1", "PRODUCTID","OPERATION","PRODUCT","120","category 3")
+# a.send_command(["127.0.0.1"], "USERID2", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
+# a.send_command(["127.0.0.1"], "USERID3", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")
+# a.send_command(["127.0.0.1"], "USERID5", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
+# a.send_command(["127.0.0.1"], "USERID7", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")   
+           
+# a.send_command(["127.0.0.1"], "USERID11", "PRODUCTID","OPERATION","PRODUCT","120","category 3")
+# a.send_command(["127.0.0.1"], "USERID22", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
+# a.send_command(["127.0.0.1"], "USERID33", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")
+# a.send_command(["127.0.0.1"], "USERID54", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
+# a.send_command(["127.0.0.1"], "USERID77", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")   
+           
+
+# a.send_command(["127.0.0.1"], "USERID1", "PRODUCTID","OPERATION","PRODUCT","120","category 3")
+# a.send_command(["127.0.0.1"], "USERID2", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
+# a.send_command(["127.0.0.1"], "USERID3", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")
+# a.send_command(["127.0.0.1"], "USERID5", "PRODUCTID2","OPERATION2","PRODUCT2","1202","category 32")
+# a.send_command(["127.0.0.1"], "USERID7", "PRODUCTID3","OPERATION2","PRODUCT4","1230","category 3")   
  

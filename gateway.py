@@ -20,6 +20,10 @@ import json
 import threading
 import time
 import os 
+from master_node import MasterNode
+
+REPLICATION_COUNT = 2
+
 
 class WatcherPipe():
     def __init__(self):
@@ -31,7 +35,8 @@ class WatcherPipe():
         with open("./config.json") as fin:
             return json.loads(fin.read())
 
-    def create_hash(self,user_id:str, pid:str):
+    @staticmethod
+    def create_hash(user_id:str, pid:str):
         m = hashlib.sha256()
         m.update(user_id.encode())
         m.update(pid.encode())
@@ -48,10 +53,38 @@ class WatcherPipe():
                                 stdin=subprocess.PIPE,
                             )
         stdout_value = proc.communicate()
-        device_id = stdout_value[0].decode()
+        device_ids = stdout_value[0].decode()
 
-        return device_id
+        return device_ids
 
- 
+
+    def insert(self, data:dict):
+        # data = {
+        #     "userid": userid,
+        #     "productid": productid,
+        #     "operation": operation,
+        #     "item": item,
+        #     "price": price,
+        #     "category": category
+        # }
+        device_ids = self.run_crush(data["userid"], data["productid"], REPLICATION_COUNT)
+        device_ip_map = {}
+        for node in self.get_config()["nodes"]:
+            if node["device_id"] in device_ids:
+                device_ip_map[node["device_id"]] = node["ip"]
+
+        for did, ip in device_ip_map.items():
+            kmaster = kazooMaster(
+                ip, "p", did, data["userid"], 
+                data["productid"], data["operation"]
+            )
+            kmaster.create()
+
+        mnode = MasterNode()
+        mnode.connection_accept()
+        mnode.send_command(device_ip_map.values(), data)
+
+
+
 w = WatcherPipe()
 w.run_gateway()

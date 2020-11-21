@@ -6,12 +6,12 @@ import logging
 
 class kazooMaster(object):
 
-    def __init__(self,ip,type_="p",node="",userID="",key="",operation="",remap=False):
+    def __init__(self,ip,type_="p",node="",userID="",pid="",operation="",remap=False):
         self.ip = ip
         self.node = node
         self.type=type_
         self.userID = userID
-        self.productID = key
+        self.productID = pid
         self.operation = operation
         self.path_rev = ""
         if type_ == "e" or type_ == "E":
