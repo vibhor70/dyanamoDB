@@ -107,5 +107,8 @@ class WatcherPipe():
             # This is the child process 
             self.run_watcher(r, w)
 
+        kmaster = kazooMaster("172.17.0.2", "e", "device_1")
+        kmaster.children_watch("/device_1")
+
 w = WatcherPipe()
 w.run_gateway()

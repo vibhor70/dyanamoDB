@@ -26,6 +26,20 @@ class kazooMaster(object):
     def start_client(self):
         self.zk = KazooClient(hosts='{}:2181'.format(self.ip), read_only = False)
         self.zk.start()
+
+    def start_client_async(self):
+        self.zk = KazooClient(hosts='{}:2181'.format(self.ip), read_only = False)
+        self.zk.start_async()
+
+    def children_watch(self, path = None):
+        if path is None:
+            path = self.path
+            
+        @self.zk.ChildrenWatch(path)
+        def watch_children(children):
+            print("Children are now: %s" % children)
+        # Above function called immediately, and from then on
+
     def stop_client(self):
         self.zk.stop()
     
