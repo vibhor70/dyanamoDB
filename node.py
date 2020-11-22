@@ -52,16 +52,19 @@ def reliable_recv():
 
 	#criteria["VERSION"]
 	
-	if db.search(Query()["USERID"] == "1") == None:
-		path = "/" +criteria["USERID"]+ "/"+ criteria["PRODUCTID"] + "/" + DEVICE
+	if db.search(Query()["USERID"] == criteria["USERID"]) == None:
+		path = "/" +criteria["USERID"]+ "/"+ criteria["PRODUCTID"] 
+		path_rev = "/" + DEVICE + "/" +criteria["USERID"] + "/" + criteria["PRODUCTID"]
 		if kmaster.exist("path"):
 			Gateway.read_repair({"NODES":DEVICE})
 		else:
 			to_store = {'USERID': criteria["USERID"], 'PRODUCT_INFO': [criteria["PRODUCTID"],criteria["OPERATION"],criteria["PRICE"],criteria["CATEGORY"],"0"]}
 			db.insert(to_store)
+			kmaster.setVersion(path,b"0")
 	else:
 		to_store = db.search(Query()["USERID"] == criteria["USERID"])
 		version = to_store[0]['PRODUCT_INFO'][4]
+
 		path = "/" +criteria["USERID"]+ "/"+ criteria["PRODUCTID"] + "/" + DEVICE
 		path_rev = "/" +DEVICE + "/" + criteria["USERID"]+ "/"+ criteria["PRODUCTID"] 
 		zversion = kmaster.retrieve(path)
@@ -70,10 +73,17 @@ def reliable_recv():
 			Gateway.read_repair({"NODES":DEVICE})
 		else:
 			version = version + 1
-			to_store = {'USERID': criteria["USERID"], 'PRODUCT_INFO': [criteria["PRODUCTID"],criteria["OPERATION"],criteria["PRICE"],criteria["CATEGORY"],version]}
-			kmaster.setVersion(path,version)
-			kmaster.setVersion(path_rev,version)
-			db.insert(to_store)
+			to_store = db.search(Query()["USERID"] == criteria["USERID"])
+			dbversion = to_store[0]['PRODUCT_INFO'][4]
+			if dbversion  == version :
+				print("CONCURRENT")
+				reliable_send("CONCURRENT TRANSACTION : INITIATING READ REPAIR")
+			else:
+
+				to_store = {'USERID': criteria["USERID"], 'PRODUCT_INFO': [criteria["PRODUCTID"],criteria["OPERATION"],criteria["PRICE"],criteria["CATEGORY"],version]}
+				kmaster.setVersion(path,version)
+				kmaster.setVersion(path_rev,version)
+				db.insert(to_store)
 	"""
 	implement concurrency here
 	read from saved file version number and than from zookeeper if fault tell client
