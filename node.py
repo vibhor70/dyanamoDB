@@ -66,6 +66,7 @@ def reliable_recv():
 		path_rev = "/" +DEVICE + "/" + criteria["USERID"]+ "/"+ criteria["PRODUCTID"] 
 		zversion = kmaster.retrieve(path)
 		if zversion != version:
+			reliable_send("CONCURRENT TRANSACTION : INITIATING READ REPAIR")
 			Gateway.read_repair({"NODES":DEVICE})
 		else:
 			version = version + 1
