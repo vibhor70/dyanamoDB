@@ -34,7 +34,7 @@ class kazooMaster(object):
     def children_watch(self, path = None):
         if path is None:
             path = self.path
-            
+        print(path)
         @self.zk.ChildrenWatch(path)
         def watch_children(children):
             print("Children are now: %s" % children)

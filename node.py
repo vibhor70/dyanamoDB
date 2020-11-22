@@ -108,3 +108,24 @@ sock.connect((IP_CONNECT,54321))
 shell()
 sock.close()
 kmaster.start_client()
+
+
+# [
+# 	{
+# 	"USER": "USER1"
+# 	"PRODUCTS": [
+# 		"P1":[
+# 		 {
+# 			"HISTORY":[
+# 				{"OPERATION": "ADD", VERSION_VEC: 1},
+# 				{"OPERATION": "ADD", VERSION_VEC: 2},
+# 				{"OPERATION": "ADD", VERSION_VEC: 3},
+# 				{"OPERATION": "ADD", VERSION_VEC: 5},
+# 				{"OPERATION": "ADD", VERSION_VEC: 4},
+# 				{"OPERATION": "DELETION", VERSION_VEC: 6},
+# 			],
+# 			"LATEST_VERSION_VEC": 6
+# 		},
+# 	],
+# 	},
+# ]
