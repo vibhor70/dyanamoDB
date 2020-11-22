@@ -24,10 +24,10 @@ from master_node import MasterNode
 
 REPLICATION_COUNT = 2
 
-
+GATEWAY_IP = "172.17.0.4"
 class Gateway():
     def __init__(self):
-       pass
+        self.Flaged_ip=dict()
     
     @staticmethod
     def get_config():
@@ -68,24 +68,66 @@ class Gateway():
         # }
         device_ids = self.run_crush(data["userid"], data["productid"], REPLICATION_COUNT)
         device_ip_map = {}
+        flag=False
+        
         for node in self.get_config()["nodes"]:
             if node["device_id"] in device_ids:
                 device_ip_map[node["device_id"]] = node["ip"]
         #before inserting check if node exits or not than remove that IP
-
-        for did, ip in device_ip_map.items():
-            kmaster = kazooMaster(
-                ip, "p", did, data["userid"], 
+        kmaster = kazooMaster(
+                GATEWAY_IP, "p", "", data["userid"], 
                 data["productid"], data["operation"]
             )
-            kmaster.start_client()
-            kmaster.create()
+        kmaster.start_client()
+        for did, ip in device_ip_map.items():
+            path = "/" + did
+            if kmaster.exist(path):
+                if self.Flaged_ip[did]!=-1:
+                    mnode = MasterNode()
+                    mnode.connection_accept()
+                    mnode.send_command(device_ip_map[did], data)
+                else:
+                    read_repair({"userid":did})
+                    #DO READ REPAIR WHEN DOWN NODE COMES BACK
+                    self.Flaged_ip[did]=0
+                    mnode = MasterNode()
+                    mnode.connection_accept()
+                    mnode.send_command(device_ip_map[did], data)
+
+            else:
+                flag=False
+                self.Flaged_ip[did]=-1
+
+        kmaster.stop_client()    
         data["DevID"]=device_ids
         #run in constructor also add device ids to arguement
-        mnode = MasterNode()
-        mnode.connection_accept()
-        mnode.send_command(device_ip_map.values(), data)
+        
 #call list_all only when down node comes back
+
+
+    def read_repair(self,info:dict):
+        """
+        dict={
+            "NODES":[node1,node2,node3]
+        }
+
+        """
+        kmaster = kazooMaster(
+            GATEWAY_IP,"p","",info["userid"],"","",False
+        )
+        kmaster.start_client()
+        all_user = set()
+        for nodes in info["NODES"]:
+            path = "/" + nodes
+            all_child = kmaster.get_children(path)
+            for child in all_child:
+                all_user.add(child)
+
+        for child in all_user:
+            list_all({"userid":child})
+
+        kmaster.stop_client()
+        
     def list_all(self,info:dict):
         """
         dict={
@@ -93,7 +135,7 @@ class Gateway():
         }
         """
         kmaster = kazooMaster(
-            "172.17.0.3","p","",info["userid"],"","",False
+            GATEWAY_IP,"p","",info["userid"],"","",False
         )
         kmaster.start_client()
         to_return  = kmaster.getmap()
@@ -139,6 +181,7 @@ class Gateway():
                     kmaster.setVersion(path_rev,max_version)
         #TO DO CHANGE DATA NODES ALSO
         latest_data = kmaster.getmap()
+        kmaster.stop_client()
         return latest_data
 
     def delete_(self,info:dict):
@@ -149,8 +192,9 @@ class Gateway():
         }
         """
         kmaster = kazooMaster(
-            "","p","",info["userid"],info["productid"],"",False
+            GATEWAY_IP,"p","",info["userid"],info["productid"],"",False
         )
+        kmaster.start_client()
         allInfo = kmaster.getmap()
         for val in range(len(allInfo)):
             if allInfo[val]["key"]==info["productid"]:
@@ -158,7 +202,7 @@ class Gateway():
                 path_rev = "/" + allInfo[val]["device"] + "/" + info["userid"] + "/" + allInfo[val]["key"]
                 kmaster.delete(path)
                 kmaster.delete(path_rev)
-
+        kmaster.stop_client()
          #TO DO CHANGE DATA NODES ALSO
         
          

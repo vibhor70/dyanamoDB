@@ -26,6 +26,17 @@ class kazooMaster(object):
     def start_client(self):
         self.zk = KazooClient(hosts='{}:2181'.format(self.ip), read_only = False)
         self.zk.start()
+    def stop_client(self):
+        self.zk.stop()
+    
+    def get_children(self,path):
+        return self.zk.get_children(path)
+
+    def exist(self,path):
+        if self.zk.exists(path) == None:
+            return False
+        else:
+            return True
 
     def create(self):
         logging.basicConfig(filename='logs/connection.log', filemode='w', level=logging.DEBUG)
@@ -35,8 +46,8 @@ class kazooMaster(object):
             return False
         else:
             if self.zk.exists(self.path) == None:
-                self.zk.create(self.path,value=b"version 1",makepath=True)
-                self.zk.create(self.path_rev,value=b"version 1",makepath=True)
+                self.zk.create(self.path,value=b"0",makepath=True)
+                self.zk.create(self.path_rev,value=b"0",makepath=True)
                 return True
                 #self.zk.create(self.path,self.operation.encode(),sequence=True)
             else:

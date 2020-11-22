@@ -7,14 +7,21 @@ import base64
 from tinydb import TinyDB, Query
 import struct
 from kazooMaster import kazooMaster
+from gateway import Gateway
 db = TinyDB('db.json')
 
 IP_CONNECT = "127.0.0.1"
-DEVICE = "1"
+DEVICE = "dev1"
 # record = TinyDB("records.json")
 # secondary_index = TinyDB("secondary.json")
 
 # TO DO SET INDIVIDUAL DEVICE ID's FOR EACH CONTAINER
+
+
+
+kmaster = kazooMaster(
+					IP_CONNECT, "p", "", "", 
+				"", "")
 def reliable_send(data):
 	json_data = data
 	print(json_data)
@@ -40,7 +47,32 @@ def reliable_recv():
 	#print(data.decode())
 	criteria = data.decode()
 	criteria = json.loads(criteria)
+	# print(criteria)
+	# print(criteria["OPERATION"])
 
+	#criteria["VERSION"]
+	
+	if db.search(Query()["USERID"] == "1") == None:
+		path = "/" +criteria["USERID"]+ "/"+ criteria["PRODUCTID"] + "/" + DEVICE
+		if kmaster.exist("path"):
+			Gateway.read_repair({"NODES":DEVICE})
+		else:
+			to_store = {'USERID': criteria["USERID"], 'PRODUCT_INFO': [criteria["PRODUCTID"],criteria["OPERATION"],criteria["PRICE"],criteria["CATEGORY"],"0"]}
+			db.insert(to_store)
+	else:
+		to_store = db.search(Query()["USERID"] == criteria["USERID"])
+		version = to_store[0]['PRODUCT_INFO'][4]
+		path = "/" +criteria["USERID"]+ "/"+ criteria["PRODUCTID"] + "/" + DEVICE
+		path_rev = "/" +DEVICE + "/" + criteria["USERID"]+ "/"+ criteria["PRODUCTID"] 
+		zversion = kmaster.retrieve(path)
+		if zversion != version:
+			Gateway.read_repair({"NODES":DEVICE})
+		else:
+			version = version + 1
+			to_store = {'USERID': criteria["USERID"], 'PRODUCT_INFO': [criteria["PRODUCTID"],criteria["OPERATION"],criteria["PRICE"],criteria["CATEGORY"],version]}
+			kmaster.setVersion(path,version)
+			kmaster.setVersion(path_rev,version)
+			db.insert(to_store)
 	"""
 	implement concurrency here
 	read from saved file version number and than from zookeeper if fault tell client
@@ -55,15 +87,16 @@ def reliable_recv():
 	# 	#         
 	# 	#use version vectors for concurrency
 	# 	if kmaster 
-	return json.loads(data.decode())
+	return True
 
 def shell():
+	
 	while True:
 		print("Listening")
 		data_recv = reliable_recv()
-		if data_recv is not None:
+		if data_recv :
 			try:
-				db.insert(data_recv)
+				print("Successfully entered")
 			except ValueError as e:
 				print(e, "exception in db insert")
 		
@@ -73,4 +106,4 @@ sock.connect((IP_CONNECT,54321))
 
 shell()
 sock.close()
-
+kmaster.start_client()
