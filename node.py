@@ -59,44 +59,54 @@ class Node(object):
 		#print(data.decode())
 		criteria = data.decode()
 		criteria = json.loads(criteria)
+		print(criteria)
 
-		t1 = threading.Thread(target = self.concurrency_check, args=(criteria))
+		t1 = threading.Thread(target = self.concurrency_check, args=(criteria,))
 		t1.start()
 
 	def concurrency_check(self, criteria):
-		if db.search(Query()["userid"] == criteria["userid"]) == None:
-			path = "/" + criteria["userid"] + "/" + criteria["productid"] 
-			path_rev = "/" + self.DEVICE + "/" +criteria["userid"] + "/" + criteria["productid"]
+		User = Query()
+		print("/" + criteria["USERID"] + "/" + criteria["PRODUCTID"],
+			"/" + self.DEVICE + "/" +criteria["USERID"] + "/" + criteria["PRODUCTID"]
+		)
+		if not db.search(User["USERID"] == criteria["USERID"]):
+			path = "/" + criteria["USERID"] + "/" + criteria["PRODUCTID"] 
+			path_rev = "/" + self.DEVICE + "/" +criteria["USERID"] + "/" + criteria["PRODUCTID"]
+			print(path, path_rev)
+
 			if self.kmaster.exist("path"):
-				pass
-				# Gateway.read_repair({"NODES":self.DEVICE})
+				# pass
+				Gateway.read_repair({"NODES":self.DEVICE})
 			else:
+				self.kmaster.create(path)
+				self.kmaster.create(path_rev)
+
 				to_store = {
-					'userid': criteria["userid"],
-					'product': [
-						criteria["productid"],
-						criteria["operation"],
-						criteria["price"],
-						criteria["category"],
+					'USERID': criteria["USERID"],
+					'PRODUCT': [
+						criteria["PRODUCTID"],
+						criteria["OPERATION"],
+						criteria["PRICE"],
+						criteria["CATEGORY"],
 						"0"
 					]
 				}
 				db.insert(to_store)
 				self.kmaster.setVersion(path,b"0")
 		else:
-			to_store = db.search(Query()["userid"] == criteria["userid"])
-			version = to_store[0]['product'][4]
+			to_store = db.search(Query()["USERID"] == criteria["USERID"])
+			version = to_store[0]['PRODUCT'][4]
 
-			path = "/" +criteria["userid"]+ "/"+ criteria["productid"] + "/" + self.DEVICE
-			path_rev = "/" + self.DEVICE + "/" + criteria["userid"]+ "/"+ criteria["productid"] 
+			path = "/" +criteria["USERID"]+ "/"+ criteria["PRODUCTID"] + "/" + self.DEVICE
+			path_rev = "/" + self.DEVICE + "/" + criteria["USERID"]+ "/"+ criteria["PRODUCTID"] 
 			zversion = self.kmaster.retrieve(path)
 			if zversion != version:
 				reliable_send("CONCURRENT TRANSACTION : INITIATING READ REPAIR")
-				pass
-				# Gateway.read_repair({"NODES":self.DEVICE})
+				# pass
+				Gateway.read_repair({"NODES":self.DEVICE})
 			else:
 				version = version + 1
-				to_store = db.search(Query()["userid"] == criteria["userid"])
+				to_store = db.search(User["USERID"] == criteria["USERID"])
 				dbversion = to_store[0]['PRODUCT_INFO'][4]
 				if dbversion  == version :
 					print("CONCURRENT")

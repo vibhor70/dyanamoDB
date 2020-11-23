@@ -52,26 +52,17 @@ class kazooMaster(object):
         else:
             return True
 
-    def create(self):
+    def create(self, path):
         logging.basicConfig(filename='logs/connection.log', filemode='w', level=logging.DEBUG)
 
         if(self.path == ""):
             logging.error("PATH EMPTY")
             return False
         else:
-            if self.zk.exists(self.path) == None:
-                self.zk.create(self.path,value=b"0",makepath=True)
-                self.zk.create(self.path_rev,value=b"0",makepath=True)
+            if self.zk.exists(path) == None:
+                self.zk.create(path,value=b"0",makepath=True)
+                # self.zk.create(self.path_rev,value=b"0",makepath=True)
                 return True
-                #self.zk.create(self.path,self.operation.encode(),sequence=True)
-            else:
-                data,stat = self.zk.get(self.path)
-                data_rev,stat_rev = self.zk.get(self.path_rev)
-                self.zk.set(self.path,str(stat.version).encode())
-                self.zk.set(self.path_rev,str(stat_rev.version).encode())
-                return True
-                #self.zk.create(self.path,self.operation.encode(),sequence=True)
-        self.zk.stop()
         return False
 
 #stat is blocking ,control will return to called object after ephemeral node crashes
