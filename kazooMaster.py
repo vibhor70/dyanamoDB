@@ -60,7 +60,7 @@ class kazooMaster(object):
             return False
         else:
             if self.zk.exists(path) == None:
-                self.zk.create(path,value=b"0",makepath=True)
+                self.zk.create(path, value=b"0", makepath=True)
                 # self.zk.create(self.path_rev,value=b"0",makepath=True)
                 return True
         return False
@@ -158,14 +158,14 @@ class kazooMaster(object):
             print("REMAP PARAMETER FALSE")
         
     def setVersion(self,path,value):
-        
         if self.zk.exists(path) == None:
-            print("NODE ERROR")
-        
-        else :
-            self.zk.set(path=path,value=str(value).encode())
-
-
+            print("NODE ERROR in setversion method")
+        else:
+            try:
+                self.zk.set(path=path,value=str(value).encode())
+            except Exception as e:
+                print(e, "Exception in set versioning")
+                
 # a = kazooMaster("172.17.0.3","p","dev1","","","",True)
 # a.reMap()
 

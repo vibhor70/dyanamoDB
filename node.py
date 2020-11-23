@@ -70,7 +70,7 @@ class Node(object):
 			"/" + self.DEVICE + "/" +criteria["USERID"] + "/" + criteria["PRODUCTID"]
 		)
 		if not db.search(User["USERID"] == criteria["USERID"]):
-			path = "/" + criteria["USERID"] + "/" + criteria["PRODUCTID"] 
+			path = "/" + criteria["USERID"] + "/" + criteria["PRODUCTID"] + '/' + self.DEVICE 
 			path_rev = "/" + self.DEVICE + "/" +criteria["USERID"] + "/" + criteria["PRODUCTID"]
 			print(path, path_rev)
 
@@ -92,7 +92,7 @@ class Node(object):
 					]
 				}
 				db.insert(to_store)
-				self.kmaster.setVersion(path,b"0")
+				self.kmaster.setVersion(path, 0)
 		else:
 			to_store = db.search(Query()["USERID"] == criteria["USERID"])
 			version = to_store[0]['PRODUCT'][4]
@@ -101,7 +101,7 @@ class Node(object):
 			path_rev = "/" + self.DEVICE + "/" + criteria["USERID"]+ "/"+ criteria["PRODUCTID"] 
 			zversion = self.kmaster.retrieve(path)
 			if zversion != version:
-				reliable_send("CONCURRENT TRANSACTION : INITIATING READ REPAIR")
+				self.reliable_send("CONCURRENT TRANSACTION : INITIATING READ REPAIR")
 				# pass
 				Gateway.read_repair({"NODES":self.DEVICE})
 			else:
@@ -110,12 +110,12 @@ class Node(object):
 				dbversion = to_store[0]['PRODUCT_INFO'][4]
 				if dbversion  == version :
 					print("CONCURRENT")
-					reliable_send("CONCURRENT TRANSACTION : INITIATING READ REPAIR")
+					self.reliable_send("CONCURRENT TRANSACTION : INITIATING READ REPAIR")
 				else:
 
 					to_store = {'USERID': criteria["USERID"], 'PRODUCT_INFO': [criteria["PRODUCTID"],criteria["OPERATION"],criteria["PRICE"],criteria["CATEGORY"],version]}
-					self.kmaster.setVersion(path,version)
-					self.kmaster.setVersion(path_rev,version)
+					self.kmaster.setVersion(path, version)
+					self.kmaster.setVersion(path_rev, version)
 					db.insert(to_store)
 
 		"""
