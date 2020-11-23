@@ -177,8 +177,8 @@ class Gateway():
             for i in range(len(List)):
                 x,y = List[i]
                 if max_version != int(y):
-                    path = "/" + info["userid"] + "/"+ str(keys) + "/" + str(x)
-                    path_rev = "/" + str(x) + "/" + info["userid"] + "/"+ str(keys)
+                    path = "/" + info["USERID"] + "/"+ str(keys) + "/" + str(x)
+                    path_rev = "/" + str(x) + "/" + info["USERID"] + "/"+ str(keys)
                     kmaster.setVersion(path,max_version)
                     kmaster.setVersion(path_rev,max_version)
         #TO DO CHANGE DATA NODES ALSO
