@@ -88,7 +88,7 @@ class Gateway():
                     mnode.connection_accept()
                     mnode.send_command(device_ip_map[did], data)
                 else:
-                    read_repair({"userid":did})
+                    self.read_repair({"userid":did})
                     #DO READ REPAIR WHEN DOWN NODE COMES BACK
                     self.Flaged_ip[did]=0
                     mnode = MasterNode()
@@ -114,7 +114,7 @@ class Gateway():
 
         """
         kmaster = kazooMaster(
-            self.GATEWAY_IP,"p","",info["userid"],"","",False
+            self.GATEWAY_IP,"p","",info["USERID"],"","",False
         )
         kmaster.start_client()
         all_user = set()
@@ -125,7 +125,7 @@ class Gateway():
                 all_user.add(child)
 
         for child in all_user:
-            list_all({"userid":child})
+            self.list_all({"USERID":child})
 
         kmaster.stop_client()
         
