@@ -96,11 +96,11 @@ class Node(object):
 				self.kmaster.setVersion(path, 0)
 		else:
 			to_store = db.search(Query()["USERID"] == criteria["USERID"])
-			version = to_store[0]['PRODUCT'][4]
+			version = int(to_store[0]['PRODUCT'][4])
 
 			path = "/" +criteria["USERID"]+ "/"+ criteria["PRODUCTID"] + "/" + self.DEVICE
 			path_rev = "/" + self.DEVICE + "/" + criteria["USERID"]+ "/"+ criteria["PRODUCTID"] 
-			zversion = self.kmaster.retrieve(path)
+			zversion = int(self.kmaster.retrieve(path))
 			print(zversion, "zversion", type(zversion))
 			print(version, "version", type(version))
 
@@ -117,11 +117,10 @@ class Node(object):
 					print("CONCURRENT")
 					self.reliable_send("CONCURRENT TRANSACTION : INITIATING READ REPAIR".encode())
 				else:
-
-					to_store = {'USERID': criteria["USERID"], 'PRODUCT_INFO': [criteria["PRODUCTID"],criteria["OPERATION"],criteria["PRICE"],criteria["CATEGORY"],version]}
+					to_store_updated = {'USERID': criteria["USERID"], 'PRODUCT_INFO': [criteria["PRODUCTID"],criteria["OPERATION"],criteria["PRICE"],criteria["CATEGORY"],version]}
 					self.kmaster.setVersion(path, version)
 					self.kmaster.setVersion(path_rev, version)
-					db.insert(to_store)
+					db.update(to_store, to_store_updated) # TODO: UPDATE
 
 		"""
 		implement concurrency here
