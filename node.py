@@ -101,7 +101,7 @@ class Node(object):
 			path_rev = "/" + self.DEVICE + "/" + criteria["USERID"]+ "/"+ criteria["PRODUCTID"] 
 			zversion = self.kmaster.retrieve(path)
 			if zversion != version:
-				self.reliable_send("CONCURRENT TRANSACTION : INITIATING READ REPAIR")
+				self.reliable_send("CONCURRENT TRANSACTION : INITIATING READ REPAIR".encode())
 				# pass
 				Gateway.read_repair({"NODES":self.DEVICE})
 			else:
@@ -110,7 +110,7 @@ class Node(object):
 				dbversion = to_store[0]['PRODUCT_INFO'][4]
 				if dbversion  == version :
 					print("CONCURRENT")
-					self.reliable_send("CONCURRENT TRANSACTION : INITIATING READ REPAIR")
+					self.reliable_send("CONCURRENT TRANSACTION : INITIATING READ REPAIR".encode())
 				else:
 
 					to_store = {'USERID': criteria["USERID"], 'PRODUCT_INFO': [criteria["PRODUCTID"],criteria["OPERATION"],criteria["PRICE"],criteria["CATEGORY"],version]}
