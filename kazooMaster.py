@@ -127,8 +127,8 @@ class kazooMaster(object):
             subChildren = parent+"/"+keys
             subChild = self.zk.get_children(subChildren)
             for val in subChild:
-                print("KEY: ",keys," DEVICES: ",val)
                 path = subChildren+"/"+val
+                print("KEY: ",keys," DEVICES: ",val, "version", self.retrieve(path))
                 to_return.append({
                     "key": keys,
                     "device": val, 
