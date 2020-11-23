@@ -206,6 +206,6 @@ class Gateway():
          #TO DO CHANGE DATA NODES ALSO
         
          
- 
-# w = Gateway()
-# w.list_all({"userid":"usr1"})
+if __name__ == "__main__":
+    w = Gateway()
+    w.list_all({"userid":"usr1"})
