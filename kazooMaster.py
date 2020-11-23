@@ -44,6 +44,7 @@ class kazooMaster(object):
         self.zk.stop()
     
     def get_children(self,path):
+        print(path, "in get children")
         return self.zk.get_children(path)
 
     def exist(self,path):
@@ -165,7 +166,7 @@ class kazooMaster(object):
                 self.zk.set(path=path,value=str(value).encode())
             except Exception as e:
                 print(e, "Exception in set versioning")
-                
+
 # a = kazooMaster("172.17.0.3","p","dev1","","","",True)
 # a.reMap()
 

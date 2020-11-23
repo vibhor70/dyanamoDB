@@ -77,7 +77,7 @@ class Node(object):
 			if self.kmaster.exist("path"):
 				# pass
 				gateway = Gateway()
-				gateway.read_repair({"NODES":self.DEVICE})
+				gateway.read_repair({"NODES":[self.DEVICE,]})
 			else:
 				self.kmaster.create(path)
 				self.kmaster.create(path_rev)
@@ -108,7 +108,7 @@ class Node(object):
 				self.reliable_send("CONCURRENT TRANSACTION : INITIATING READ REPAIR".encode())
 				# pass
 				gateway = Gateway()
-				gateway.read_repair({"NODES":self.DEVICE})
+				gateway.read_repair({"NODES":[self.DEVICE,]})
 			else:
 				version = version + 1
 				to_store = db.search(User["USERID"] == criteria["USERID"])

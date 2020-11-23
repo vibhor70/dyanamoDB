@@ -120,6 +120,7 @@ class Gateway():
         all_user = set()
         for nodes in info["NODES"]:
             path = "/" + nodes
+            print(path, "in read_repar")
             all_child = kmaster.get_children(path)
             for child in all_child:
                 all_user.add(child)
