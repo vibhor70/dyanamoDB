@@ -207,5 +207,5 @@ class Gateway():
         
          
  
-w = Gateway()
-w.list_all({"userid":"usr1"})
+# w = Gateway()
+# w.list_all({"userid":"usr1"})
