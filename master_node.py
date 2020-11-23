@@ -6,18 +6,23 @@ import threading
 import sys
 import struct
 
-CONTAINER_IP = "127.0.0.1"
-
 class MasterNode(object):
     def __init__(self):
         self.ips =[]
         self.targets =[]
+        self.CONTAINER_IP = self.get_config()
+
         self.s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
         self.s.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
-        self.s.bind((CONTAINER_IP,54321))
+        self.s.bind((self.CONTAINER_IP,54321))
         self.s.listen(5)
         self.clients = 0
         self.stop_threads = False
+
+    def get_config(self):
+        with open("./config.json") as fin:
+            config = json.loads(fin.read())
+            return config["gateway"]["ip"]
 
     def send_all(self, target, data):
         target.sendall(data)

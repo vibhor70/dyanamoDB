@@ -24,11 +24,12 @@ from master_node import MasterNode
 
 REPLICATION_COUNT = 2
 
-GATEWAY_IP = "172.17.0.4"
 class Gateway():
     def __init__(self):
         self.Flaged_ip=dict()
-    
+        self.CONFIG = self.get_config()
+        self.GATEWAY_IP = self.CONFIG["gateway"]["ip"]
+
     @staticmethod
     def get_config():
         with open("./config.json") as fin:
@@ -70,12 +71,12 @@ class Gateway():
         device_ip_map = {}
         flag=False
         
-        for node in self.get_config()["nodes"]:
+        for node in self.CONFIG()["nodes"]:
             if node["device_id"] in device_ids:
                 device_ip_map[node["device_id"]] = node["ip"]
         #before inserting check if node exits or not than remove that IP
         kmaster = kazooMaster(
-                GATEWAY_IP, "p", "", data["userid"], 
+                self.GATEWAY_IP, "p", "", data["userid"], 
                 data["productid"], data["operation"]
             )
         kmaster.start_client()
@@ -113,7 +114,7 @@ class Gateway():
 
         """
         kmaster = kazooMaster(
-            GATEWAY_IP,"p","",info["userid"],"","",False
+            self.GATEWAY_IP,"p","",info["userid"],"","",False
         )
         kmaster.start_client()
         all_user = set()
@@ -135,7 +136,7 @@ class Gateway():
         }
         """
         kmaster = kazooMaster(
-            GATEWAY_IP,"p","",info["userid"],"","",False
+            self.GATEWAY_IP,"p","",info["userid"],"","",False
         )
         kmaster.start_client()
         to_return  = kmaster.getmap()
@@ -192,7 +193,7 @@ class Gateway():
         }
         """
         kmaster = kazooMaster(
-            GATEWAY_IP,"p","",info["userid"],info["productid"],"",False
+            self.GATEWAY_IP,"p","",info["userid"],info["productid"],"",False
         )
         kmaster.start_client()
         allInfo = kmaster.getmap()

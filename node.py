@@ -40,22 +40,22 @@ class Node(object):
 				continue
 			
 
-	def recvall(self, sock, n):
+	def recvall(self, n):
 		# Helper function to recv n bytes or return None if EOF is hit
 		data = bytearray()
 		while len(data) < n:
-			packet = sock.recv(n - len(data))
+			packet = self.sock.recv(n - len(data))
 			if not packet:
 				return None
 			data.extend(packet)
 		return data
 
 	def reliable_recv(self):
-		raw_msglen = self.recvall(sock, 4)
+		raw_msglen = self.recvall(4)
 		if not raw_msglen:
 			return None
 		msglen = struct.unpack('>I', raw_msglen)[0]
-		data = self.recvall(sock, msglen)
+		data = self.recvall(msglen)
 		#print(data.decode())
 		criteria = data.decode()
 		criteria = json.loads(criteria)

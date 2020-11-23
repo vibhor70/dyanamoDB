@@ -31,6 +31,10 @@
             "ip": "172.17.0.7"
         }
     ],
+
+    "gateway": {
+        "ip": "172.17.0.4"
+    },
     "production": true,
     "version": 1.0
 }
