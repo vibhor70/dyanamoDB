@@ -114,7 +114,7 @@ class Gateway():
 
         """
         kmaster = kazooMaster(
-            self.GATEWAY_IP,"p","",info["USERID"],"","",False
+            self.GATEWAY_IP,"p","","","","",False
         )
         kmaster.start_client()
         all_user = set()
@@ -136,7 +136,7 @@ class Gateway():
         }
         """
         kmaster = kazooMaster(
-            self.GATEWAY_IP,"p","",info["userid"],"","",False
+            self.GATEWAY_IP,"p","","","","",False
         )
         kmaster.start_client()
         to_return  = kmaster.getmap()

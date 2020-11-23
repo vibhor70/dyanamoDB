@@ -101,7 +101,9 @@ class Node(object):
 			path = "/" +criteria["USERID"]+ "/"+ criteria["PRODUCTID"] + "/" + self.DEVICE
 			path_rev = "/" + self.DEVICE + "/" + criteria["USERID"]+ "/"+ criteria["PRODUCTID"] 
 			zversion = self.kmaster.retrieve(path)
-			print(zversion)
+			print(zversion, "zversion", type(zversion))
+			print(version, "version", type(version))
+
 			if zversion != version:
 				self.reliable_send("CONCURRENT TRANSACTION : INITIATING READ REPAIR".encode())
 				# pass
