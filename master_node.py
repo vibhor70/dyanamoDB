@@ -85,13 +85,12 @@ class MasterNode(object):
         return self.ips
         
 
-a = MasterNode()
-#Blocking Call
+if __name__ == "__main__":
+    a = MasterNode()
+    #Blocking Call
+    a.connection_accept()
 
-a.connection_accept()
-
-
-a.send_command(["127.0.0.1"], {"USERID":"1", "PRODUCTID":"2","OPERATION":"3","PRICE":"4","CATEGORY":"120"})
-a.send_command(["127.0.0.1"], {"USERID":"1", "PRODUCTID":"3","OPERATION":"5","PRICE":"45","CATEGORY":"120"})
-a.send_command(["127.0.0.1"], {"USERID":"1", "PRODUCTID":"4","OPERATION":"3","PRICE":"4","CATEGORY":"120"})
+    a.send_command(["127.0.0.1"], {"USERID":"1", "PRODUCTID":"2","OPERATION":"3","PRICE":"4","CATEGORY":"120"})
+    a.send_command(["127.0.0.1"], {"USERID":"1", "PRODUCTID":"3","OPERATION":"5","PRICE":"45","CATEGORY":"120"})
+    a.send_command(["127.0.0.1"], {"USERID":"1", "PRODUCTID":"4","OPERATION":"3","PRICE":"4","CATEGORY":"120"})
 
