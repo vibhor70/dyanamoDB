@@ -146,6 +146,8 @@ class Gateway():
             "userid":username
         }
         """
+        print("list_all", info, flag, down_nodes)
+
         kmaster = kazooMaster(
             self.GATEWAY_IP,"p","",info["USERID"],"","",False
         )
