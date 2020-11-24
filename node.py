@@ -29,6 +29,9 @@ class Node(object):
 		self.sock.connect((IP_CONNECT,54321))
     		
 		self.kmaster = kazooMaster(IP_CONNECT, "p", "", "", "", "")
+		# create ephermeral node
+		self.kmaster.create("/{}".format(DEVICE), "e")
+
 		self.kmaster.start_client()
 
 	def reliable_send(self, data):

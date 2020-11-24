@@ -53,7 +53,13 @@ class kazooMaster(object):
         else:
             return True
 
-    def create(self, path):
+    def create(self, path, param = "p"):
+        ephemeral = False
+        if param == "p":
+            ephemeral = False
+        elif param == "e":
+            ephemeral = True
+            
         logging.basicConfig(filename='logs/connection.log', filemode='w', level=logging.DEBUG)
 
         if(self.path == ""):
@@ -61,7 +67,7 @@ class kazooMaster(object):
             return False
         else:
             if self.zk.exists(path) == None:
-                self.zk.create(path, value=b"0", makepath=True)
+                self.zk.create(path, value=b"0", makepath=True, ephemeral = ephemeral)
                 # self.zk.create(self.path_rev,value=b"0",makepath=True)
                 return True
         return False
