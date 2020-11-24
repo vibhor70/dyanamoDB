@@ -123,12 +123,11 @@ class Node(object):
 		# 			"ID": criteria["PRODUCTID"],
 		# 		}
 		# 	}
-		query = db.search((User.USERID == criteria["USERID"]) & (User.PRODUCTS.ID == criteria["PRODUCTID"]) )
 		print("/" + criteria["USERID"] + "/" + criteria["PRODUCTID"],
 			"/" + self.DEVICE + "/" + criteria["USERID"] + "/" + criteria["PRODUCTID"]
 		)
 
-		db_user_product = db.search(query)
+		db_user_product = db.search((User.USERID == criteria["USERID"]) & (User.PRODUCTS.ID == criteria["PRODUCTID"]) )
 
 		if not db_user_product: # if product and user id DNE, simply push the 1st operation
 			path = "/" + criteria["USERID"] + "/" + criteria["PRODUCTID"] + '/' + self.DEVICE 
