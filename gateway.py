@@ -67,9 +67,9 @@ class Gateway():
     def insert(self, data:dict):
 
         device_ids = self.run_crush(data["userid"], data["productid"], REPLICATION_COUNT)
+        print(device_ids)
         device_ip_map = {}
         flag=False
-        
         for node in self.CONFIG["nodes"]:
             if node["device_id"] in device_ids:
                 device_ip_map[node["device_id"]] = node["ip"]
@@ -78,6 +78,8 @@ class Gateway():
                 self.GATEWAY_IP, "p", "", data["userid"], 
                 data["productid"], data["operation"]
             )
+        print(device_ip_map)
+        
         kmaster.start_client()
         for did, ip in device_ip_map.items():
             path = "/" + did
