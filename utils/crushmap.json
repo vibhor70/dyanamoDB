@@ -1,7 +1,7 @@
 {
     "trees": [
       {
-        "type": "root", "name": "dc1", "id": 0,
+        "type": "root", "name": "dc1", "id": -10,
         "children": [
           {
            "type": "host", "name": "host0", "id": -1,
