@@ -183,7 +183,7 @@ class Gateway():
                 latest[key]=all_dev
                 # print(latest[key])
         
-
+        maxData = None
         for keys in latest:
             max_version=-1
             List = latest[keys]
@@ -232,7 +232,7 @@ class Gateway():
                     kmaster.create("/{}/{}/{}".format(down_node, info["USERID"], keys))
                     kmaster.create("/{}/{}/{}".format(info["USERID"], keys, down_node))
                     for d in maxData:
-                        print(d)
+                        print(d, type(d))
                         # self.mnode.send_command(
                         #     [device_ip_map["down_node"],], 
                         #     {"COMMAND":"INSERT","USERID":info["USERID"], 
