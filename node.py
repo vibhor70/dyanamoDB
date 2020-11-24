@@ -148,9 +148,11 @@ class Node(object):
 				# print(user_products)
 				# print(str(user_products["PRODUCTS"]).encode())
 				products = json.dumps({"PRODUCT":product})
+				print(products)
 				self.reliable_send(products.encode())
 			else:
 				products = json.dumps({"PRODUCT":{}})
+				print(products)
 				self.reliable_send(products.encode())
 
 	@staticmethod
