@@ -70,7 +70,7 @@ class Gateway():
         device_ip_map = {}
         flag=False
         
-        for node in self.CONFIG()["nodes"]:
+        for node in self.CONFIG["nodes"]:
             if node["device_id"] in device_ids:
                 device_ip_map[node["device_id"]] = node["ip"]
         #before inserting check if node exits or not than remove that IP
@@ -189,7 +189,7 @@ class Gateway():
                     path = "/" + info["USERID"] + "/"+ str(keys) + "/" + str(x)
                     path_rev = "/" + str(x) + "/" + info["USERID"] + "/"+ str(keys)
                     device_ids = list(x)
-                    for node in self.CONFIG()["nodes"]:
+                    for node in self.CONFIG["nodes"]:
                         if node["device_id"] in device_ids:
                             self.mnode.send_command(
                                 [node["ip"]], 
@@ -222,7 +222,7 @@ class Gateway():
             if allInfo[val]["key"]==info["productid"]:
                 path = "/" + info["userid"] + "/" + allInfo[val]["key"] + "/" + allInfo[val]["device"]
                 path_rev = "/" + allInfo[val]["device"] + "/" + info["userid"] + "/" + allInfo[val]["key"]
-                for node in self.CONFIG()["nodes"]:
+                for node in self.CONFIG["nodes"]:
                         if node["device_id"] in list(allInfo[val]["device"]):
                             self.mnode.send_command([node["ip"]],   {"COMMAND":"DELETE", "USERID":info["userid"],"PRODUCTID":allInfo[val]["key"]})
                 kmaster.delete(path)

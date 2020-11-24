@@ -21,7 +21,7 @@ gatway = Gateway(gatway_ip)
 # for i in range(5):
 
 data = {
-    "userid": "1",
+    "userid": "user_1",
     "productid": "toothpaste",
     "operation": "ADD",
 }
@@ -33,12 +33,5 @@ gatway.list_all({
     "USERID": "1"
 })
 
-user_id = "user_1"
-pid = "toothpaste"
-m = hashlib.sha1()
-m.update(user_id.encode())
-m.update(pid.encode())
-digest = m.hexdigest()
-digest_int = int(digest, 16) % 10**8
 
 """
