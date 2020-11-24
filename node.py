@@ -213,7 +213,10 @@ class Node(object):
 
 				self.kmaster.setVersion(path, 0)
 		else:
-			version = int(db_user_product["PRODUCTS"][0]['LATEST_VERSION_VECTOR'])
+			for i, product in enumerate(db_user_product["PRODUCTS"]):
+				if product["ID"] == criteria["PRODUCTID"]:
+					version = int(db_user_product["PRODUCTS"][i]['LATEST_VERSION_VECTOR'])
+					
 			# version = to_store[0]['PRODUCT'][-1]
 			# if len(version) > 1:
 			# 	version = int(version[-1][-1])
