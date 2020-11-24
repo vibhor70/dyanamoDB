@@ -216,7 +216,7 @@ class Node(object):
 			for i, product in enumerate(db_user_product["PRODUCTS"]):
 				if product["ID"] == criteria["PRODUCTID"]:
 					version = int(db_user_product["PRODUCTS"][i]['LATEST_VERSION_VECTOR'])
-					
+
 			# version = to_store[0]['PRODUCT'][-1]
 			# if len(version) > 1:
 			# 	version = int(version[-1][-1])
@@ -250,27 +250,9 @@ class Node(object):
 			# 	print("CONCURRENT")
 			# 	self.reliable_send("CONCURRENT TRANSACTION : ".encode())
 			
-			# to_store_updated = self.get_store_dict(criteria, str(version))
-			# print(to_store_updated, "new to_store updated")
-			# to_store_updated = {
-			# 	'USERID': criteria["USERID"], 
-			# 	'PRODUCT_INFO': [criteria["PRODUCTID"],criteria["OPERATION"],criteria["PRICE"],criteria["CATEGORY"],version
-			# ]}
 
 			self.kmaster.setVersion(path, version)
 			self.kmaster.setVersion(path_rev, version)
-			# to_append = [criteria["PRODUCTID"],criteria["OPERATION"],criteria["PRICE"],criteria["CATEGORY"],version] # TODO: UPDATE
-			# temp = db.search(User["USERID"] == criteria["USERID"])
-			# new = []
-			# new.append(temp[0]["PRODUCT"])
-			# new.append(to_append) 
-			# db.update(delete('USERID'), User["USERID"] == criteria["USERID"] )
-			# db.insert({
-			# 	'USERID': criteria["USERID"],
-			# 	'PRODUCT': new
-			# })
-
-
 			# update lastest version vector 
 			print("db user and db product both found")
 			for i, product in enumerate(db_user_product["PRODUCTS"]):

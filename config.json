@@ -19,22 +19,8 @@
             "device_id": "device_4",
             "id": 4,
             "ip": "172.17.0.5"
-        },
-        {
-            "device_id": "device_5",
-            "id": 5,
-            "ip": "172.17.0.6"
-        },
-        {
-            "device_id": "device_6",
-            "id": 6,
-            "ip": "172.17.0.7"
         }
     ],
-
-    "gateway": {
-        "ip": "172.17.0.4"
-    },
     "production": true,
     "version": 1.0
 }

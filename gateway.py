@@ -25,10 +25,10 @@ from master_node import MasterNode
 REPLICATION_COUNT = 2
 
 class Gateway():
-    def __init__(self):
+    def __init__(self, gateway_ip):
         self.Flaged_ip=dict()
         self.CONFIG = self.get_config()
-        self.GATEWAY_IP = self.CONFIG["gateway"]["ip"]
+        self.GATEWAY_IP = gateway_ip
         self.mnode = MasterNode()
         self.mnode.connection_accept()
         
@@ -61,14 +61,7 @@ class Gateway():
 
 
     def insert(self, data:dict):
-        # data = {
-        #     "userid": userid,
-        #     "productid": productid,
-        #     "operation": operation,
-        #     "item": item,
-        #     "price": price,
-        #     "category": category
-        # }
+
         device_ids = self.run_crush(data["userid"], data["productid"], REPLICATION_COUNT)
         device_ip_map = {}
         flag=False
@@ -176,7 +169,7 @@ class Gateway():
                     maxDevice = x
                     maxProductid = keys
 
-            for node in self.CONFIG()["nodes"]:
+            for node in self.CONFIG["nodes"]:
                 if node["device_id"] in list(maxDevice):
                     self.mnode.send_command([node["ip"]], {"COMMAND":"RETRIEVE","USERID":info["USERID"]})
                     maxData = self.mnode.reliable_recv()
@@ -235,5 +228,11 @@ class Gateway():
         
          
 if __name__ == "__main__":
-    w = Gateway()
+    import sys
+
+    if len(sys.argv) != 2:
+        print("Gateway ip dedo bhai")
+        sys.exit(-1)
+
+    w = Gateway(sys.argv[1])
    
