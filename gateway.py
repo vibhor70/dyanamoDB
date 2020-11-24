@@ -249,30 +249,33 @@ class Gateway():
         kmaster.stop_client()
         return latest_data
 
-    def delete_(self,info:dict):
+    def delete(self,info:dict):
         """
         dict ={
-            "userid":username,
-            "productid":productID
+            "USERID":username,
+            "PRODUCTID":productID
         }
         """
         kmaster = kazooMaster(
-            self.GATEWAY_IP,"p","",info["userid"],info["productid"],"",False
+            self.GATEWAY_IP,"p","",info["USERID"],info["PRODUCTID"],"",False
         )
         kmaster.start_client()
-        allInfo = kmaster.getmap()
+        allInfo = self.list_all()
+
         for val in range(len(allInfo)):
-            if allInfo[val]["key"]==info["productid"]:
-                path = "/" + info["userid"] + "/" + allInfo[val]["key"] + "/" + allInfo[val]["device"]
-                path_rev = "/" + allInfo[val]["device"] + "/" + info["userid"] + "/" + allInfo[val]["key"]
+            # version = int(allInfo[val]['version'])
+            if allInfo[val]["key"]==info["PRODUCTID"]:
+                # path = "/" + info["USERID"] + "/" + allInfo[val]["key"] + "/" + allInfo[val]["device"]
+                # path_rev = "/" + allInfo[val]["device"] + "/" + info["userid"] + "/" + allInfo[val]["key"]
                 for node in self.CONFIG["nodes"]:
-                        if node["device_id"] in list(allInfo[val]["device"]):
-                            self.mnode.send_command([node["ip"]],   {"COMMAND":"DELETE", "USERID":info["userid"],"PRODUCTID":allInfo[val]["key"]})
-                kmaster.delete(path)
-                kmaster.delete(path_rev)
+                    if node["device_id"] in list(allInfo[val]["device"]):
+                        self.mnode.send_command([node["ip"]],   
+                        {"COMMAND":"DELETE", 
+                        "USERID":info["userid"],"PRODUCTID":allInfo[val]["key"]})
+                # kmaster.setVersion(path, version)
+                # kmaster.setVersion(path_rev, version)
+
         kmaster.stop_client()
-         #TO DO CHANGE DATA NODES ALSO
-        
          
 if __name__ == "__main__":
     import sys

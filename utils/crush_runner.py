@@ -20,3 +20,4 @@ c = Crush()
 c.parse(json.loads(crushmap))
 devices = c.map(rule="data", value=int(value), replication_count=int(rcount))
 print("\n".join([str(device) for device in devices]))
+

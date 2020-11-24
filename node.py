@@ -70,34 +70,14 @@ class Node(object):
 	def run_command(self, criteria):
 		print(criteria)
 		if criteria["COMMAND"] == "INSERT":
-			self.concurrency_check(criteria)
+			self.insertion(criteria)
 		elif criteria["COMMAND"] == "RETRIEVE":
 			self.list_all(criteria)
 		elif criteria["COMMAND"] == "REPLACE":
 			self.replace(criteria)
 		elif criteria["COMMAND"] == "DELETE":
-			self.delete_product(criteria)
+			self.deletion(criteria)
 
-	def delete_product(self,criteria):
-		User = Query()
-		userid = criteria["USERID"]
-		to_store = db.search(User["USERID"] == criteria["USERID"])
-		if not to_store:
-			print("No user with user id exists")
-			return
-		query = (User.USERID == criteria["USERID"])
-		db.update(delete('PRODUCTS'), query)
-		productid = criteria["PRODUCTID"]
-		toChange = to_store[0]["PRODUCTS"]
-		newList=[]
-		print(toChange)
-		for val in toChange:
-			print(val)
-			if val["ID"] == productid:
-				pass
-			else:
-				newList.append(val)
-		db.update({'PRODUCTS': newList}, query)
 
 		
 	def replace(self,criteria):
@@ -176,9 +156,58 @@ class Node(object):
 				]
 			}
 
-	def concurrency_check(self, criteria):
+
+
+	def deletion(self,criteria):
 		User = Query()
-		print("IN concurrency_check")
+		print("IN DELETION")
+		# query = (User.USERID == criteria["USERID"]) & (User.PRODUCTS.all(Query().ID == criteria["PRODUCTID"]))
+		query = (User.USERID == criteria["USERID"])
+		db_user_product = db.get(query)
+
+		up_found = False
+		if db_user_product:
+			for db_user_prod in db_user_product["PRODUCTS"]:
+				if db_user_prod["ID"] == criteria["PRODUCTID"]:
+					up_found = True
+					break
+
+		path = "/" + criteria["USERID"] + "/" + criteria["PRODUCTID"] + '/' + self.DEVICE 
+		path_rev = "/" + self.DEVICE + "/" +criteria["USERID"] + "/" + criteria["PRODUCTID"]
+
+		if up_found: # if product and user id DNE, simply push the 1st operation
+			for i, product in enumerate(db_user_product["PRODUCTS"]):
+				if product["ID"] == criteria["PRODUCTID"]:
+					version = int(db_user_product["PRODUCTS"][i]['LATEST_VERSION_VECTOR'])
+
+			zversion = int(self.kmaster.retrieve(path))
+			print(zversion, "zversion", type(zversion))
+			print(version, "version", type(version))
+			
+			version = version + 1
+			if zversion != version:
+				print("CONCURRENT TRANSACTION in node")
+
+			self.kmaster.setVersion(path, version)
+			self.kmaster.setVersion(path_rev, version)
+
+			for i, product in enumerate(db_user_product["PRODUCTS"]):
+				if product["ID"] == criteria["PRODUCTID"]:
+					db_user_product["PRODUCTS"][i]['LATEST_VERSION_VECTOR'] = str(version)
+					## append the operation and update
+					db_user_product["PRODUCTS"][i]['OPERATIONS'].append(
+						{"OPERATION": criteria["OPERATION"], "VERSION_VECTOR": str(version)}
+					)
+					break
+			db.update(db_user_product)
+		
+		else:
+			print("DELETION NOT POSSIBLE, USERID, PRODUCTD DOES NOT FOUND")
+
+
+	def insertion(self, criteria):
+		User = Query()
+		print("IN insertion")
 		print("/" + criteria["USERID"] + "/" + criteria["PRODUCTID"],
 			"/" + self.DEVICE + "/" + criteria["USERID"] + "/" + criteria["PRODUCTID"]
 		)

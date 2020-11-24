@@ -51,9 +51,7 @@ data = {
 }
 gatway.insert(data)
 
-gatway.list_all({
-    "USERID": "1"
-})
+gatway.list_all({"USERID": "1"})
 
 
 
