@@ -123,17 +123,18 @@ class Gateway():
             path = "/" + nodes
             print(path, "in read_repar")
             all_child = []
-            try:
-                all_child = kmaster.get_children(path)
-            except NoNodeError as e:
+            
+            all_child = kmaster.get_children(path)
+            
                 # self.create_znode(kmaster, path)
+            if all_child == "":
                 print("Node does not exists")
                 kmaster.create(path)
                 flag = True
                 down_node.append(nodes)
-
-            for child in all_child:
-                all_user.add(child)
+            else:
+                for child in all_child:
+                    all_user.add(child)
         for child in all_user:
             self.list_all({"USERID":child}, flag, down_node)
 

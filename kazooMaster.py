@@ -45,7 +45,10 @@ class kazooMaster(object):
     
     def get_children(self,path):
         print(path, "in get children")
-        return self.zk.get_children(path)
+        if self.zk.exists(path) == None:
+            return ""
+        else:
+            return self.zk.get_children(path)
 
     def exist(self,path):
         if self.zk.exists(path) == None:
