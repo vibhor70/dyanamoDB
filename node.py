@@ -101,7 +101,7 @@ class Node(object):
 		print(criteria, "IN REPLACE")
 		User = Query()
 		userid = criteria["USERID"]
-		products = criteria["UPDATEDLIST"]
+		updaed_products = criteria["UPDATEDLIST"]
 		max_product_id = criteria["MAX_PRODUCTID"]
 		user = db.get(User.USERID == userid)
 		if not user:
@@ -110,18 +110,22 @@ class Node(object):
 		db_products = user["PRODUCTS"]
 
 		change_with = None
-		for i, product in enumerate(products):
+		for i, product in enumerate(updaed_products):
 			if product["ID"] == max_product_id:
-				change_with = products[i]
+				change_with = updaed_products[i]
 				break
 
 		if not change_with:
 			return False
 
+		print(db_products, "ORIGNAL db products")
 		for i, product in enumerate(db_products):
 			if product["ID"] == max_product_id:
 				db_products[i] = change_with
+				print(db_products[i])
+				break
 
+		print(db_products, "new db products")	
 		db.update({'PRODUCTS': db_products}, User.USERID == userid)
 		return True
 
@@ -130,8 +134,8 @@ class Node(object):
 		userid = criteria["USERID"]
 		user_products = db.get(User["USERID"] == criteria["USERID"])
 		if user_products:
-			print(user_products)
-			print(str(user_products["PRODUCTS"]).encode())
+			# print(user_products)
+			# print(str(user_products["PRODUCTS"]).encode())
 			products = json.dumps({"PRODUCTS": user_products["PRODUCTS"]})
 			self.reliable_send(products.encode())
 		else:
@@ -181,11 +185,11 @@ class Node(object):
 					up_found = True
 					break
 
-		print(db_user_product, "user produt in concurrecny query")
+		# print(db_user_product, "user produt in concurrecny query")
 		if not up_found: # if product and user id DNE, simply push the 1st operation
 			path = "/" + criteria["USERID"] + "/" + criteria["PRODUCTID"] + '/' + self.DEVICE 
 			path_rev = "/" + self.DEVICE + "/" +criteria["USERID"] + "/" + criteria["PRODUCTID"]
-			print(path, path_rev)
+			# print(path, path_rev)
 
 			if self.kmaster.exist("path"):
 				# pass

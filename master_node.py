@@ -100,10 +100,11 @@ if __name__ == "__main__":
     a.send_command(["172.17.0.2"], {"COMMAND":"INSERT","USERID":"1", "PRODUCTID":"2","OPERATION":"2","PRICE":"4","CATEGORY":"120"})
     a.send_command(["172.17.0.2"], {"COMMAND":"INSERT","USERID":"1", "PRODUCTID":"4","OPERATION":"2","PRICE":"4","CATEGORY":"120"})
     
+        
     a.send_command(["172.17.0.2"], {"COMMAND":"RETRIEVE","USERID":"1"})
-    a.send_command(["172.17.0.2"], {"COMMAND":"REPLACE","USERID":"1","UPDATEDLIST": [{
+    a.send_command(["172.17.0.2"], {"COMMAND":"REPLACE","USERID":"1", "MAX_PRODUCTID": 2, "UPDATEDLIST": [{
         "ID": "1", "PRICE":"4","CATEGORY":"120", "LATEST_VERSION_VECTOR": "10",
         "OPERATIONS": [{"OPERATION": "1","VERSION_VECTOR": "10"}]
         }]})
-    a.send_command(["172.17.0.2"], {"COMMAND":"DELETE", "USERID":"1","PRODUCTID":"2"})
+    # a.send_command(["172.17.0.2"], {"COMMAND":"DELETE", "USERID":"1","PRODUCTID":"2"})
 
