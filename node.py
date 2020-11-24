@@ -145,7 +145,7 @@ class Node(object):
 		print("/" + criteria["USERID"] + "/" + criteria["PRODUCTID"],
 			"/" + self.DEVICE + "/" + criteria["USERID"] + "/" + criteria["PRODUCTID"]
 		)
-		query = (User.USERID == criteria["USERID"]) & (User.PRODUCTS.ID == criteria["PRODUCTID"])
+		query = (User.USERID == criteria["USERID"]) & (User.PRODUCTS.all(Query().ID == criteria["PRODUCTID"]))
 		db_user_product = db.search(query)
 
 		print(db_user_product, "user produt in concurrecny query")
