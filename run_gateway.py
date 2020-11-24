@@ -21,9 +21,11 @@ gatway = Gateway(gatway_ip)
 # for i in range(5):
 
 data = {
-    "userid": "user_1",
-    "productid": "toothpaste",
-    "operation": "ADD",
+    "USERID": "user_1",
+    "PRODUCTID": "toothpaste",
+    "OPERATION": "ADD",
+    "PRICE":"4","CATEGORY":"1",
+    "COMMAND":"INSERT"
 }
 
 gatway.insert(data)

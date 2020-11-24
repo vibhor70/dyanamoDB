@@ -66,7 +66,7 @@ class Gateway():
 
     def insert(self, data:dict):
 
-        device_ids = self.run_crush(data["userid"], data["productid"], REPLICATION_COUNT)
+        device_ids = self.run_crush(data["USERID"], data["PRODUCTID"], REPLICATION_COUNT)
         print(device_ids)
         device_ip_map = {}
         flag=False
@@ -75,8 +75,8 @@ class Gateway():
                 device_ip_map[node["device_id"]] = node["ip"]
         #before inserting check if node exits or not than remove that IP
         kmaster = kazooMaster(
-                self.GATEWAY_IP, "p", "", data["userid"], 
-                data["productid"], data["operation"]
+                self.GATEWAY_IP, "p", "", data["USERID"], 
+                data["PRODUCTID"], data["OPERATION"]
             )
         print(device_ip_map)
 
@@ -86,7 +86,7 @@ class Gateway():
             if kmaster.exist(path):
                 if did in self.Flaged_ip.keys():
                     if self.Flaged_ip[did] == -1:
-                        self.read_repair({"userid":did})
+                        self.read_repair({"USERID":did})
                         #DO READ REPAIR WHEN DOWN NODE COMES BACK
                         self.Flaged_ip[did]=0
                         self.mnode.send_command(device_ip_map[did], data)
