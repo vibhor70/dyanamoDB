@@ -201,7 +201,7 @@ class Gateway():
             for node in self.CONFIG["nodes"]:
                 if node["device_id"] == maxDevice:
                     self.mnode.send_command([node["ip"]], {"COMMAND":"RETRIEVE","USERID":info["USERID"], "PRODUCTID": maxProductid})
-                    maxData = self.mnode.reliable_recv()
+                    maxData = self.mnode.reliable_recv(self.mnode.targets[node["ip"]])
                     # GOT THE PRODUCTS
                     maxData = json.loads(maxData)["PRODUCT"]
                     print("maxdata", maxData)
