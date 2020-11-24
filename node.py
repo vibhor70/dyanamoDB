@@ -174,10 +174,11 @@ class Node(object):
 		db_user_product = db.get(query)
 
 		up_found = False
-		for db_user_prod in db_user_product:
-			if db_user_prod["ID"] == criteria["PRODUCTID"]:
-				up_found = True
-				break
+		if db_user_product:
+			for db_user_prod in db_user_product:
+				if db_user_prod["ID"] == criteria["PRODUCTID"]:
+					up_found = True
+					break
 
 		print(db_user_product, "user produt in concurrecny query")
 		if not up_found: # if product and user id DNE, simply push the 1st operation
