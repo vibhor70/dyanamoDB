@@ -32,6 +32,20 @@ gatway.insert(data)
 
 
 data = {
+    "USERID": "user_1",
+    "PRODUCTID": "toothpaste",
+    "OPERATION": "ADD",
+    "PRICE":"4","CATEGORY":"30",
+    "COMMAND":"INSERT"
+}
+
+
+
+
+
+
+
+data = {
     "USERID": "user_2",
     "PRODUCTID": "brush",
     "OPERATION": "ADD",

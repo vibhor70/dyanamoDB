@@ -196,7 +196,7 @@ class Gateway():
                     maxDevice = x
                     maxProductid = keys
 
-            print(maxDevice. max_version, maxProductid)
+            print(maxDevice, max_version, maxProductid)
             for node in self.CONFIG["nodes"]:
                 if node["device_id"] in list(maxDevice):
                     self.mnode.send_command([node["ip"]], {"COMMAND":"RETRIEVE","USERID":info["USERID"]})
