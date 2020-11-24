@@ -55,7 +55,6 @@ gatway.insert(data)
 gatway.list_all({"USERID": "user_1"})
 
 gatway.delete({"USERID": "user_2", "PRODUCTID": "brush"})
-
-
+gatway.delete({"USERID": "user_1", "PRODUCTID": "toothbrush"})
 
 """
