@@ -5,7 +5,7 @@ import random
 import json
 
 def get_config():
-    with open(".config/config.json") as fin:
+    with open("./config/config.json") as fin:
         return json.loads(fin.read())
 
 CONFIG = get_config()
