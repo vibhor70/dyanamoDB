@@ -82,7 +82,7 @@ class Gateway():
 
         kmaster.start_client()
         for did, ip in device_ip_map.items():
-            path = "/" + did
+            path = "/ephemeral_" + did
             if kmaster.exist(path):
                 if did in self.Flaged_ip.keys():
                     if self.Flaged_ip[did] == -1:

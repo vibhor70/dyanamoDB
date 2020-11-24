@@ -30,7 +30,7 @@ class Node(object):
     		
 		self.kmaster = kazooMaster(IP_CONNECT, "p", "", "", "", "")
 		# create ephermeral node
-		self.kmaster.create("/{}".format(DEVICE), "e")
+		self.kmaster.create("/ephemeral_{}".format(DEVICE), "e")
 
 		self.kmaster.start_client()
 
@@ -168,12 +168,6 @@ class Node(object):
 
 	def concurrency_check(self, criteria):
 		User = Query()
-		# query = {
-		# 	'USERID': criteria["USERID"],
-		# 	'PRODUCTS': {
-		# 			"ID": criteria["PRODUCTID"],
-		# 		}
-		# 	}
 		print("/" + criteria["USERID"] + "/" + criteria["PRODUCTID"],
 			"/" + self.DEVICE + "/" + criteria["USERID"] + "/" + criteria["PRODUCTID"]
 		)
