@@ -196,7 +196,7 @@ class Node(object):
 					db_user_product["PRODUCTS"][i]['LATEST_VERSION_VECTOR'] = str(version)
 					## append the operation and update
 					db_user_product["PRODUCTS"][i]['OPERATIONS'].append(
-						{"OPERATION": criteria["OPERATION"], "VERSION_VECTOR": str(version)}
+						{"OPERATION": "DELETE", "VERSION_VECTOR": str(version)}
 					)
 					break
 			db.update(db_user_product)
