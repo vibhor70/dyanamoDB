@@ -29,7 +29,7 @@ class Gateway():
         self.Flaged_ip=dict()
         self.CONFIG = self.get_config()
         self.GATEWAY_IP = gateway_ip
-        self.mnode = MasterNode()
+        self.mnode = MasterNode(gateway_ip)
         self.mnode.connection_accept()
         
     @staticmethod

@@ -6,11 +6,11 @@ import threading
 import sys
 import struct
 
-class MasterNode(object):
+class MasterNode(object, CONTAINER_IP):
     def __init__(self):
         self.ips =[]
         self.targets =[]
-        self.CONTAINER_IP = self.get_config()
+        self.CONTAINER_IP = CONTAINER_IP
 
         self.s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
         self.s.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
