@@ -175,7 +175,7 @@ class Node(object):
 
 		up_found = False
 		if db_user_product:
-			for db_user_prod in db_user_product:
+			for db_user_prod in db_user_product["PRODUCTS"]:
 				if db_user_prod["ID"] == criteria["PRODUCTID"]:
 					up_found = True
 					break
