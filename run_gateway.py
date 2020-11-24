@@ -39,10 +39,7 @@ data = {
     "COMMAND":"INSERT"
 }
 
-
-
-
-
+gatway.insert(data)
 
 
 data = {

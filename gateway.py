@@ -184,6 +184,7 @@ class Gateway():
                 # print(latest[key])
         
         maxData = None
+        maxProductid = None
         for keys in latest:
             max_version=-1
             List = latest[keys]
@@ -196,7 +197,7 @@ class Gateway():
                     maxDevice = x
                     maxProductid = keys
 
-            print(maxDevice, max_version, maxProductid)
+            print(maxDevice, max_version, maxProductid, "maxdevice, version , maxpid")
             for node in self.CONFIG["nodes"]:
                 if node["device_id"] in list(maxDevice):
                     self.mnode.send_command([node["ip"]], {"COMMAND":"RETRIEVE","USERID":info["USERID"]})
@@ -215,7 +216,6 @@ class Gateway():
                     path_rev = "/" + str(x) + "/" + info["USERID"] + "/"+ str(keys)
                     device_ids = list(x)
                     for node in self.CONFIG["nodes"]:
-                        
                         if node["device_id"] in device_ids:
                             self.mnode.send_command(
                                 [node["ip"]], 
@@ -233,8 +233,8 @@ class Gateway():
                 for down_node in down_nodes:
                     kmaster.create("/{}/{}/{}".format(down_node, info["USERID"], keys))
                     kmaster.create("/{}/{}/{}".format(info["USERID"], keys, down_node))
-                    for d in maxData:
-                        print(d, type(d))
+                    # for d in maxData:
+                    print(maxData, type(maxData), "maxdata")
                         # self.mnode.send_command(
                         #     [device_ip_map["down_node"],], 
                         #     {"COMMAND":"INSERT","USERID":info["USERID"], 
