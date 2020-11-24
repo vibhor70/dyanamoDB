@@ -239,7 +239,7 @@ class Gateway():
                     {"COMMAND":"INSERT","USERID":"1", "PRODUCTID":"5","OPERATION":"2","PRICE":"4","CATEGORY":"12"}
                     """
                     self.mnode.send_command(
-                        [device_ip_map["down_node"],], 
+                        [device_ip_map[down_node],], 
                         {"COMMAND":"REPLACE","USERID":info["USERID"], 
                         "MAX_PRODUCTID": maxProductid, "UPDATEDLIST":[maxData]})
 
