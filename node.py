@@ -68,6 +68,7 @@ class Node(object):
 		self.run_command(criteria)
 
 	def run_command(self, criteria):
+		print(criteria)
 		if criteria["COMMAND"] == "INSERT":
 			self.concurrency_check(criteria)
 		elif criteria["COMMAND"] == "RETRIEVE":
@@ -148,11 +149,10 @@ class Node(object):
 				# print(user_products)
 				# print(str(user_products["PRODUCTS"]).encode())
 				products = json.dumps({"PRODUCT":product})
-				print(products)
+				print(products, "in list_all")
 				self.reliable_send(products.encode())
 			else:
 				products = json.dumps({"PRODUCT":{}})
-				print(products)
 				self.reliable_send(products.encode())
 
 	@staticmethod
@@ -178,6 +178,7 @@ class Node(object):
 
 	def concurrency_check(self, criteria):
 		User = Query()
+		print("IN concurrency_check")
 		print("/" + criteria["USERID"] + "/" + criteria["PRODUCTID"],
 			"/" + self.DEVICE + "/" + criteria["USERID"] + "/" + criteria["PRODUCTID"]
 		)
@@ -238,8 +239,8 @@ class Node(object):
 			
 			version = version + 1
 			if zversion != version:
-				self.reliable_send("CONCURRENT TRANSACTION : ".encode())
-				print("CONCURRENT TRANSACTION")
+				# self.reliable_send("CONCURRENT TRANSACTION : ".encode())
+				print("CONCURRENT TRANSACTION in node")
 				# return # handle concurrent
 				# pass
 
