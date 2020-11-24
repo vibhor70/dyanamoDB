@@ -67,7 +67,7 @@ class Node(object):
 	def concurrency_check(self, criteria):
 		User = Query()
 		print("/" + criteria["USERID"] + "/" + criteria["PRODUCTID"],
-			"/" + self.DEVICE + "/" +criteria["USERID"] + "/" + criteria["PRODUCTID"]
+			"/" + self.DEVICE + "/" + criteria["USERID"] + "/" + criteria["PRODUCTID"]
 		)
 		if not db.search(User["USERID"] == criteria["USERID"]):
 			path = "/" + criteria["USERID"] + "/" + criteria["PRODUCTID"] + '/' + self.DEVICE 
@@ -111,16 +111,17 @@ class Node(object):
 				gateway.read_repair({"NODES":[self.DEVICE,]})
 			else:
 				version = version + 1
-				to_store = db.search(User["USERID"] == criteria["USERID"])
-				dbversion = to_store[0]['PRODUCT_INFO'][4]
+				userQuery = db.search(User["USERID"] == criteria["USERID"])
+				dbversion = userQuery[0]['PRODUCT'][4]
 				if dbversion  == version :
 					print("CONCURRENT")
 					self.reliable_send("CONCURRENT TRANSACTION : INITIATING READ REPAIR".encode())
 				else:
-					to_store_updated = {'USERID': criteria["USERID"], 'PRODUCT_INFO': [criteria["PRODUCTID"],criteria["OPERATION"],criteria["PRICE"],criteria["CATEGORY"],version]}
+					to_store_updated = {'USERID': criteria["USERID"], 'PRODUCT': [criteria["PRODUCTID"],criteria["OPERATION"],criteria["PRICE"],criteria["CATEGORY"],version]}
+					query = {'USERID': criteria["USERID"], 'PRODUCT': [criteria["PRODUCTID"],criteria["OPERATION"],criteria["PRICE"],criteria["CATEGORY"],dbversion]}
 					self.kmaster.setVersion(path, version)
 					self.kmaster.setVersion(path_rev, version)
-					db.update(to_store, to_store_updated) # TODO: UPDATE
+					db.upsert(to_store_updated, userQuery) # TODO: UPDATE
 
 		"""
 		implement concurrency here
