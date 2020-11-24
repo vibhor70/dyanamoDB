@@ -6,8 +6,8 @@ import threading
 import sys
 import struct
 
-class MasterNode(object, CONTAINER_IP):
-    def __init__(self):
+class MasterNode(object):
+    def __init__(self, CONTAINER_IP):
         self.ips =[]
         self.targets =[]
         self.CONTAINER_IP = CONTAINER_IP
