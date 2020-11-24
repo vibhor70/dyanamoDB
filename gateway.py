@@ -62,13 +62,14 @@ class Gateway():
         stdout_value = proc.communicate()
         device_ids = stdout_value[0].decode()
 
+        device_ids = [str(devid).strip() for devid in device_ids.split("\n")]
         return device_ids
 
 
     def insert(self, data:dict):
 
-        device_ids = self.run_crush(data["USERID"], data["PRODUCTID"], REPLICATION_COUNT)
-        print(device_ids)
+        device_ids = list(self.run_crush(data["USERID"], data["PRODUCTID"], REPLICATION_COUNT))
+        print(device_ids, type(device_ids))
         device_ip_map = {}
         flag=False
         for node in self.CONFIG["nodes"]:
@@ -87,7 +88,7 @@ class Gateway():
             if kmaster.exist(path):
                 if did in self.Flaged_ip.keys():
                     if self.Flaged_ip[did] == -1:
-                        self.read_repair({"NODES":[str(devid) for devid in device_ids]})
+                        self.read_repair({"NODES":device_ids})
                         #DO READ REPAIR WHEN DOWN NODE COMES BACK
                         self.Flaged_ip[did]=0
                         self.mnode.send_command(device_ip_map[did], data)

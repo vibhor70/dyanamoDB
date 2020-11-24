@@ -18,4 +18,5 @@ crushmap = open("utils/crushmap.json", "r").read()
 
 c = Crush()
 c.parse(json.loads(crushmap))
-print(c.map(rule="data", value=int(value), replication_count=int(rcount)))
+devices = c.map(rule="data", value=int(value), replication_count=int(rcount))
+print("\n".join([str(device) for device in devices]))

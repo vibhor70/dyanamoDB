@@ -24,7 +24,7 @@ data = {
     "USERID": "user_1",
     "PRODUCTID": "toothpaste",
     "OPERATION": "ADD",
-    "PRICE":"4","CATEGORY":"1",
+    "PRICE":"4000","CATEGORY":"3",
     "COMMAND":"INSERT"
 }
 
