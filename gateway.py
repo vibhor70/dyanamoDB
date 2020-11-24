@@ -87,7 +87,7 @@ class Gateway():
             if kmaster.exist(path):
                 if did in self.Flaged_ip.keys():
                     if self.Flaged_ip[did] == -1:
-                        self.read_repair({"NODES":list(device_ip_map.keys())})
+                        self.read_repair({"NODES":[str(devid) for devid in device_ids]})
                         #DO READ REPAIR WHEN DOWN NODE COMES BACK
                         self.Flaged_ip[did]=0
                         self.mnode.send_command(device_ip_map[did], data)
