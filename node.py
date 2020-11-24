@@ -66,7 +66,7 @@ class Node(object):
 		if criteria["COMMAND"] == "INSERT":
 			self.concurrency_check(criteria)
 		elif criteria["COMMAND"] == "RETRIEVE":
-			self.list_all(self,criteria)
+			self.list_all(self, criteria = criteria)
 		elif criteria["COMMAND"] == "REPLACE":
 			self.replace(self,criteria)
 		
@@ -105,13 +105,14 @@ class Node(object):
 		)
 
 
-	def list_all(self,criteria):
+	def list_all(self, criteria):
 		User = Query()
 		userid = criteria["USERID"]
-
-		if db.search(User["USERID"] == criteria["USERID"]):
-			to_store = db.search(Query()["USERID"] == criteria["USERID"])
-			self.reliable_send(str(to_store[0]["PRODUCT"]).encode())
+		user_products = db.search(User["USERID"] == criteria["USERID"])
+		if user_products:
+			print(user_products)
+			print(str(user_products[0]["PRODUCTS"]).encode())
+			self.reliable_send(str(user_products[0]["PRODUCTS"]).encode())
 		else:
 			self.reliable_send("NO RECORD FOUND".encode())
 
