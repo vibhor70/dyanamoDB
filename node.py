@@ -137,13 +137,15 @@ class Node(object):
 		User = Query()
 		userid = criteria["USERID"]
 		user_products = db.get(User["USERID"] == criteria["USERID"])
-		if user_products:
-			# print(user_products)
-			# print(str(user_products["PRODUCTS"]).encode())
-			products = json.dumps({"PRODUCTS": user_products["PRODUCTS"]})
-			self.reliable_send(products.encode())
-		else:
-			self.reliable_send("NO RECORD FOUND".encode())
+		productID = criteria["PRODUCTID"]
+		for product in user_products["PRODUCTS"]:
+			if productID  == product["ID"]:
+				# print(user_products)
+				# print(str(user_products["PRODUCTS"]).encode())
+				products = json.dumps({"PRODUCT":product})
+				self.reliable_send(products.encode())
+			else:
+				self.reliable_send("NO RECORD FOUND".encode())
 
 	@staticmethod
 	def get_store_dict(criteria, version):

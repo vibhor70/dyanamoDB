@@ -199,11 +199,11 @@ class Gateway():
 
             print(maxDevice, max_version, maxProductid, "maxdevice, version , maxpid")
             for node in self.CONFIG["nodes"]:
-                if node["device_id"] in list(maxDevice):
-                    self.mnode.send_command([node["ip"]], {"COMMAND":"RETRIEVE","USERID":info["USERID"]})
+                if node["device_id"] == maxDevice:
+                    self.mnode.send_command([node["ip"]], {"COMMAND":"RETRIEVE","USERID":info["USERID"], "PRODUCTID": maxProductid})
                     maxData = self.mnode.reliable_recv()
                     # GOT THE PRODUCTS
-                    maxData = json.loads(maxData)["PRODUCTS"]
+                    maxData = json.loads(maxData)["PRODUCT"]
                     print("maxdata", maxData)
                     """
                     HUGE DOUBT IF SEND WILL I RECIVE USING RELIABLE RECV
