@@ -182,7 +182,7 @@ class Gateway():
                     maxData = self.mnode.reliable_recv()
                     maxData = list(maxData)
                     """
-HUGE DOUBT IF SEND WILL I RECIVE USING RELIABLE RECV
+                    HUGE DOUBT IF SEND WILL I RECIVE USING RELIABLE RECV
 
                     """
             for i in range(len(List)):
@@ -195,7 +195,7 @@ HUGE DOUBT IF SEND WILL I RECIVE USING RELIABLE RECV
                         if node["device_id"] in device_ids:
                             self.mnode.send_command([node["ip"]],  {"COMMAND":"REPLACE","USERID":info["USERID"],"UPDATEDLIST":maxData})
                             """
-SENDING A LIST DEPENDS ON IF maxData RECIEVED
+                            SENDING A LIST DEPENDS ON IF maxData RECIEVED
                             """
                     kmaster.setVersion(path,max_version)
                     kmaster.setVersion(path_rev,max_version)

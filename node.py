@@ -85,12 +85,10 @@ class Node(object):
 				pass
 			else:
 				newList.append(tval)
-		db.insert(
-				{
+		db.insert({
 			'USERID': criteria["USERID"],
 			'PRODUCT': newList
-				}
-			)
+		})
 
 		
 	def replace(self,criteria):
@@ -119,10 +117,20 @@ class Node(object):
 
 	def concurrency_check(self, criteria):
 		User = Query()
+		query = {
+			'USERID': criteria["USERID"],
+			'PRODUCTS': {
+					"ID": criteria["PRODUCTID"],
+				}
+			}
+
 		print("/" + criteria["USERID"] + "/" + criteria["PRODUCTID"],
 			"/" + self.DEVICE + "/" + criteria["USERID"] + "/" + criteria["PRODUCTID"]
 		)
-		if not db.search(User["USERID"] == criteria["USERID"]):
+
+		db_user_product = db.search(query)
+
+		if not db_user_product: # if product and user id DNE, simply push the 1st operation
 			path = "/" + criteria["USERID"] + "/" + criteria["PRODUCTID"] + '/' + self.DEVICE 
 			path_rev = "/" + self.DEVICE + "/" +criteria["USERID"] + "/" + criteria["PRODUCTID"]
 			print(path, path_rev)
@@ -137,61 +145,97 @@ class Node(object):
 
 				to_store = {
 					'USERID': criteria["USERID"],
-					'PRODUCT': [
-						criteria["PRODUCTID"],
-						criteria["OPERATION"],
-						criteria["PRICE"],
-						criteria["CATEGORY"],
-						"0"
-					]
-				}
-				db.insert(to_store)
+					'PRODUCTS': [
+							{
+								"ID": criteria["PRODUCTID"],
+								"PRICE": criteria["PRICE"],
+								"CATEGORY": criteria["CATEGORY"],
+								"LATEST_VERSION_VECTOR": "0",
+								"OPERATIONS": [
+									{
+										"OPERATION": criteria["OPERATION"],
+										"VERSION_VECTOR": "0"
+									}
+								]
+							
+							}
+						]
+					}
+				db.upsert(to_store, query)
 				self.kmaster.setVersion(path, 0)
 		else:
-			
-			version = to_store[0]['PRODUCT'][-1]
-
-			if len(version) > 1:
-				version = int(version[-1][-1])
-			else:
-				version =int(version[-1])
+			version = int(db_user_product['LATEST_VERSION_VECTOR'])
+			# version = to_store[0]['PRODUCT'][-1]
+			# if len(version) > 1:
+			# 	version = int(version[-1][-1])
+			# else:
+			# 	version =int(version[-1])
 
 			path = "/" +criteria["USERID"]+ "/"+ criteria["PRODUCTID"] + "/" + self.DEVICE
 			path_rev = "/" + self.DEVICE + "/" + criteria["USERID"]+ "/"+ criteria["PRODUCTID"] 
 			zversion = int(self.kmaster.retrieve(path))
 			print(zversion, "zversion", type(zversion))
 			print(version, "version", type(version))
+			
 			version = version + 1
 			if zversion != version:
 				self.reliable_send("CONCURRENT TRANSACTION : ".encode())
-				# pass
-			
-			to_store = db.search(User["USERID"] == criteria["USERID"])
-			dbversion = to_store[0]['PRODUCT'][-1]
-			if len(dbversion) > 1:
-				dbversion = dbversion[-1][-1]
-			else:
-				dbversion = dbversion[-1]
+				print("CONCURRENT TRANSACTION")
 
-			if dbversion  == version :
-				print("CONCURRENT")
-				self.reliable_send("CONCURRENT TRANSACTION : ".encode())
+				return # handle concurrent
+				# pass
+
+			"""Why more checking?"""			
+			# to_store = db.search(User["USERID"] == criteria["USERID"])
+			# dbversion = to_store[0]['PRODUCT'][-1]
+			# if len(dbversion) > 1:
+			# 	dbversion = dbversion[-1][-1]
+			# else:
+			# 	dbversion = dbversion[-1]
+
+			# if dbversion  == version :
+			# 	print("CONCURRENT")
+			# 	self.reliable_send("CONCURRENT TRANSACTION : ".encode())
 			
-			to_store_updated = {'USERID': criteria["USERID"], 'PRODUCT_INFO': [criteria["PRODUCTID"],criteria["OPERATION"],criteria["PRICE"],criteria["CATEGORY"],version]}
+			to_store_updated = {
+				'USERID': criteria["USERID"],
+				'PRODUCTS': [
+						{
+							"ID": criteria["PRODUCTID"],
+							"PRICE": criteria["PRICE"],
+							"CATEGORY": criteria["CATEGORY"],
+							"LATEST_VERSION_VECTOR": version,
+							"OPERATIONS": [
+								{
+									"OPERATION": criteria["OPERATION"],
+									"VERSION_VECTOR": version
+								}
+							]
+						
+						}
+					]
+				}
+
+			# to_store_updated = {
+			# 	'USERID': criteria["USERID"], 
+			# 	'PRODUCT_INFO': [criteria["PRODUCTID"],criteria["OPERATION"],criteria["PRICE"],criteria["CATEGORY"],version
+			# ]}
+
 			self.kmaster.setVersion(path, version)
 			self.kmaster.setVersion(path_rev, version)
-			to_append = [criteria["PRODUCTID"],criteria["OPERATION"],criteria["PRICE"],criteria["CATEGORY"],version] # TODO: UPDATE
-			temp = db.search(User["USERID"] == criteria["USERID"])
-			new = []
-			new.append(temp[0]["PRODUCT"])
-			new.append(to_append) 
-			db.update(delete('USERID'), User["USERID"] == criteria["USERID"] )
-			db.insert(
-				{
-			'USERID': criteria["USERID"],
-			'PRODUCT': new
-				}
-			)
+			# to_append = [criteria["PRODUCTID"],criteria["OPERATION"],criteria["PRICE"],criteria["CATEGORY"],version] # TODO: UPDATE
+			# temp = db.search(User["USERID"] == criteria["USERID"])
+			# new = []
+			# new.append(temp[0]["PRODUCT"])
+			# new.append(to_append) 
+			# db.update(delete('USERID'), User["USERID"] == criteria["USERID"] )
+			# db.insert({
+			# 	'USERID': criteria["USERID"],
+			# 	'PRODUCT': new
+			# })
+			db.upsert(to_store_updated, query)
+			
+
 		"""
 		implement concurrency here
 		read from saved file version number and than from zookeeper if fault tell client
