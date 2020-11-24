@@ -26,19 +26,8 @@
             "children": [
              { "id": 4, "name": "device_4", "weight": 65536 }
             ]
-           },
-           {
-            "type": "host", "name": "host1", "id": -5,
-            "children": [
-             { "id": 5, "name": "device_5", "weight": 65536 }
-            ]
-           },
-           {
-            "type": "host", "name": "host2", "id": -6,
-            "children": [
-             { "id": 6, "name": "device_6", "weight": 65536 }
-            ]
            }
+           
         ]
       }
     ],

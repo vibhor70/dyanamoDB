@@ -32,7 +32,7 @@ class Gateway():
         self.mnode = MasterNode(gateway_ip)
         t = threading.Thread(target = self.run_mmnode_thread)
         t.start()
-        
+
     def run_mmnode_thread(self):
         self.mnode.connection_accept()
 
@@ -52,7 +52,7 @@ class Gateway():
         return encoded
 
     def run_crush(self, user_id:str, pid:str, rcount:int):
-        val = self.create_hash()
+        val = self.create_hash(user_id, pid)
         proc = subprocess.Popen(['python2', 'utils/crush_runner.py', str(val), str(rcount)], 
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE,
@@ -96,7 +96,7 @@ class Gateway():
                 self.Flaged_ip[did]=-1
 
         kmaster.stop_client()    
-        data["DevID"]=device_ids
+        # data["DevID"]=device_ids
         #run in constructor also add device ids to arguement
         
 #call list_all only when down node comes back
