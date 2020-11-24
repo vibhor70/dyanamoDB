@@ -271,7 +271,7 @@ class Gateway():
                     if node["device_id"] == allInfo[val]["device"]:
                         self.mnode.send_command([node["ip"]],   
                         {"COMMAND":"DELETE", 
-                        "USERID":info["userid"],"PRODUCTID":allInfo[val]["key"]})
+                        "USERID":info["USERID"],"PRODUCTID":allInfo[val]["key"]})
                 # kmaster.setVersion(path, version)
                 # kmaster.setVersion(path_rev, version)
 
