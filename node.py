@@ -62,48 +62,40 @@ class Node(object):
 		criteria = data.decode()
 		criteria = json.loads(criteria)
 		print(criteria)
+		self.run_command(criteria)
 
+	def run_command(self, criteria):
 		if criteria["COMMAND"] == "INSERT":
 			self.concurrency_check(criteria)
 		elif criteria["COMMAND"] == "RETRIEVE":
 			self.list_all(criteria)
 		elif criteria["COMMAND"] == "REPLACE":
 			self.replace(criteria)
-		
+		elif criteria["COMMAND"] == "DELETE":
+			self.delete_product(criteria)
 
-	def delete(self,criteria):
+	def delete_product(self,criteria):
 		User = Query()
 		userid = criteria["USERID"]
 		to_store = db.search(User["USERID"] == criteria["USERID"])
-		db.update(delete('USERID'), User["USERID"] == criteria["USERID"] )
+		query = (User.USERID == criteria["USERID"])
+		db.update(delete('PRODUCTS'), query)
 		productid = criteria["PRODUCTID"]
-		toChange = to_store[0]["PRODUCT"]
+		toChange = to_store[0]["PRODUCTS"]
 		newList=[]
 		for val in toChange:
-			tval = val
-			if tval[0] == productid:
+			if val["ID"] == productid:
 				pass
 			else:
-				newList.append(tval)
-		db.insert({
-			'USERID': criteria["USERID"],
-			'PRODUCT': newList
-		})
+				newList.append(val)
+		db.update({'PRODUCTS': newList}, query)
 
 		
 	def replace(self,criteria):
 		User = Query()
 		userid = criteria["USERID"]
-
-		to_store = db.search(User["USERID"] == criteria["USERID"])
-		db.update(delete('USERID'), User["USERID"] == criteria["USERID"] )
-		db.insert(
-			{
-		'USERID': criteria["USERID"],
-		'PRODUCT': criteria["UPDATEDLIST"]
-			}
-		)
-
+		db.update({'PRODUCTS': criteria["UPDATEDLIST"]}, User.USERID == userid)
+		return True
 
 	def list_all(self, criteria):
 		User = Query()
@@ -115,6 +107,27 @@ class Node(object):
 			self.reliable_send(str(user_products[0]["PRODUCTS"]).encode())
 		else:
 			self.reliable_send("NO RECORD FOUND".encode())
+
+	@staticmethod
+	def get_store_dict(criteria, version):
+		return {
+			'USERID': criteria["USERID"],
+			'PRODUCTS': [
+					{
+						"ID": criteria["PRODUCTID"],
+						"PRICE": criteria["PRICE"],
+						"CATEGORY": criteria["CATEGORY"],
+						"LATEST_VERSION_VECTOR": version,
+						"OPERATIONS": [
+							{
+								"OPERATION": criteria["OPERATION"],
+								"VERSION_VECTOR": version
+							}
+						]
+					
+					}
+				]
+			}
 
 	def concurrency_check(self, criteria):
 		User = Query()
@@ -128,8 +141,9 @@ class Node(object):
 			"/" + self.DEVICE + "/" + criteria["USERID"] + "/" + criteria["PRODUCTID"]
 		)
 		query = (User.USERID == criteria["USERID"]) & (User.PRODUCTS.ID == criteria["PRODUCTID"])
-		db_user_product = db.search(query )
+		db_user_product = db.search(query)
 
+		print(db_user_product, "user produt in concurrecny query")
 		if not db_user_product: # if product and user id DNE, simply push the 1st operation
 			path = "/" + criteria["USERID"] + "/" + criteria["PRODUCTID"] + '/' + self.DEVICE 
 			path_rev = "/" + self.DEVICE + "/" +criteria["USERID"] + "/" + criteria["PRODUCTID"]
@@ -143,24 +157,7 @@ class Node(object):
 				self.kmaster.create(path)
 				self.kmaster.create(path_rev)
 
-				to_store = {
-					'USERID': criteria["USERID"],
-					'PRODUCTS': [
-							{
-								"ID": criteria["PRODUCTID"],
-								"PRICE": criteria["PRICE"],
-								"CATEGORY": criteria["CATEGORY"],
-								"LATEST_VERSION_VECTOR": "0",
-								"OPERATIONS": [
-									{
-										"OPERATION": criteria["OPERATION"],
-										"VERSION_VECTOR": "0"
-									}
-								]
-							
-							}
-						]
-					}
+				to_store = self.get_store_dict(criteria, "0")
 				db.upsert(to_store, query)
 				self.kmaster.setVersion(path, 0)
 		else:
@@ -197,24 +194,7 @@ class Node(object):
 			# 	print("CONCURRENT")
 			# 	self.reliable_send("CONCURRENT TRANSACTION : ".encode())
 			
-			to_store_updated = {
-				'USERID': criteria["USERID"],
-				'PRODUCTS': [
-						{
-							"ID": criteria["PRODUCTID"],
-							"PRICE": criteria["PRICE"],
-							"CATEGORY": criteria["CATEGORY"],
-							"LATEST_VERSION_VECTOR": version,
-							"OPERATIONS": [
-								{
-									"OPERATION": criteria["OPERATION"],
-									"VERSION_VECTOR": version
-								}
-							]
-						
-						}
-					]
-				}
+			to_store_updated = self.get_store_dict(criteria, str(version))
 
 			# to_store_updated = {
 			# 	'USERID': criteria["USERID"], 
