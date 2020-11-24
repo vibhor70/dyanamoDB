@@ -109,6 +109,11 @@ class Node(object):
 		user = db.get(User.USERID == userid)
 
 		if not user:
+			data = {
+				"USERID": userid,
+				"PRODUCTS": [criteria,]
+			}
+			db.insert(data)
 			print("No such user exists in replace")
 			return
 		db_products = user["PRODUCTS"]
@@ -145,7 +150,8 @@ class Node(object):
 				products = json.dumps({"PRODUCT":product})
 				self.reliable_send(products.encode())
 			else:
-				self.reliable_send("NO RECORD FOUND".encode())
+				products = json.dumps({"PRODUCT":{}})
+				self.reliable_send(products.encode())
 
 	@staticmethod
 	def get_store_dict(criteria, version):
