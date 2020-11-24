@@ -130,7 +130,7 @@ class Node(object):
 		user_products = db.get(User["USERID"] == criteria["USERID"])
 		if user_products:
 			print(user_products)
-			print(str(user_products[0]["PRODUCTS"]).encode())
+			print(str(user_products["PRODUCTS"]).encode())
 			products = json.dumps({"PRODUCTS": user_products["PRODUCTS"]})
 			self.reliable_send(products.encode())
 		else:
