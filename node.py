@@ -164,8 +164,9 @@ class Node(object):
 				to_store = self.get_store_dict(criteria, "0")
 				query = (User.USERID == criteria["USERID"])
 				db_user = db.get(query)
+				print(db_user, "db user")
 				if db_user:
-					db_user["PRODUCTS"] = to_store["PRODUCTS"]
+					db_user["PRODUCTS"].append(to_store["PRODUCTS"][0])
 					db.update(db_user)
 				else:	
 					db.insert(to_store)
