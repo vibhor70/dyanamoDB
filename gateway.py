@@ -260,7 +260,7 @@ class Gateway():
             self.GATEWAY_IP,"p","",info["USERID"],info["PRODUCTID"],"",False
         )
         kmaster.start_client()
-        allInfo = self.list_all({"userid": info["USERID"]})
+        allInfo = self.list_all({"USERID": info["USERID"]})
 
         for val in range(len(allInfo)):
             # version = int(allInfo[val]['version'])
