@@ -30,8 +30,12 @@ class Gateway():
         self.CONFIG = self.get_config()
         self.GATEWAY_IP = gateway_ip
         self.mnode = MasterNode(gateway_ip)
-        self.mnode.connection_accept()
+        t = threading.Thread(target = self.run_mmnode_thread)
+        t.start()
         
+    def run_mmnode_thread(self):
+        self.mnode.connection_accept()
+
     @staticmethod
     def get_config():
         with open("./config.json") as fin:

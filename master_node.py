@@ -15,7 +15,7 @@ class MasterNode(object):
         self.s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
         self.s.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
         self.s.bind((self.CONTAINER_IP,54321))
-        self.s.listen(5)
+        self.s.listen(10)
         self.clients = 0
         self.stop_threads = False
 
