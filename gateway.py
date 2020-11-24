@@ -261,7 +261,7 @@ class Gateway():
         )
         kmaster.start_client()
         allInfo = self.list_all({"USERID": info["USERID"]})
-
+        print(allInfo)
         for val in range(len(allInfo)):
             # version = int(allInfo[val]['version'])
             if allInfo[val]["key"]==info["PRODUCTID"]:
@@ -269,13 +269,14 @@ class Gateway():
                 # path_rev = "/" + allInfo[val]["device"] + "/" + info["userid"] + "/" + allInfo[val]["key"]
                 for node in self.CONFIG["nodes"]:
                     if node["device_id"] in list(allInfo[val]["device"]):
+                        
                         self.mnode.send_command([node["ip"]],   
                         {"COMMAND":"DELETE", 
                         "USERID":info["userid"],"PRODUCTID":allInfo[val]["key"]})
                 # kmaster.setVersion(path, version)
                 # kmaster.setVersion(path_rev, version)
 
-        kmaster.stop_client()
+        # kmaster.stop_client()
          
 if __name__ == "__main__":
     import sys

@@ -18,7 +18,8 @@ from gateway import Gateway
 
 gatway_ip = "172.17.0.6"
 gatway = Gateway(gatway_ip)
-# for i in range(5):
+
+
 
 data = {
     "USERID": "user_1",
