@@ -104,21 +104,22 @@ class Node(object):
 		updaed_products = criteria["UPDATEDLIST"]
 		max_product_id = criteria["MAX_PRODUCTID"]
 		user = db.get(User.USERID == userid)
+
 		if not user:
 			print("No such user exists in replace")
 			return
 		db_products = user["PRODUCTS"]
+		print(db_products, "ORIGNAL db products")
 
 		change_with = None
 		for i, product in enumerate(updaed_products):
 			if product["ID"] == max_product_id:
 				change_with = updaed_products[i]
 				break
-
+		print("CHANGE WITH", change_with)
 		if not change_with:
 			return False
 
-		print(db_products, "ORIGNAL db products")
 		for i, product in enumerate(db_products):
 			if product["ID"] == max_product_id:
 				db_products[i] = change_with
