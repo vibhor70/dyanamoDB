@@ -29,7 +29,9 @@ class Gateway():
         self.Flaged_ip=dict()
         self.CONFIG = self.get_config()
         self.GATEWAY_IP = self.CONFIG["gateway"]["ip"]
-
+        self.mnode = MasterNode()
+        self.mnode.connection_accept()
+        
     @staticmethod
     def get_config():
         with open("./config.json") as fin:
@@ -84,16 +86,13 @@ class Gateway():
             path = "/" + did
             if kmaster.exist(path):
                 if self.Flaged_ip[did]!=-1:
-                    mnode = MasterNode()
-                    mnode.connection_accept()
-                    mnode.send_command(device_ip_map[did], data)
+                  
+                    self.mnode.send_command(device_ip_map[did], data)
                 else:
                     self.read_repair({"userid":did})
                     #DO READ REPAIR WHEN DOWN NODE COMES BACK
                     self.Flaged_ip[did]=0
-                    mnode = MasterNode()
-                    mnode.connection_accept()
-                    mnode.send_command(device_ip_map[did], data)
+                    self.mnode.send_command(device_ip_map[did], data)
 
             else:
                 flag=False
@@ -141,10 +140,12 @@ class Gateway():
         )
         kmaster.start_client()
         to_return  = kmaster.getmap()
-
+        self.mnode 
         latest=dict()
 
         key=""
+        maxVersion_replace = []
+        
         for i in range(len(to_return)):
             tkey = to_return[i]["key"]
             tdevice = to_return[i]["device"]
@@ -172,13 +173,30 @@ class Gateway():
                 # print("FOR PID: ",keys," DEVICE: ",x," VERSION: ",y)
                 if max_version < int(y):
                     max_version = int(y)
+                    maxDevice = x
+                    maxProductid = keys
 
-            
+            for node in self.CONFIG()["nodes"]:
+                if node["device_id"] in list(maxDevice):
+                    self.mnode.send_command([node["ip"]], {"COMMAND":"RETRIEVE","USERID":info["USERID"], "":"","":"","":"","":""})
+                    maxData = self.mnode.reliable_recv()
+                    maxData = list(maxData)
+                    """
+HUGE DOUBT IF SEND WILL I RECIVE USING RELIABLE RECV
+
+                    """
             for i in range(len(List)):
                 x,y = List[i]
                 if max_version != int(y):
                     path = "/" + info["USERID"] + "/"+ str(keys) + "/" + str(x)
                     path_rev = "/" + str(x) + "/" + info["USERID"] + "/"+ str(keys)
+                    device_ids = list(x)
+                    for node in self.CONFIG()["nodes"]:
+                        if node["device_id"] in device_ids:
+                            self.mnode.send_command([node["ip"]],  {"COMMAND":"REPLACE","USERID":info["USERID"],"UPDATEDLIST":maxData})
+                            """
+SENDING A LIST DEPENDS ON IF maxData RECIEVED
+                            """
                     kmaster.setVersion(path,max_version)
                     kmaster.setVersion(path_rev,max_version)
         #TO DO CHANGE DATA NODES ALSO
@@ -202,6 +220,9 @@ class Gateway():
             if allInfo[val]["key"]==info["productid"]:
                 path = "/" + info["userid"] + "/" + allInfo[val]["key"] + "/" + allInfo[val]["device"]
                 path_rev = "/" + allInfo[val]["device"] + "/" + info["userid"] + "/" + allInfo[val]["key"]
+                for node in self.CONFIG()["nodes"]:
+                        if node["device_id"] in list(allInfo[val]["device"]):
+                            self.mnode.send_command([node["ip"]],   {"COMMAND":"DELETE", "USERID":info["userid"],"PRODUCTID":allInfo[val]["key"]})
                 kmaster.delete(path)
                 kmaster.delete(path_rev)
         kmaster.stop_client()
@@ -210,4 +231,4 @@ class Gateway():
          
 if __name__ == "__main__":
     w = Gateway()
-    w.list_all({"userid":"usr1"})
+   

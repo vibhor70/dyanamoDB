@@ -95,7 +95,8 @@ if __name__ == "__main__":
     #Blocking Call
     a.connection_accept()
 
-    a.send_command(["127.0.0.1"], {"USERID":"1", "PRODUCTID":"2","OPERATION":"3","PRICE":"4","CATEGORY":"120"})
-    a.send_command(["127.0.0.1"], {"USERID":"1", "PRODUCTID":"3","OPERATION":"5","PRICE":"45","CATEGORY":"120"})
-    a.send_command(["127.0.0.1"], {"USERID":"1", "PRODUCTID":"4","OPERATION":"3","PRICE":"4","CATEGORY":"120"})
+    a.send_command(["127.0.0.1"], {"COMMAND":"INSERT","USERID":"1", "PRODUCTID":"2","OPERATION":"3","PRICE":"4","CATEGORY":"120"})
+    a.send_command(["127.0.0.1"], {"COMMAND":"RETRIEVE","USERID":"1", "":"","":"","":"","":""})
+    a.send_command(["127.0.0.1"], {"COMMAND":"REPLACE","USERID":"1","UPDATEDLIST":["UPDATED PRODUCT LIST "]})
+    a.send_command(["127.0.0.1"], {"COMMAND":"DELETE", "USERID":"4","PRODUCTID":"3"})
 

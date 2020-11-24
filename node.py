@@ -10,6 +10,8 @@ from tinydb import TinyDB, Query
 import struct
 from kazooMaster import kazooMaster
 from gateway import Gateway
+from tinydb.operations import delete
+
 
 db = TinyDB('db/db.json', indent=4, separators=(',', ': '))
 
@@ -61,8 +63,59 @@ class Node(object):
 		criteria = json.loads(criteria)
 		print(criteria)
 
-		t1 = threading.Thread(target = self.concurrency_check, args=(criteria,))
-		t1.start()
+		if criteria["COMMAND"] == "INSERT":
+			self.concurrency_check(criteria)
+		elif criteria["COMMAND"] == "RETRIEVE":
+			self.list_all(self,criteria)
+		elif criteria["COMMAND"] == "REPLACE":
+			self.replace(self,criteria)
+		
+
+	def delete(self,criteria):
+		User = Query()
+		userid = criteria["USERID"]
+		to_store = db.search(User["USERID"] == criteria["USERID"])
+		db.update(delete('USERID'), User["USERID"] == criteria["USERID"] )
+		productid = criteria["PRODUCTID"]
+		toChange = to_store[0]["PRODUCT"]
+		newList=[]
+		for val in toChange:
+			tval = val
+			if tval[0] == productid:
+				pass
+			else:
+				newList.append(tval)
+		db.insert(
+				{
+			'USERID': criteria["USERID"],
+			'PRODUCT': newList
+				}
+			)
+
+		
+	def replace(self,criteria):
+		User = Query()
+		userid = criteria["USERID"]
+
+		to_store = db.search(User["USERID"] == criteria["USERID"])
+		db.update(delete('USERID'), User["USERID"] == criteria["USERID"] )
+		db.insert(
+			{
+		'USERID': criteria["USERID"],
+		'PRODUCT': criteria["UPDATEDLIST"]
+			}
+		)
+
+
+	def list_all(self,criteria):
+		User = Query()
+		userid = criteria["USERID"]
+
+		if db.search(User["USERID"] == criteria["USERID"]):
+			to_store = db.search(Query()["USERID"] == criteria["USERID"])
+			self.reliable_send(str(to_store[0]["PRODUCT"]).encode())
+		else:
+			self.reliable_send("NO RECORD FOUND".encode())
 
 	def concurrency_check(self, criteria):
 		User = Query()
@@ -95,33 +148,50 @@ class Node(object):
 				db.insert(to_store)
 				self.kmaster.setVersion(path, 0)
 		else:
-			to_store = db.search(Query()["USERID"] == criteria["USERID"])
-			version = int(to_store[0]['PRODUCT'][4])
+			
+			version = to_store[0]['PRODUCT'][-1]
+
+			if len(version) > 1:
+				version = int(version[-1][-1])
+			else:
+				version =int(version[-1])
 
 			path = "/" +criteria["USERID"]+ "/"+ criteria["PRODUCTID"] + "/" + self.DEVICE
 			path_rev = "/" + self.DEVICE + "/" + criteria["USERID"]+ "/"+ criteria["PRODUCTID"] 
 			zversion = int(self.kmaster.retrieve(path))
 			print(zversion, "zversion", type(zversion))
 			print(version, "version", type(version))
-
+			version = version + 1
 			if zversion != version:
-				self.reliable_send("CONCURRENT TRANSACTION : INITIATING READ REPAIR".encode())
+				self.reliable_send("CONCURRENT TRANSACTION : ".encode())
 				# pass
-				gateway = Gateway()
-				gateway.read_repair({"NODES":[self.DEVICE,]})
+			
+			to_store = db.search(User["USERID"] == criteria["USERID"])
+			dbversion = to_store[0]['PRODUCT'][-1]
+			if len(dbversion) > 1:
+				dbversion = dbversion[-1][-1]
 			else:
-				version = version + 1
-				to_store = db.search(User["USERID"] == criteria["USERID"])
-				dbversion = to_store[0]['PRODUCT_INFO'][4]
-				if dbversion  == version :
-					print("CONCURRENT")
-					self.reliable_send("CONCURRENT TRANSACTION : INITIATING READ REPAIR".encode())
-				else:
-					to_store_updated = {'USERID': criteria["USERID"], 'PRODUCT_INFO': [criteria["PRODUCTID"],criteria["OPERATION"],criteria["PRICE"],criteria["CATEGORY"],version]}
-					self.kmaster.setVersion(path, version)
-					self.kmaster.setVersion(path_rev, version)
-					db.update(to_store, to_store_updated) # TODO: UPDATE
+				dbversion = dbversion[-1]
 
+			if dbversion  == version :
+				print("CONCURRENT")
+				self.reliable_send("CONCURRENT TRANSACTION : ".encode())
+			
+			to_store_updated = {'USERID': criteria["USERID"], 'PRODUCT_INFO': [criteria["PRODUCTID"],criteria["OPERATION"],criteria["PRICE"],criteria["CATEGORY"],version]}
+			self.kmaster.setVersion(path, version)
+			self.kmaster.setVersion(path_rev, version)
+			to_append = [criteria["PRODUCTID"],criteria["OPERATION"],criteria["PRICE"],criteria["CATEGORY"],version] # TODO: UPDATE
+			temp = db.search(User["USERID"] == criteria["USERID"])
+			new = []
+			new.append(temp[0]["PRODUCT"])
+			new.append(to_append) 
+			db.update(delete('USERID'), User["USERID"] == criteria["USERID"] )
+			db.insert(
+				{
+			'USERID': criteria["USERID"],
+			'PRODUCT': new
+				}
+			)
 		"""
 		implement concurrency here
 		read from saved file version number and than from zookeeper if fault tell client
