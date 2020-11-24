@@ -16,7 +16,7 @@ gatway.list_all({
 """
 from gateway import Gateway
 
-gatway_ip = "172.17.0.7"
+gatway_ip = "172.17.0.6"
 gatway = Gateway(gatway_ip)
 # for i in range(5):
 
@@ -32,5 +32,13 @@ gatway.insert(data)
 gatway.list_all({
     "USERID": "1"
 })
+
+user_id = "user_1"
+pid = "toothpaste"
+m = hashlib.sha1()
+m.update(user_id.encode())
+m.update(pid.encode())
+digest = m.hexdigest()
+digest_int = int(digest, 16) % 10**8
 
 """

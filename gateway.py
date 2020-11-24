@@ -43,13 +43,13 @@ class Gateway():
 
     @staticmethod
     def create_hash(user_id:str, pid:str):
-        m = hashlib.sha256()
+        m = hashlib.sha1()
         m.update(user_id.encode())
         m.update(pid.encode())
-        digest = m.digest()
-        encoded = int(binascii.hexlify(digest).decode())
+        digest = m.hexdigest()
+        digest_int = int(digest, 16) % 10**8
         # decoded = binascii.unhexlify(str(encoded).encode()).decode()
-        return encoded
+        return digest_int
 
     def run_crush(self, user_id:str, pid:str, rcount:int):
         val = self.create_hash(user_id, pid)
