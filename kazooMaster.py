@@ -176,13 +176,5 @@ class kazooMaster(object):
             except Exception as e:
                 print(e, "Exception in set versioning")
 
-# a = kazooMaster("172.17.0.3","p","dev1","","","",True)
-# a.reMap()
-
-
-# # a=kazooMaster("172.17.0.3","p","","usr1","key1","ADD")
-# # val=a.getmap()
-
-# print("Version updated")
 
 

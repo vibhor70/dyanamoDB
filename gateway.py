@@ -1,17 +1,3 @@
-"""
-Steps:
-IMP:APPLY STAT METHOD OF KAZOO ON EPEHEMRAL NODES
-0. TAKE USER ID AND CREATE PRODUCT ID FOR EACH PRODUCT 
-2. MAP THEM USING CRUSH->(USER,PRODUCTID,DEVICE)->CREATE TWO NODES USER/ID/DEVICE AND /DEVICE/USER/ID USING create 
-METHOD OF KAZOOMASTER
- THEREBY UPDATING THE UPDATING IN ZOOKEEPER USING KAZOOMASTER CLASS
-4.UPDATE IN DATANODE USING MASTERNODE.PY
-5.INCASE OF NODE FAILURE APPLY REMAP PROCEDURE :reMap METHOD IS HALF COMPLETED 
-6.IF GATEWAY WANTS MAP OF USER IT CALL getMap OF KAZOOMASTER
-7.CONCURRRENCY NOT HANDLED AS OF NOW
-
-"""
-
 from kazooMaster import kazooMaster
 import subprocess
 import binascii
@@ -23,12 +9,12 @@ import os
 from kazoo.exceptions import NoNodeError
 from master_node import MasterNode
 
-REPLICATION_COUNT = 2
 
 class Gateway():
     def __init__(self, gateway_ip):
         self.Flaged_ip=dict()
         self.CONFIG = self.get_config()
+        self.REPLICATION_COUNT = CONFIG["REPLICATION_COUNT"]
         self.GATEWAY_IP = gateway_ip
         self.mnode = MasterNode(gateway_ip)
         t = threading.Thread(target = self.run_mmnode_thread)
@@ -68,7 +54,7 @@ class Gateway():
 
     def insert(self, data:dict):
 
-        device_ids = list(self.run_crush(data["USERID"], data["PRODUCTID"], REPLICATION_COUNT))
+        device_ids = list(self.run_crush(data["USERID"], data["PRODUCTID"], self.REPLICATION_COUNT))
         print(device_ids, type(device_ids))
         device_ip_map = {}
         flag=False

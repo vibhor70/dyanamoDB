@@ -22,12 +22,23 @@
            ]
           },
           {
-            "type": "host", "name": "host0", "id": -4,
+            "type": "host", "name": "host3", "id": -4,
             "children": [
              { "id": 4, "name": "device_4", "weight": 65536 }
             ]
+           },
+           {
+            "type": "host", "name": "host4", "id": -5,
+            "children": [
+             { "id": 5, "name": "device_5", "weight": 65536 }
+            ]
+           },
+           {
+            "type": "host", "name": "host5", "id": -6,
+            "children": [
+             { "id": 6, "name": "device_6", "weight": 65536 }
+            ]
            }
-           
         ]
       }
     ],

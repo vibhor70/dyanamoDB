@@ -2,13 +2,14 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from gateway import Gateway
 import random
+import json
 
-gatway_ip = [
-    "172.17.0.6",
-    "172.17.0.7"
-]
+def get_config():
+    with open("./config.json") as fin:
+        return json.loads(fin.read())
 
-
+CONFIG = get_config()
+GATEWAY_IPS = CONFIG["gateway_ips"]
 app = FastAPI()
 
 class ListAllQuery(BaseModel):
@@ -16,7 +17,7 @@ class ListAllQuery(BaseModel):
 
 @app.get("/api/list_all")
 async def list_all(query: ListAllQuery):
-    gatway = Gateway(gatway_ip[0])
+    gatway = Gateway(GATEWAY_IPS[0])
     res = gatway.list_all({"USERID": query["userid"]})
     return {"response": res}
 
@@ -29,7 +30,7 @@ class InsertQuery(BaseModel):
 
 @app.get("/api/insert")
 async def insertion_api(query: InsertQuery):
-    gatway = Gateway(gatway_ip[0])
+    gatway = Gateway(GATEWAY_IPS[0])
     data = {
         "USERID": query["userid"],
         "PRODUCTID": query["productid"],
@@ -48,7 +49,7 @@ class DeletionQuery(BaseModel):
 
 @app.get("/api/delete")
 async def deletion_api(query: DeletionQuery):
-    gatway = Gateway(gatway_ip[0])
+    gatway = Gateway(GATEWAY_IPS[0])
     data = {
         "USERID": query["userid"],
         "PRODUCTID": query["productid"],
