@@ -196,12 +196,14 @@ class Gateway():
                     maxDevice = x
                     maxProductid = keys
 
+            print(maxDevice. max_version, maxProductid)
             for node in self.CONFIG["nodes"]:
                 if node["device_id"] in list(maxDevice):
                     self.mnode.send_command([node["ip"]], {"COMMAND":"RETRIEVE","USERID":info["USERID"]})
                     maxData = self.mnode.reliable_recv()
                     # GOT THE PRODUCTS
                     maxData = json.loads(maxData)["PRODUCTS"]
+                    print("maxdata", maxData)
                     """
                     HUGE DOUBT IF SEND WILL I RECIVE USING RELIABLE RECV
 
