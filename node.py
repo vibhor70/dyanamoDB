@@ -203,7 +203,6 @@ class Node(object):
 				to_store = self.get_store_dict(criteria, "0")
 				query = (User.USERID == criteria["USERID"])
 				db_user = db.get(query)
-				print(db_user, "db user")
 				if db_user:
 					print("db user found, not product")
 					db_user["PRODUCTS"].append(to_store["PRODUCTS"][0])
@@ -271,12 +270,14 @@ class Node(object):
 
 			# update lastest version vector 
 			print("db user and db product both found")
-			db_user_product["PRODUCTS"][0]['LATEST_VERSION_VECTOR'] = str(version)
-			## append the operation and update
-			db_user_product["PRODUCTS"][0]['OPERATIONS'].append(
-				{"OPERATION": criteria["OPERATION"], "VERSION_VECTOR": str(version)}
-			)
-			print(db_user_product)
+			for i, product in enumerate(db_user_product["PRODUCTS"]):
+				if product["ID"] == criteria["PRODUCTID"]:
+					db_user_product["PRODUCTS"][i]['LATEST_VERSION_VECTOR'] = str(version)
+					## append the operation and update
+					db_user_product["PRODUCTS"][i]['OPERATIONS'].append(
+						{"OPERATION": criteria["OPERATION"], "VERSION_VECTOR": str(version)}
+					)
+					break
 			db.update(db_user_product)
 			
 
