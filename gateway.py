@@ -236,15 +236,11 @@ class Gateway():
                 for down_node in down_nodes:
                     kmaster.create("/{}/{}/{}".format(down_node, info["USERID"], keys))
                     kmaster.create("/{}/{}/{}".format(info["USERID"], keys, down_node))
-                    # for d in maxData:
                     print(maxData, type(maxData), "maxdata")
-                        # self.mnode.send_command(
-                        #     [device_ip_map["down_node"],], 
-                        #     {"COMMAND":"INSERT","USERID":info["USERID"], 
-                        #     "PRODUCTID": keys,
-                        #     "OPERATIONS":d[0]["OPERATIONS"],
-                        #     "PRICE":d[0]["PRICE"],"CATEGORY":"20"}
-                        # )
+                    self.mnode.send_command(
+                        [device_ip_map["down_node"],], 
+                        {"COMMAND":"REPLACE","USERID":info["USERID"], 
+                        "MAX_PRODUCTID": maxProductid, "UPDATEDLIST":[maxData]})
 
             latest_data = kmaster.getmap()
         #TO DO CHANGE DATA NODES ALSO
