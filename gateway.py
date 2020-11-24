@@ -85,13 +85,14 @@ class Gateway():
             path = "/" + did
             if kmaster.exist(path):
                 if did in self.Flaged_ip.keys():
-                    if self.Flaged_ip[did]!=-1:
-                        self.mnode.send_command(device_ip_map[did], data)
-                    else:
+                    if self.Flaged_ip[did] == -1:
                         self.read_repair({"userid":did})
                         #DO READ REPAIR WHEN DOWN NODE COMES BACK
                         self.Flaged_ip[did]=0
                         self.mnode.send_command(device_ip_map[did], data)
+                else:
+                    # new initial node starts
+                    self.mnode.send_command(device_ip_map[did], data)
             else:
                 flag=False
                 self.Flaged_ip[did]=-1
