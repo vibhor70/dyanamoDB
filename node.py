@@ -117,13 +117,13 @@ class Node(object):
 
 	def concurrency_check(self, criteria):
 		User = Query()
-		query = {
-			'USERID': criteria["USERID"],
-			'PRODUCTS': {
-					"ID": criteria["PRODUCTID"],
-				}
-			}
-
+		# query = {
+		# 	'USERID': criteria["USERID"],
+		# 	'PRODUCTS': {
+		# 			"ID": criteria["PRODUCTID"],
+		# 		}
+		# 	}
+		query = db.search((User.USERID == criteria["USERID"]) & (User.PRODUCTS.ID == criteria["PRODUCTID"]) )
 		print("/" + criteria["USERID"] + "/" + criteria["PRODUCTID"],
 			"/" + self.DEVICE + "/" + criteria["USERID"] + "/" + criteria["PRODUCTID"]
 		)
