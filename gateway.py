@@ -125,7 +125,7 @@ class Gateway():
             all_child = []
             
             all_child = kmaster.get_children(path)
-            
+            print(all_child)
             if all_child == "":
                 print("Node does not exists")
                 kmaster.create(path)
