@@ -1,1 +1,0 @@
-This is a dynamoDB type DB
