@@ -78,6 +78,9 @@ class Node(object):
 		User = Query()
 		userid = criteria["USERID"]
 		to_store = db.search(User["USERID"] == criteria["USERID"])
+		if not to_store:
+			print("No user with user id exists")
+    		return
 		query = (User.USERID == criteria["USERID"])
 		db.update(delete('PRODUCTS'), query)
 		productid = criteria["PRODUCTID"]
