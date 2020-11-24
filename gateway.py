@@ -87,10 +87,10 @@ class Gateway():
             path = "/ephemeral_" + did
             if kmaster.exist(path):
                 if did in self.Flaged_ip.keys() and self.Flaged_ip[did] == -1:
+                    self.mnode.send_command(device_ip_map[did], data)
                     self.read_repair({"NODES":device_ids})
                     #DO READ REPAIR WHEN DOWN NODE COMES BACK
                     self.Flaged_ip[did]=0
-                    self.mnode.send_command(device_ip_map[did], data)
                 else:
                     # new initial node starts
                     self.mnode.send_command(device_ip_map[did], data)
