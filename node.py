@@ -183,13 +183,14 @@ class Node(object):
 			if zversion != version:
 				self.reliable_send("CONCURRENT TRANSACTION : ".encode())
 				print("CONCURRENT TRANSACTION")
-
 				return # handle concurrent
 				# pass
 
 			"""Why more checking?"""			
 			# to_store = db.search(User["USERID"] == criteria["USERID"])
 			# dbversion = to_store[0]['PRODUCT'][-1]
+
+
 			# if len(dbversion) > 1:
 			# 	dbversion = dbversion[-1][-1]
 			# else:
@@ -199,8 +200,8 @@ class Node(object):
 			# 	print("CONCURRENT")
 			# 	self.reliable_send("CONCURRENT TRANSACTION : ".encode())
 			
-			to_store_updated = self.get_store_dict(criteria, str(version))
-
+			# to_store_updated = self.get_store_dict(criteria, str(version))
+			# print(to_store_updated, "new to_store updated")
 			# to_store_updated = {
 			# 	'USERID': criteria["USERID"], 
 			# 	'PRODUCT_INFO': [criteria["PRODUCTID"],criteria["OPERATION"],criteria["PRICE"],criteria["CATEGORY"],version
@@ -218,7 +219,15 @@ class Node(object):
 			# 	'USERID': criteria["USERID"],
 			# 	'PRODUCT': new
 			# })
-			db.upsert(to_store_updated, query)
+
+
+			# update lastest version vector 
+			db_user_product[0]["PRODUCTS"][0]['LATEST_VERSION_VECTOR'] = str(version)
+			## append the operation and update
+			db_user_product[0]["PRODUCTS"][0]['OPERATIONS'].append(
+				{"OPERATION": criteria["OPERATION"], "VERSION_VECTOR": str(version)}
+			)
+			db.update(db_user_product)
 			
 
 		"""
