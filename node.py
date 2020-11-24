@@ -166,7 +166,7 @@ class Node(object):
 				db.upsert(to_store, query)
 				self.kmaster.setVersion(path, 0)
 		else:
-			version = int(db_user_product['LATEST_VERSION_VECTOR'])
+			version = int(db_user_product[0]["PRODUCTS"][0]['LATEST_VERSION_VECTOR'])
 			# version = to_store[0]['PRODUCT'][-1]
 			# if len(version) > 1:
 			# 	version = int(version[-1][-1])
