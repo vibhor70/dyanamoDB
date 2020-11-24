@@ -98,6 +98,7 @@ class Node(object):
 		
 	def replace(self,criteria):
     	# VERIFY vibhor
+		print(criteria, "IN REPLACE")
 		User = Query()
 		userid = criteria["USERID"]
 		products = criteria["UPDATEDLIST"]
