@@ -169,7 +169,7 @@ class kazooMaster(object):
         
     def setVersion(self,path,value):
         if self.zk.exists(path) == None:
-            print("NODE ERROR in setversion method")
+            print("Path does not exists setversion method")
         else:
             try:
                 self.zk.set(path=path,value=str(value).encode())
