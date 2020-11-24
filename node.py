@@ -66,9 +66,9 @@ class Node(object):
 		if criteria["COMMAND"] == "INSERT":
 			self.concurrency_check(criteria)
 		elif criteria["COMMAND"] == "RETRIEVE":
-			self.list_all(self, criteria = criteria)
+			self.list_all(criteria)
 		elif criteria["COMMAND"] == "REPLACE":
-			self.replace(self,criteria)
+			self.replace(criteria)
 		
 
 	def delete(self,criteria):
