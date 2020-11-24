@@ -20,7 +20,7 @@ class MasterNode(object):
         self.stop_threads = False
 
     def get_config(self):
-        with open("./config.json") as fin:
+        with open("./config/config.json") as fin:
             config = json.loads(fin.read())
             return config["gateway"]["ip"]
 

@@ -25,7 +25,7 @@ class Gateway():
 
     @staticmethod
     def get_config():
-        with open("./config.json") as fin:
+        with open("./config/config.json") as fin:
             return json.loads(fin.read())
 
     @staticmethod
@@ -40,7 +40,7 @@ class Gateway():
 
     def run_crush(self, user_id:str, pid:str, rcount:int):
         val = self.create_hash(user_id, pid)
-        proc = subprocess.Popen(['python2', 'utils/crush_runner.py', str(val), str(rcount)], 
+        proc = subprocess.Popen(['python2', 'crush_runner.py', str(val), str(rcount)], 
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE,
                                 stdin=subprocess.PIPE,

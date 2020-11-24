@@ -14,7 +14,7 @@ if len(sys.argv) != 3:
 
 value = sys.argv[1]
 rcount = sys.argv[2]
-crushmap = open("utils/crushmap.json", "r").read()
+crushmap = open("config/crushmap.json", "r").read()
 
 c = Crush()
 c.parse(json.loads(crushmap))
