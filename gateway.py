@@ -178,9 +178,10 @@ class Gateway():
 
             for node in self.CONFIG()["nodes"]:
                 if node["device_id"] in list(maxDevice):
-                    self.mnode.send_command([node["ip"]], {"COMMAND":"RETRIEVE","USERID":info["USERID"], "":"","":"","":"","":""})
+                    self.mnode.send_command([node["ip"]], {"COMMAND":"RETRIEVE","USERID":info["USERID"]})
                     maxData = self.mnode.reliable_recv()
-                    maxData = list(maxData)
+                    # GOT THE PRODUCTS
+                    maxData = json.loads(maxData)["PRODUCTS"]
                     """
                     HUGE DOUBT IF SEND WILL I RECIVE USING RELIABLE RECV
 
@@ -193,7 +194,11 @@ class Gateway():
                     device_ids = list(x)
                     for node in self.CONFIG()["nodes"]:
                         if node["device_id"] in device_ids:
-                            self.mnode.send_command([node["ip"]],  {"COMMAND":"REPLACE","USERID":info["USERID"],"UPDATEDLIST":maxData})
+                            self.mnode.send_command(
+                                [node["ip"]], 
+                                {"COMMAND":"REPLACE","USERID":info["USERID"],
+                                "UPDATEDLIST":maxData, "MAX_PRODUCTID": maxProductid}
+                            )
                             """
                             SENDING A LIST DEPENDS ON IF maxData RECIEVED
                             """

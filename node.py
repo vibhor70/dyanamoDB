@@ -97,19 +97,42 @@ class Node(object):
 
 		
 	def replace(self,criteria):
+    	# VERIFY vibhor
 		User = Query()
 		userid = criteria["USERID"]
-		db.update({'PRODUCTS': criteria["UPDATEDLIST"]}, User.USERID == userid)
+		products = criteria["UPDATEDLIST"]
+		max_product_id = criteria["MAX_PRODUCTID"]
+		user = db.get(User.USERID == userid)
+		if not user:
+			print("No such user exists in replace")
+			return
+		db_products = user["PRODUCTS"]
+
+		change_with = None
+		for i, product in enumerate(products):
+			if product["ID"] == max_product_id:
+				change_with = products[i]
+				break
+
+		if not change_with:
+			return False
+
+		for i, product in enumerate(db_products):
+			if product["ID"] == max_product_id:
+				db_products[i] = change_with
+
+		db.update({'PRODUCTS': db_products}, User.USERID == userid)
 		return True
 
 	def list_all(self, criteria):
 		User = Query()
 		userid = criteria["USERID"]
-		user_products = db.search(User["USERID"] == criteria["USERID"])
+		user_products = db.get(User["USERID"] == criteria["USERID"])
 		if user_products:
 			print(user_products)
 			print(str(user_products[0]["PRODUCTS"]).encode())
-			self.reliable_send(str(user_products[0]["PRODUCTS"]).encode())
+			products = json.dumps({"PRODUCTS": user_products["PRODUCTS"]})
+			self.reliable_send(products.encode())
 		else:
 			self.reliable_send("NO RECORD FOUND".encode())
 
@@ -145,10 +168,19 @@ class Node(object):
 		print("/" + criteria["USERID"] + "/" + criteria["PRODUCTID"],
 			"/" + self.DEVICE + "/" + criteria["USERID"] + "/" + criteria["PRODUCTID"]
 		)
-		query = (User.USERID == criteria["USERID"]) & (User.PRODUCTS.all(Query().ID == criteria["PRODUCTID"]))
+		# query = (User.USERID == criteria["USERID"]) & (User.PRODUCTS.all(Query().ID == criteria["PRODUCTID"]))
+		query = (User.USERID == criteria["USERID"])
+
 		db_user_product = db.get(query)
+
+		up_found = False
+		for db_user_prod in db_user_product:
+			if db_user_prod["ID"] == criteria["PRODUCTID"]:
+				up_found = True
+				break
+
 		print(db_user_product, "user produt in concurrecny query")
-		if not db_user_product: # if product and user id DNE, simply push the 1st operation
+		if not up_found: # if product and user id DNE, simply push the 1st operation
 			path = "/" + criteria["USERID"] + "/" + criteria["PRODUCTID"] + '/' + self.DEVICE 
 			path_rev = "/" + self.DEVICE + "/" +criteria["USERID"] + "/" + criteria["PRODUCTID"]
 			print(path, path_rev)
