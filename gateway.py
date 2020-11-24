@@ -268,8 +268,7 @@ class Gateway():
                 # path = "/" + info["USERID"] + "/" + allInfo[val]["key"] + "/" + allInfo[val]["device"]
                 # path_rev = "/" + allInfo[val]["device"] + "/" + info["userid"] + "/" + allInfo[val]["key"]
                 for node in self.CONFIG["nodes"]:
-                    if node["device_id"] in list(allInfo[val]["device"]):
-                        
+                    if node["device_id"] == allInfo[val]["device"]:
                         self.mnode.send_command([node["ip"]],   
                         {"COMMAND":"DELETE", 
                         "USERID":info["userid"],"PRODUCTID":allInfo[val]["key"]})
