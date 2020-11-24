@@ -21,8 +21,8 @@ gatway = Gateway(gatway_ip)
 # for i in range(5):
 
 data = {
-    "USERID": "user_2",
-    "PRODUCTID": "brush",
+    "USERID": "user_1",
+    "PRODUCTID": "toothpaste",
     "OPERATION": "ADD",
     "PRICE":"4","CATEGORY":"1",
     "COMMAND":"INSERT"
@@ -30,6 +30,15 @@ data = {
 
 gatway.insert(data)
 
+
+data = {
+    "USERID": "user_2",
+    "PRODUCTID": "brush",
+    "OPERATION": "ADD",
+    "PRICE":"4","CATEGORY":"1",
+    "COMMAND":"INSERT"
+}
+gatway.insert(data)
 
 gatway.list_all({
     "USERID": "1"

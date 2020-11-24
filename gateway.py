@@ -19,7 +19,8 @@ import hashlib
 import json
 import threading
 import time
-import os 
+import os
+from kazoo.exceptions import NoNodeError
 from master_node import MasterNode
 
 REPLICATION_COUNT = 2
@@ -116,19 +117,30 @@ class Gateway():
         )
         kmaster.start_client()
         all_user = set()
+        flag = False
+        down_node = []
         for nodes in info["NODES"]:
             path = "/" + nodes
             print(path, "in read_repar")
-            all_child = kmaster.get_children(path)
+            all_child = []
+            try:
+                all_child = kmaster.get_children(path)
+            except NoNodeError as e:
+                # self.create_znode(kmaster, path)
+                print("Node does not exists")
+                kmaster.create(path)
+                flag = True
+                down_node.append(nodes)
+
             for child in all_child:
                 all_user.add(child)
-
         for child in all_user:
-            self.list_all({"USERID":child})
+            self.list_all({"USERID":child}, flag, down_node)
 
         kmaster.stop_client()
-        
-    def list_all(self,info:dict):
+
+
+    def list_all(self,info:dict, flag = False, down_nodes = None):
         """
         dict={
             "userid":username
@@ -144,7 +156,10 @@ class Gateway():
 
         key=""
         maxVersion_replace = []
-        
+        device_ip_map = {}
+        for node in self.CONFIG["nodes"]:
+            device_ip_map[node["device_id"]] = node["ip"]
+
         for i in range(len(to_return)):
             tkey = to_return[i]["key"]
             tdevice = to_return[i]["device"]
@@ -162,6 +177,7 @@ class Gateway():
                 all_dev.append((tdevice,tversion))
                 latest[key]=all_dev
                 # print(latest[key])
+        
 
         for keys in latest:
             max_version=-1
@@ -192,6 +208,7 @@ class Gateway():
                     path_rev = "/" + str(x) + "/" + info["USERID"] + "/"+ str(keys)
                     device_ids = list(x)
                     for node in self.CONFIG["nodes"]:
+                        
                         if node["device_id"] in device_ids:
                             self.mnode.send_command(
                                 [node["ip"]], 
@@ -203,6 +220,23 @@ class Gateway():
                             """
                     kmaster.setVersion(path,max_version)
                     kmaster.setVersion(path_rev,max_version)
+
+
+            if flag == True:
+                for down_node in down_nodes:
+                    kmaster.create("/{}/{}/{}".format(down_node, info["USERID"], keys))
+                    kmaster.create("/{}/{}/{}".format(info["USERID"], keys, down_node))
+                    for d in maxData:
+                        print(d)
+                        # self.mnode.send_command(
+                        #     [device_ip_map["down_node"],], 
+                        #     {"COMMAND":"INSERT","USERID":info["USERID"], 
+                        #     "PRODUCTID": keys,
+                        #     "OPERATIONS":d[0]["OPERATIONS"],
+                        #     "PRICE":d[0]["PRICE"],"CATEGORY":"20"}
+                        # )
+
+            latest_data = kmaster.getmap()
         #TO DO CHANGE DATA NODES ALSO
         latest_data = kmaster.getmap()
         kmaster.stop_client()
