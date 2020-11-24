@@ -126,7 +126,6 @@ class Gateway():
             
             all_child = kmaster.get_children(path)
             
-                # self.create_znode(kmaster, path)
             if all_child == "":
                 print("Node does not exists")
                 kmaster.create(path)
@@ -135,6 +134,8 @@ class Gateway():
             else:
                 for child in all_child:
                     all_user.add(child)
+        
+        print(all_user)
         for child in all_user:
             self.list_all({"USERID":child}, flag, down_node)
 
