@@ -227,6 +227,7 @@ class Node(object):
 			db_user_product[0]["PRODUCTS"][0]['OPERATIONS'].append(
 				{"OPERATION": criteria["OPERATION"], "VERSION_VECTOR": str(version)}
 			)
+			print(db_user_product)
 			db.update(db_user_product)
 			
 
