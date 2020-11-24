@@ -146,7 +146,7 @@ class Node(object):
 			"/" + self.DEVICE + "/" + criteria["USERID"] + "/" + criteria["PRODUCTID"]
 		)
 		query = (User.USERID == criteria["USERID"]) & (User.PRODUCTS.all(Query().ID == criteria["PRODUCTID"]))
-		db_user_product = db.search(query)
+		db_user_product = db.get(query)
 
 		print(db_user_product, "user produt in concurrecny query")
 		if not db_user_product: # if product and user id DNE, simply push the 1st operation
@@ -166,7 +166,7 @@ class Node(object):
 				db.upsert(to_store, query)
 				self.kmaster.setVersion(path, 0)
 		else:
-			version = int(db_user_product[0]["PRODUCTS"][0]['LATEST_VERSION_VECTOR'])
+			version = int(db_user_product["PRODUCTS"][0]['LATEST_VERSION_VECTOR'])
 			# version = to_store[0]['PRODUCT'][-1]
 			# if len(version) > 1:
 			# 	version = int(version[-1][-1])
@@ -183,7 +183,7 @@ class Node(object):
 			if zversion != version:
 				self.reliable_send("CONCURRENT TRANSACTION : ".encode())
 				print("CONCURRENT TRANSACTION")
-				return # handle concurrent
+				# return # handle concurrent
 				# pass
 
 			"""Why more checking?"""			
@@ -222,9 +222,9 @@ class Node(object):
 
 
 			# update lastest version vector 
-			db_user_product[0]["PRODUCTS"][0]['LATEST_VERSION_VECTOR'] = str(version)
+			db_user_product["PRODUCTS"][0]['LATEST_VERSION_VECTOR'] = str(version)
 			## append the operation and update
-			db_user_product[0]["PRODUCTS"][0]['OPERATIONS'].append(
+			db_user_product["PRODUCTS"][0]['OPERATIONS'].append(
 				{"OPERATION": criteria["OPERATION"], "VERSION_VECTOR": str(version)}
 			)
 			print(db_user_product)
