@@ -147,7 +147,6 @@ class Node(object):
 		)
 		query = (User.USERID == criteria["USERID"]) & (User.PRODUCTS.all(Query().ID == criteria["PRODUCTID"]))
 		db_user_product = db.get(query)
-
 		print(db_user_product, "user produt in concurrecny query")
 		if not db_user_product: # if product and user id DNE, simply push the 1st operation
 			path = "/" + criteria["USERID"] + "/" + criteria["PRODUCTID"] + '/' + self.DEVICE 
@@ -161,9 +160,16 @@ class Node(object):
 			else:
 				self.kmaster.create(path)
 				self.kmaster.create(path_rev)
-
+				
 				to_store = self.get_store_dict(criteria, "0")
-				db.upsert(to_store, query)
+				query = (User.USERID == criteria["USERID"])
+				db_user = db.get(query)
+				if db_user:
+					db_user["PRODUCTS"] = to_store["PRODUCTS"]
+					db.update(db_user)
+				else:	
+					db.insert(to_store)
+
 				self.kmaster.setVersion(path, 0)
 		else:
 			version = int(db_user_product["PRODUCTS"][0]['LATEST_VERSION_VECTOR'])
