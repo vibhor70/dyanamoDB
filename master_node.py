@@ -42,7 +42,6 @@ class MasterNode(object):
                 if(not new_recv or len(new_recv.decode()) < 4048 ):
                     cter=False
                     break
-                print(data)
             except ValueError as e:
                 print(e)
                 break

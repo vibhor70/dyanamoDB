@@ -1,12 +1,14 @@
-from kazooMaster import kazooMaster
-import subprocess
 import binascii
 import hashlib
 import json
+import os
+import subprocess
 import threading
 import time
-import os
+
 from kazoo.exceptions import NoNodeError
+
+from kazoo_master import kazooMaster
 from master_node import MasterNode
 
 
@@ -55,7 +57,6 @@ class Gateway():
     def insert(self, data:dict):
 
         device_ids = list(self.run_crush(data["USERID"], data["PRODUCTID"], self.REPLICATION_COUNT))
-        print(device_ids, type(device_ids))
         device_ip_map = {}
         flag=False
         for node in self.CONFIG["nodes"]:
@@ -66,7 +67,6 @@ class Gateway():
                 self.GATEWAY_IP, "p", "", data["USERID"], 
                 data["PRODUCTID"], data["OPERATION"]
             )
-        print(device_ip_map)
 
         kmaster.start_client()
         for did, ip in device_ip_map.items():
@@ -85,12 +85,7 @@ class Gateway():
                 self.Flaged_ip[did]=-1
 
         kmaster.stop_client()    
-        # data["DevID"]=device_ids
-        #run in constructor also add device ids to arguement
         
-#call list_all only when down node comes back
-
-
     def read_repair(self,info:dict):
         """
         dict={
@@ -121,7 +116,6 @@ class Gateway():
                 for child in all_child:
                     all_user.add(child)
         
-        print(all_user)
         for child in all_user:
             self.list_all({"USERID":child}, flag, down_node)
 
@@ -182,16 +176,13 @@ class Gateway():
                     maxDevice = x
                     maxProductid = keys
 
-            print(maxDevice, max_version, maxProductid, "maxdevice, version , maxpid")
             for node in self.CONFIG["nodes"]:
                 if node["device_id"] == maxDevice:
                     self.mnode.send_command([node["ip"]], {"COMMAND":"RETRIEVE","USERID":info["USERID"], "PRODUCTID": maxProductid})
                     target= self.mnode.targets[self.mnode.ips.index(node["ip"])]
                     maxData = self.mnode.reliable_recv(target)
                     # GOT THE PRODUCTS
-                    print(maxData, "maxdata in loop")
                     maxData = json.loads(maxData)["PRODUCT"]
-                    print("maxdata", maxData)
                     """
                     HUGE DOUBT IF SEND WILL I RECIVE USING RELIABLE RECV
 

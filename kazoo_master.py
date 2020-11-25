@@ -1,11 +1,11 @@
-from kazoo.recipe.watchers import DataWatch
+import logging
+
 from kazoo.client import KazooClient
 from kazoo.protocol.states import KazooState
-import logging
+from kazoo.recipe.watchers import DataWatch
 
 
 class kazooMaster(object):
-
     def __init__(self,ip,type_="p",node="",userID="",pid="",operation="",remap=False):
         self.ip = ip
         self.node = node
@@ -91,7 +91,6 @@ class kazooMaster(object):
 
         if self.zk.exists(self.path) !=None:
             val=DataWatch(self.zk,self.path,func=my_func)
-            print(type(val),"VAL:",val)
             if not val:
                 return -1
             while stop > 0:
@@ -137,20 +136,17 @@ class kazooMaster(object):
             subChild = self.zk.get_children(subChildren)
             for val in subChild:
                 path = subChildren+"/"+val
-                print("KEY: ",keys," DEVICES: ",val, "version", self.retrieve(path))
                 to_return.append({
                     "key": keys,
                     "device": val, 
                     "version": self.retrieve(path)
                 })
                 
-
         return to_return
 
     #give only Device Id for remapping
     def reMap(self):
         remap_data=[]
-        print(self.remap)
         if self.remap == True:
             dev_down=self.node
             dev_down = "/"+dev_down
@@ -162,10 +158,10 @@ class kazooMaster(object):
                     remap_data.append((users,items))
                     #TODO:delete user key pairs here
                     print(users,items)
-
-            #print(remap_data)
         else:
             print("REMAP PARAMETER FALSE")
+        
+        return remap_data
         
     def setVersion(self,path,value):
         if self.zk.exists(path) == None:
