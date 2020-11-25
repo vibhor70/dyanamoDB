@@ -43,9 +43,10 @@ class DataNode(object):
 		self.sock.sendall(data)
 
 	def run(self):
+		print(self.IP_CONNECT)
 		while True:
-			logging.info("Listening to device: {} and gateway ip: ".format(self.DEVICE, self.IP_CONNECT))
-			print("Listening to device: {} and gateway ip: ".format(self.DEVICE, self.IP_CONNECT))
+			logging.info("Listening from device: {} and gateway ip: ".format(self.DEVICE, self.IP_CONNECT))
+			print("Listening from device: {} and gateway ip: ".format(self.DEVICE, self.IP_CONNECT))
 			data_recv = self.reliable_recv()
 			if not data_recv:
 				continue
@@ -281,8 +282,8 @@ class DataNode(object):
 			self.sock.close()
 
 
-def run_node_thread(DEVICE, GATWWAY_IP):
-	node = DataNode(DEVICE, GATWWAY_IP)
+def run_node_thread(GATWWAY_IP, DEVICE):
+	node = DataNode(GATWWAY_IP, DEVICE)
 	node.run()
 
 if __name__ == "__main__":
