@@ -1,13 +1,13 @@
 #!/usr/bin/python
 import base64
 import json
+import logging
 import os
 import socket
 import struct
 import subprocess
 import sys
 import threading
-import logging
 
 from tinydb import Query, TinyDB
 from tinydb.operations import delete
@@ -15,12 +15,11 @@ from tinydb.operations import delete
 from gateway import Gateway
 from kazooMaster import kazooMaster
 
-
 db = TinyDB('db/db.json', indent=4, separators=(',', ': '))
 sec_index_db = TinyDB("db/secondary.json", indent=4, separators=(',', ': '))
 logging.basicConfig(filename='logs/node.log', filemode='w', level=logging.INFO)
 
-class Node(object):
+class DataNode(object):
 	def __init__(self, IP_CONNECT, DEVICE):
 		self.DEVICE = DEVICE
 		self.IP_CONNECT = IP_CONNECT
@@ -155,6 +154,7 @@ class Node(object):
 				]
 			}
 
+
 	def deletion(self,criteria):
 		logging.info("In deletion, with data = " + str(criteria))
 		User = Query()
@@ -200,9 +200,26 @@ class Node(object):
 			logging.info("DELETION NOT POSSIBLE, USERID, PRODUCTD DOES NOT FOUND")
 
 
+	def insert_secondary_index(self, criteria):
+		logging.info("Inserting product secondary index for {}".format(str(criteria)))
+		Product = Query()
+		query = (Product.PRODUCTID == criteria["PRODUCTID"])
+		product = db.get(query)
+		if product:
+			product["USERIDS"].append(criteria["USERID"])
+			sec_index_db.update(product)
+		else:
+			sec_index_db.insert({
+				"PRODUCT_ID": criteria["PRODUCTID"],
+				"USERIDS": [criteria["USERID"],]
+			})
+
+
 	def insertion(self, criteria):
 		User = Query()
 		logging.info("In insertion, with data = " + str(criteria))
+
+		self.insert_secondary_index(criteria)
 
 		# query = (User.USERID == criteria["USERID"]) & (User.PRODUCTS.all(Query().ID == criteria["PRODUCTID"]))
 		query = (User.USERID == criteria["USERID"])
@@ -227,7 +244,6 @@ class Node(object):
 				self.kmaster.create(path_rev)
 				
 				to_store = self.get_store_dict(criteria, "0")
-				query = (User.USERID == criteria["USERID"])
 				db_user = db.get(query)
 				if db_user:
 					db_user["PRODUCTS"].append(to_store["PRODUCTS"][0])
@@ -266,7 +282,7 @@ class Node(object):
 
 
 def run_node_thread(DEVICE, GATWWAY_IP):
-	node = Node(DEVICE, GATWWAY_IP)
+	node = DataNode(DEVICE, GATWWAY_IP)
 	node.run()
 
 if __name__ == "__main__":
