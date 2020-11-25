@@ -297,5 +297,5 @@ if __name__ == "__main__":
 		gateway_ips = config["gateway_ips"]
 
 		for gip in gateway_ips:
-			t = threading.Thread(target = run_node_thread, args=(DEVICE, gip))
+			t = threading.Thread(target = run_node_thread, args=(gip, DEVICE))
 			t.start()
