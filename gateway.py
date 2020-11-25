@@ -89,14 +89,15 @@ class Gateway():
                     self.mnode.send_command(device_ip_map[did], data)
             else:
                 flag=False
+                self.update_crush("REMOVE":"IP")
                 #Down update change crush map
-                
+
                 self.Flaged_ip[did]=-1
 
         for dname,val in self.Flaged_ip.items():
             path = "/ephemeral_" + dname
             if kmaster.exist(path) and val == -1:
-                self.Flaged_ip[dname] =0
+                self.update_crush("ADD":"IP")
                 #UP Update update crush
         kmaster.stop_client()    
         
