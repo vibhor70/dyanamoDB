@@ -31,7 +31,7 @@ class ConnectGateway(object):
 
 
 api_sock_server = ConnectGateway()
-GATEWAY_IPS = api_sock_server.get_gateway_socks()
+GATEWAY_IPS = api_sock_server.get_gateway_ips()
 
 app = FastAPI()
 
