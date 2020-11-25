@@ -1,49 +1,55 @@
 #!/usr/bin/python
-import socket
-import subprocess
+import base64
 import json
 import os
-import sys
-import base64
-import threading
-from tinydb import TinyDB, Query
+import socket
 import struct
-from kazooMaster import kazooMaster
-from gateway import Gateway
+import subprocess
+import sys
+import threading
+import logging
+
+from tinydb import Query, TinyDB
 from tinydb.operations import delete
+
+from gateway import Gateway
+from kazooMaster import kazooMaster
 
 
 db = TinyDB('db/db.json', indent=4, separators=(',', ': '))
-
-
-# record = TinyDB("records.json")
-# secondary_index = TinyDB("secondary.json")
-
-# TO DO SET INDIVIDUAL self.DEVICE ID's FOR EACH CONTAINER
-
+sec_index_db = TinyDB("db/secondary.json", indent=4, separators=(',', ': '))
+logging.basicConfig(filename='logs/node.log', filemode='w', level=logging.INFO)
 
 class Node(object):
 	def __init__(self, IP_CONNECT, DEVICE):
 		self.DEVICE = DEVICE
+		self.IP_CONNECT = IP_CONNECT
 		self.sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 		self.sock.connect((IP_CONNECT,54321))
     		
 		self.kmaster = kazooMaster(IP_CONNECT, "p", "", "", "", "")
 		# create ephermeral node
-		self.kmaster.create("/ephemeral_{}".format(DEVICE), "e")
-
+		self.create_ephemeral_node()
 		self.kmaster.start_client()
+		logging.info("Node initialized")
+		
+
+	def create_ephemeral_node(self):
+		try:
+			self.kmaster.create("/ephemeral_{}".format(self.DEVICE), "e")
+		except Exception as e:
+			logging.error("Error in creating ephermeral node" + str(e))
 
 	def reliable_send(self, data):
 		self.sock.sendall(data)
 
 	def run(self):
 		while True:
-			print("Listening")
+			logging.info("Listening to device: {} and gateway ip: ".format(self.DEVICE, self.IP_CONNECT))
+			print("Listening to device: {} and gateway ip: ".format(self.DEVICE, self.IP_CONNECT))
 			data_recv = self.reliable_recv()
 			if not data_recv:
 				continue
-			
 
 	def recvall(self, n):
 		# Helper function to recv n bytes or return None if EOF is hit
@@ -64,11 +70,10 @@ class Node(object):
 		#print(data.decode())
 		criteria = data.decode()
 		criteria = json.loads(criteria)
-		print(criteria)
 		self.run_command(criteria)
 
 	def run_command(self, criteria):
-		print(criteria)
+		logging.info("In run command, with data = " + str(criteria))
 		if criteria["COMMAND"] == "INSERT":
 			self.insertion(criteria)
 		elif criteria["COMMAND"] == "RETRIEVE":
@@ -77,12 +82,12 @@ class Node(object):
 			self.replace(criteria)
 		elif criteria["COMMAND"] == "DELETE":
 			self.deletion(criteria)
+		else:
+			logging.info("No command found")
 
-
-		
 	def replace(self,criteria):
     	# VERIFY vibhor
-		print(criteria, "IN REPLACE")
+		logging.info("In replace, with data = " + str(criteria))
 		User = Query()
 		userid = criteria["USERID"]
 		updaed_products = criteria["UPDATEDLIST"]
@@ -95,41 +100,35 @@ class Node(object):
 				"PRODUCTS": [criteria,]
 			}
 			db.insert(data)
-			print("No such user exists in replace")
+			logging.info("No such user exists in replace")
 			return
-		db_products = user["PRODUCTS"]
-		print(db_products, "ORIGNAL db products")
 
+		db_products = user["PRODUCTS"]
 		change_with = None
 		for i, product in enumerate(updaed_products):
 			if product["ID"] == max_product_id:
 				change_with = updaed_products[i]
 				break
-		print("CHANGE WITH", change_with)
-		if not change_with:
-			return False
+
+		if not change_with:	return False
 
 		for i, product in enumerate(db_products):
 			if product["ID"] == max_product_id:
 				db_products[i] = change_with
-				print(db_products[i])
 				break
 
-		print(db_products, "new db products")	
 		db.update({'PRODUCTS': db_products}, User.USERID == userid)
 		return True
 
 	def list_all(self, criteria):
+		logging.info("In list_all, with data = " + str(criteria))
 		User = Query()
 		userid = criteria["USERID"]
 		user_products = db.get(User["USERID"] == criteria["USERID"])
 		productID = criteria["PRODUCTID"]
 		for product in user_products["PRODUCTS"]:
 			if productID  == product["ID"]:
-				# print(user_products)
-				# print(str(user_products["PRODUCTS"]).encode())
 				products = json.dumps({"PRODUCT":product})
-				print(products, "in list_all")
 				self.reliable_send(products.encode())
 			else:
 				products = json.dumps({"PRODUCT":{}})
@@ -156,11 +155,9 @@ class Node(object):
 				]
 			}
 
-
-
 	def deletion(self,criteria):
+		logging.info("In deletion, with data = " + str(criteria))
 		User = Query()
-		print("IN DELETION")
 		# query = (User.USERID == criteria["USERID"]) & (User.PRODUCTS.all(Query().ID == criteria["PRODUCTID"]))
 		query = (User.USERID == criteria["USERID"])
 		db_user_product = db.get(query)
@@ -181,12 +178,10 @@ class Node(object):
 					version = int(db_user_product["PRODUCTS"][i]['LATEST_VERSION_VECTOR'])
 
 			zversion = int(self.kmaster.retrieve(path))
-			print(zversion, "zversion", type(zversion))
-			print(version, "version", type(version))
 			
 			version = version + 1
 			if zversion != version:
-				print("CONCURRENT TRANSACTION in node")
+				logging.info("CONCURRENT TRANSACTION in node")
 
 			self.kmaster.setVersion(path, version)
 			self.kmaster.setVersion(path_rev, version)
@@ -202,18 +197,15 @@ class Node(object):
 			db.update(db_user_product)
 		
 		else:
-			print("DELETION NOT POSSIBLE, USERID, PRODUCTD DOES NOT FOUND")
+			logging.info("DELETION NOT POSSIBLE, USERID, PRODUCTD DOES NOT FOUND")
 
 
 	def insertion(self, criteria):
 		User = Query()
-		print("IN insertion")
-		print("/" + criteria["USERID"] + "/" + criteria["PRODUCTID"],
-			"/" + self.DEVICE + "/" + criteria["USERID"] + "/" + criteria["PRODUCTID"]
-		)
+		logging.info("In insertion, with data = " + str(criteria))
+
 		# query = (User.USERID == criteria["USERID"]) & (User.PRODUCTS.all(Query().ID == criteria["PRODUCTID"]))
 		query = (User.USERID == criteria["USERID"])
-
 		db_user_product = db.get(query)
 
 		up_found = False
@@ -223,14 +215,11 @@ class Node(object):
 					up_found = True
 					break
 
-		# print(db_user_product, "user produt in concurrecny query")
-		if not up_found: # if product and user id DNE, simply push the 1st operation
-			path = "/" + criteria["USERID"] + "/" + criteria["PRODUCTID"] + '/' + self.DEVICE 
-			path_rev = "/" + self.DEVICE + "/" +criteria["USERID"] + "/" + criteria["PRODUCTID"]
-			# print(path, path_rev)
+		path = "/" + criteria["USERID"] + "/" + criteria["PRODUCTID"] + '/' + self.DEVICE 
+		path_rev = "/" + self.DEVICE + "/" +criteria["USERID"] + "/" + criteria["PRODUCTID"]
 
+		if not up_found: # if product and user id DNE, simply push the 1st operation
 			if self.kmaster.exist("path"):
-				# pass
 				gateway = Gateway()
 				gateway.read_repair({"NODES":[self.DEVICE,]})
 			else:
@@ -241,11 +230,9 @@ class Node(object):
 				query = (User.USERID == criteria["USERID"])
 				db_user = db.get(query)
 				if db_user:
-					print("db user found, not product")
 					db_user["PRODUCTS"].append(to_store["PRODUCTS"][0])
 					db.update(db_user)
 				else:	
-					print("db user not found")
 					db.insert(to_store)
 
 				self.kmaster.setVersion(path, 0)
@@ -254,44 +241,14 @@ class Node(object):
 				if product["ID"] == criteria["PRODUCTID"]:
 					version = int(db_user_product["PRODUCTS"][i]['LATEST_VERSION_VECTOR'])
 
-			# version = to_store[0]['PRODUCT'][-1]
-			# if len(version) > 1:
-			# 	version = int(version[-1][-1])
-			# else:
-			# 	version =int(version[-1])
-
-			path = "/" +criteria["USERID"]+ "/"+ criteria["PRODUCTID"] + "/" + self.DEVICE
-			path_rev = "/" + self.DEVICE + "/" + criteria["USERID"]+ "/"+ criteria["PRODUCTID"] 
 			zversion = int(self.kmaster.retrieve(path))
-			print(zversion, "zversion", type(zversion))
-			print(version, "version", type(version))
-			
 			version = version + 1
 			if zversion != version:
-				# self.reliable_send("CONCURRENT TRANSACTION : ".encode())
-				print("CONCURRENT TRANSACTION in node")
-				# return # handle concurrent
-				# pass
-
-			"""Why more checking?"""			
-			# to_store = db.search(User["USERID"] == criteria["USERID"])
-			# dbversion = to_store[0]['PRODUCT'][-1]
-
-
-			# if len(dbversion) > 1:
-			# 	dbversion = dbversion[-1][-1]
-			# else:
-			# 	dbversion = dbversion[-1]
-
-			# if dbversion  == version :
-			# 	print("CONCURRENT")
-			# 	self.reliable_send("CONCURRENT TRANSACTION : ".encode())
-			
+				logging.info("CONCURRENT TRANSACTION in node")
 
 			self.kmaster.setVersion(path, version)
 			self.kmaster.setVersion(path_rev, version)
 			# update lastest version vector 
-			print("db user and db product both found")
 			for i, product in enumerate(db_user_product["PRODUCTS"]):
 				if product["ID"] == criteria["PRODUCTID"]:
 					db_user_product["PRODUCTS"][i]['LATEST_VERSION_VECTOR'] = str(version)
@@ -301,60 +258,27 @@ class Node(object):
 					)
 					break
 			db.update(db_user_product)
-			
 
-		"""
-		implement concurrency here
-		read from saved file version number and than from zookeeper if fault tell client
-		"""
-		#print(criteria["DevID"])
-		# for val in criteria["DevID"]:
-		# 	self.kmaster = kazooMaster(
-		# 				"172.17.0.3", "p", val, criteria["userid"], 
-		# 				criteria["productid"], criteria["operation"]
-		# 			)
-		# 	self.kmaster.start_client()
-		# 	#         
-		# 	#use version vectors for concurrency
-		# 	if self.kmaster 
 		return True
-
 
 		def __del__(self):
 			self.sock.close()
 
 
-def run_node():
-	if len(sys.argv) != 3:
-		print("Please provide <IP> <DEVICE name>")
-		sys.exit(-1)
-	IP_CONNECT = sys.argv[1]
-	DEVICE = sys.argv[2]
-	node = Node(IP_CONNECT, DEVICE)
+def run_node_thread(DEVICE, GATWWAY_IP):
+	node = Node(DEVICE, GATWWAY_IP)
 	node.run()
 
 if __name__ == "__main__":
-	run_node()
+	if len(sys.argv) != 2:
+		print("Please provide <DEVICE name>")
+		sys.exit(-1)
 
+	DEVICE = sys.argv[1]
+	with open("./config/config.json") as f:
+		config = f.read()
+		gateway_ips = config["gateway_ips"]
 
-
-
-# [
-# 	{
-# 	"USER": "USER1"
-# 	"PRODUCTS": [
-# 		"P1":[
-# 		 {
-# 			"HISTORY":[
-# 				{"OPERATION": "ADD", VERSION_VEC: 1},
-# 				{"OPERATION": "ADD", VERSION_VEC: 2},
-# 				{"OPERATION": "ADD", VERSION_VEC: 3},
-# 				{"OPERATION": "ADD", VERSION_VEC: 5},
-# 				{"OPERATION": "ADD", VERSION_VEC: 4},
-# 				{"OPERATION": "DELETION", VERSION_VEC: 6},
-# 			],
-# 			"LATEST_VERSION_VEC": 6
-# 		},
-# 	],
-# 	},
-# ]
+		for gip in gateway_ips:
+			t = threading.Thread(target = run_node_thread, args=(DEVICE, gip))
+			t.start()
