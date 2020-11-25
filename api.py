@@ -11,22 +11,33 @@ import threading
 class ConnectGateway(object):
     def __init__(self):
         self.GATEWAY_IPS = self.get_config()["gateway_ips"]
-        self.GATEWAY_INSTANCES = []
+        self.GATEWAY_SOCKS = []
 
-    def get_config(self):
+    @staticmethod
+    def get_config():
         with open("./config/config.json") as fin:
             return json.loads(fin.read())
 
     def run(self):
         for gip in GATEWAY_IPS:
             # ginstance
-            GATEWAY_INSTANCES.append(gip)
-            gnode = SocketServer(gip)
-            t = threading.Thread(target = self.run_mmnode_thread)
+            gnode_sock = SocketServer(gip)
+            self.GATEWAY_SOCKS.append(gnode_sock)
+            t = threading.Thread(target = self.run_mmnode_thread, args=(gnode_sock))
             t.start()
 
-    def run_mmnode_thread(self):
-        self.mnode.connection_accept()
+    @staticmethod
+    def run_mmnode_thread(gnode_sock):
+        gnode_sock.connection_accept()
+
+    def get_gateway_socks(self):
+        return self.GATEWAY_SOCKS
+
+
+
+gateways = ConnectGateway()
+gateways.run()
+GSOCKS = gateways.get_gateway_socks()
 
 app = FastAPI()
 
@@ -35,8 +46,11 @@ class ListAllQuery(BaseModel):
 
 @app.get("/api/list_all")
 async def list_all(query: ListAllQuery):
-    gatway = Gateway(GATEWAY_IPS[0])
-    res = gatway.list_all({"USERID": query["userid"]})
+    GSOCK = random.choice(GSOCKS)
+    res = GSOCK.send_command({
+        "USERID": query["userid"],
+        "COMMAND": "LIST_ALL"
+    })
     return {"response": res}
 
 class InsertQuery(BaseModel):
@@ -48,7 +62,7 @@ class InsertQuery(BaseModel):
 
 @app.get("/api/insert")
 async def insertion_api(query: InsertQuery):
-    gatway = Gateway(GATEWAY_IPS[0])
+    GSOCK = random.choice(GSOCKS)
     data = {
         "USERID": query["userid"],
         "PRODUCTID": query["productid"],
@@ -57,9 +71,8 @@ async def insertion_api(query: InsertQuery):
         "CATEGORY":query["category"],
         "COMMAND":"INSERT"
     }
-    gatway.insert(data)
+    GSOCK.send_command(data)
     return {"response": "Added to cart"}
-
 
 class DeletionQuery(BaseModel):
     userid: str
@@ -67,11 +80,11 @@ class DeletionQuery(BaseModel):
 
 @app.get("/api/delete")
 async def deletion_api(query: DeletionQuery):
-    gatway = Gateway(GATEWAY_IPS[0])
+    GSOCK = random.choice(GSOCKS)
     data = {
         "USERID": query["userid"],
         "PRODUCTID": query["productid"],
         "COMMAND":"DELETION"
     }
-    gatway.delete(data)
+    GSOCK.send_command(data)
     return {"response": "Deleted from cart"}
