@@ -19,7 +19,7 @@ class ConnectGateway(object):
             return json.loads(fin.read())
 
     def run(self):
-        for gip in GATEWAY_IPS:
+        for gip in self.GATEWAY_IPS:
             # ginstance
             gnode_sock = SocketServer(gip)
             self.GATEWAY_SOCKS.append(gnode_sock)

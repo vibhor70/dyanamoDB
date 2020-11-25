@@ -3,10 +3,10 @@ import struct
 import json
 
 class GatewayClient(object):
-    def __init__(self, gateway_ip):
-        self.gateway_instance = Gateway(gateway_ip)
+	def __init__(self, gateway_ip):
+		self.gateway_instance = Gateway(gateway_ip)
 
-    def recvall(self, n):
+	def recvall(self, n):
 		data = bytearray()
 		while len(data) < n:
 			packet = self.sock.recv(n - len(data))
@@ -15,7 +15,7 @@ class GatewayClient(object):
 			data.extend(packet)
 		return data
 
-    def reliable_recv(self):
+	def reliable_recv(self):
 		raw_msglen = self.recvall(4)
 		if not raw_msglen:
 			return None
@@ -26,10 +26,10 @@ class GatewayClient(object):
 		criteria = json.loads(criteria)
 		self.run_command(criteria)
 
-    def run_command(self, criteria):
-        if criteria["COMMAND"] == "INSERT":
-            self.gateway_instance.insert(criteria)
-        if criteria["COMMAND"] == "LIST_ALL":
-            self.gateway_instance.list_all(criteria)
-        if criteria["COMMAND"] == "DELETE":
-            self.gateway_instance.delete(criteria)
+	def run_command(self, criteria):
+		if criteria["COMMAND"] == "INSERT":
+			self.gateway_instance.insert(criteria)
+		if criteria["COMMAND"] == "LIST_ALL":
+			self.gateway_instance.list_all(criteria)
+		if criteria["COMMAND"] == "DELETE":
+			self.gateway_instance.delete(criteria)
