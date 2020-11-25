@@ -129,6 +129,9 @@ class DataNode(object):
 		User = Query()
 		userid = criteria["USERID"]
 		user_products = db.get(User["USERID"] == criteria["USERID"])
+		if not user_products:
+			products = json.dumps({"PRODUCT":{}})	
+			self.reliable_send(products.encode())
 		productID = criteria["PRODUCTID"]
 		for product in user_products["PRODUCTS"]:
 			if productID  == product["ID"]:
@@ -210,14 +213,15 @@ class DataNode(object):
 		Product = Query()
 		query = (Product.CATEGORY == criteria["CATEGORY"])
 		product = db.get(query)
+		print(product)
 		if product:
-			product["CATEGORY"].append(criteria["USERID"])
+			product[criteria["CATEGORY"]].append(criteria["USERID"])
 			sec_index_db.update(product)
 		else:
 			sec_index_db.insert({
-				"CATEGORY": [criteria["USERID"]]
-				
+				criteria["CATEGORY"]: [criteria["USERID"]]
 			})
+			
 	def list_category(self,criteria):
 		logging.info("Extracting product secondary index for {}".format(str(criteria)))
 		Product = Query()
