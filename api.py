@@ -29,9 +29,12 @@ class ConnectGateway(object):
     def get_gateway_ips(self):
         return self.GATEWAY_IPS
 
+    def get_sock(self):
+        return self.APISOCK
 
 api_sock_server = ConnectGateway()
 GATEWAY_IPS = api_sock_server.get_gateway_ips()
+APISOCK = api_sock_server.get_sock()
 
 app = FastAPI()
 
@@ -52,7 +55,7 @@ class DeletionQuery(BaseModel):
 @app.post("/api/list_all")
 async def list_all(query: ListAllQuery):
     GIP = random.choice(GATEWAY_IPS)
-    res = api_sock_server.send_command(
+    res = APISOCK.send_command(
         [GIP,],
         {"USERID": query["userid"], "COMMAND": "LIST_ALL"}
     )
@@ -69,7 +72,7 @@ async def insertion_api(query: InsertQuery):
         "CATEGORY":query["category"],
         "COMMAND":"INSERT"
     }
-    api_sock_server.send_command([GIP,], data)
+    APISOCK.send_command([GIP,], data)
     return {"response": "Added to cart"}
 
 
@@ -81,5 +84,5 @@ async def deletion_api(query: DeletionQuery):
         "PRODUCTID": query["productid"],
         "COMMAND":"DELETION"
     }
-    api_sock_server.send_command([GIP,], data)
+    APISOCK.send_command([GIP,], data)
     return {"response": "Deleted from cart"}
