@@ -61,6 +61,7 @@ class Gateway():
 
     def insert(self, data:dict):
         device_ids = list(self.run_crush(data["USERID"], data["PRODUCTID"], self.REPLICATION_COUNT))
+
         device_ip_map = {}
         flag=False
         for node in self.CONFIG["nodes"]:
@@ -71,12 +72,14 @@ class Gateway():
                 self.GATEWAY_IP, "p", "", data["USERID"], 
                 data["PRODUCTID"], data["OPERATION"]
             )
+        
 
         kmaster.start_client()
         for did, ip in device_ip_map.items():
             path = "/ephemeral_" + did
             if kmaster.exist(path):
                 if did in self.Flaged_ip.keys() and self.Flaged_ip[did] == -1:
+                    #
                     self.mnode.send_command(device_ip_map[did], data)
                     self.read_repair({"NODES":device_ids})
                     #DO READ REPAIR WHEN DOWN NODE COMES BACK
@@ -86,8 +89,15 @@ class Gateway():
                     self.mnode.send_command(device_ip_map[did], data)
             else:
                 flag=False
+                #Down update change crush map
+                
                 self.Flaged_ip[did]=-1
 
+        for dname,val in self.Flaged_ip.items():
+            path = "/ephemeral_" + dname
+            if kmaster.exist(path) and val == -1:
+                self.Flaged_ip[dname] =0
+                #UP Update update crush
         kmaster.stop_client()    
         
     def read_repair(self,info:dict):
@@ -293,7 +303,7 @@ class Gateway():
         """
         val = self.get_crush()
         all_category_info = []
-        for value in len(val["trees"][0]["children"]):
+        for value in range(len(val["trees"][0]["children"])):
             name = val["trees"][0]["children"][value]["children"][0]["name"]
             for node in self.CONFIG["nodes"]:
                 if node["device_id"] == name:
