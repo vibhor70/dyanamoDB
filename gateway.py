@@ -16,7 +16,7 @@ class Gateway():
     def __init__(self, gateway_ip):
         self.Flaged_ip=dict()
         self.CONFIG = self.get_config()
-        self.REPLICATION_COUNT = CONFIG["REPLICATION_COUNT"]
+        self.REPLICATION_COUNT = self.CONFIG["REPLICATION_COUNT"]
         self.GATEWAY_IP = gateway_ip
         self.mnode = SocketServer(gateway_ip)
         t = threading.Thread(target = self.run_mmnode_thread)
