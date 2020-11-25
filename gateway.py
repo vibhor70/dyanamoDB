@@ -51,11 +51,11 @@ class Gateway():
         device_ids = stdout_value[0].decode()
 
         device_ids = [str(devid).strip() for devid in device_ids.split("\n") if len(devid) > 0]
+        print(device_ids)
         return device_ids
 
 
     def insert(self, data:dict):
-
         device_ids = list(self.run_crush(data["USERID"], data["PRODUCTID"], self.REPLICATION_COUNT))
         device_ip_map = {}
         flag=False
