@@ -73,7 +73,7 @@ async def list_category(query: ListCategoryQuery):
     GIP = random.choice(GATEWAY_IPS)
     APISOCK.send_command(
         [GIP,],
-        {"USERID": query.userid, "COMMAND": "LIST_CATEGORY"}
+        {"CATEGORY": query.category, "COMMAND": "LIST_CATEGORY"}
     )
     target = APISOCK.targets[APISOCK.ips.index(GIP)]
     res = APISOCK.reliable_recv(target)
