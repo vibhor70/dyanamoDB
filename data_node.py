@@ -13,7 +13,7 @@ from tinydb import Query, TinyDB
 from tinydb.operations import delete
 
 from gateway import Gateway
-from kazooMaster import kazooMaster
+from kazoo_master import kazooMaster
 
 db = TinyDB('db/db.json', indent=4, separators=(',', ': '))
 sec_index_db = TinyDB("db/secondary.json", indent=4, separators=(',', ': '))
@@ -293,6 +293,7 @@ if __name__ == "__main__":
 	DEVICE = sys.argv[1]
 	with open("./config/config.json") as f:
 		config = f.read()
+		config = json.loads(config)
 		gateway_ips = config["gateway_ips"]
 
 		for gip in gateway_ips:
