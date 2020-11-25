@@ -57,7 +57,7 @@ async def list_all(query: ListAllQuery):
     GIP = random.choice(GATEWAY_IPS)
     res = APISOCK.send_command(
         [GIP,],
-        {"USERID": query["userid"], "COMMAND": "LIST_ALL"}
+        {"USERID": query.userid, "COMMAND": "LIST_ALL"}
     )
     return {"response": res}
 
@@ -65,11 +65,11 @@ async def list_all(query: ListAllQuery):
 async def insertion_api(query: InsertQuery):
     GIP = random.choice(GATEWAY_IPS)
     data = {
-        "USERID": query["userid"],
-        "PRODUCTID": query["productid"],
-        "OPERATION": query["operation"],
-        "PRICE":query["price"],
-        "CATEGORY":query["category"],
+        "USERID": query.userid,
+        "PRODUCTID": query.productid,
+        "OPERATION": query.operation,
+        "PRICE":query.price,
+        "CATEGORY":query.category,
         "COMMAND":"INSERT"
     }
     APISOCK.send_command([GIP,], data)
@@ -80,8 +80,8 @@ async def insertion_api(query: InsertQuery):
 async def deletion_api(query: DeletionQuery):
     GIP = random.choice(GATEWAY_IPS)
     data = {
-        "USERID": query["userid"],
-        "PRODUCTID": query["productid"],
+        "USERID": query.userid,
+        "PRODUCTID": query.productid,
         "COMMAND":"DELETION"
     }
     APISOCK.send_command([GIP,], data)
