@@ -129,17 +129,20 @@ class DataNode(object):
 		User = Query()
 		userid = criteria["USERID"]
 		user_products = db.get(User["USERID"] == criteria["USERID"])
+		print(user_products)
 		if not user_products:
 			products = json.dumps({"PRODUCT":{}})	
 			self.reliable_send(products.encode())
 		productID = criteria["PRODUCTID"]
+		
 		for product in user_products["PRODUCTS"]:
 			if productID  == product["ID"]:
 				products = json.dumps({"PRODUCT":product})
 				self.reliable_send(products.encode())
-			else:
-				products = json.dumps({"PRODUCT":{}})
-				self.reliable_send(products.encode())
+				return
+
+		products = json.dumps({"PRODUCT":{}})
+		self.reliable_send(products.encode())
 
 	@staticmethod
 	def get_store_dict(criteria, version):

@@ -318,7 +318,7 @@ class Gateway():
         all_category_info = []
         device_ip_map = self.get_device_ip_map()
 
-        for value in len(val["trees"][0]["children"]):
+        for value in range(len(val["trees"][0]["children"])):
             name = val["trees"][0]["children"][value]["children"][0]["name"]
             # for node in self.CONFIG["nodes"]:
             self.mnode.send_command( [device_ip_map[name], ],   
