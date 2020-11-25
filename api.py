@@ -49,7 +49,7 @@ class DeletionQuery(BaseModel):
     userid: str
     productid: str
 
-@app.get("/api/list_all")
+@app.post("/api/list_all")
 async def list_all(query: ListAllQuery):
     GIP = random.choice(GATEWAY_IPS)
     res = api_sock_server.send_command(
@@ -58,7 +58,7 @@ async def list_all(query: ListAllQuery):
     )
     return {"response": res}
 
-@app.get("/api/insert")
+@app.post("/api/insert")
 async def insertion_api(query: InsertQuery):
     GIP = random.choice(GATEWAY_IPS)
     data = {
@@ -73,7 +73,7 @@ async def insertion_api(query: InsertQuery):
     return {"response": "Added to cart"}
 
 
-@app.get("/api/delete")
+@app.post("/api/delete")
 async def deletion_api(query: DeletionQuery):
     GIP = random.choice(GATEWAY_IPS)
     data = {
