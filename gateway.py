@@ -125,6 +125,12 @@ class Gateway():
 
         kmaster.stop_client()
 
+    def get_device_ip_map(self):
+        device_ip_map = {}
+        for node in self.CONFIG["nodes"]:
+            device_ip_map[node["device_id"]] = node["ip"]
+
+        return device_ip_map
 
     def list_all(self,info:dict, flag = False, down_nodes = None):
         """
@@ -144,9 +150,8 @@ class Gateway():
 
         key=""
         maxVersion_replace = []
-        device_ip_map = {}
-        for node in self.CONFIG["nodes"]:
-            device_ip_map[node["device_id"]] = node["ip"]
+
+        device_ip_map = self.device_ip_map()
 
         for i in range(len(to_return)):
             tkey = to_return[i]["key"]
@@ -293,18 +298,18 @@ class Gateway():
         """
         val = self.get_crush()
         all_category_info = []
+        device_ip_map = self.get_device_ip_map()
+
         for value in len(val["trees"][0]["children"]):
             name = val["trees"][0]["children"][value]["children"][0]["name"]
-            for node in self.CONFIG["nodes"]:
-                if node["device_id"] == name:
-                    self.mnode.send_command([node["ip"]],   
-                        {"COMMAND":"LISTCATEGORY",
-                        "CATEGORY":info["CATEGORY"]
-                        })
+            # for node in self.CONFIG["nodes"]:
+            self.mnode.send_command( [device_ip_map[name], ],   
+                {"COMMAND":"LISTCATEGORY",
+                "CATEGORY":info["CATEGORY"]
+                })
+            target= self.mnode.targets[self.mnode.ips.index(device_ip_map[name])]
+            temp = self.mnode.reliable_recv(target)
+            temp = json.loads(temp)
+            all_category_info.append(temp)
 
-                    
-                    target= self.mnode.targets[self.mnode.ips.index(node["ip"])]
-                    temp = self.mnode.reliable_recv(target)
-                    temp = json.loads(temp)
-                    all_category_info.append(temp)
-     
+        return all_category_info

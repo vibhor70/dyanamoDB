@@ -41,6 +41,9 @@ app = FastAPI()
 class ListAllQuery(BaseModel):
     userid: str
 
+class ListCategory(BaseModel):
+    category: str
+
 class InsertQuery(BaseModel):
     userid: str
     productid: str
@@ -62,6 +65,21 @@ async def list_all(query: ListAllQuery):
     res = APISOCK.reliable_recv(target)
     res = json.loads(res)
     return {"response": res["data"]}
+
+
+@app.post("/api/list_catgory")
+async def list_all(query: ListCategory):
+    GIP = random.choice(GATEWAY_IPS)
+    APISOCK.send_command(
+        [GIP,],
+        {"USERID": query.userid, "COMMAND": "LIST_CATEGORY"}
+    )
+    target = APISOCK.targets[APISOCK.ips.index(GIP)]
+    res = APISOCK.reliable_recv(target)
+    res = json.loads(res)
+    return {"response": res["data"]}
+
+
 
 @app.post("/api/insert")
 async def insertion_api(query: InsertQuery):
