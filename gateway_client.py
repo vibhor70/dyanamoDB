@@ -51,5 +51,10 @@ class GatewayClient(object):
 			self.gateway_instance.delete(criteria)
 
 if __name__ == "__main__":
-	g = GatewayClient()
+	import sys
+	if len(sys.argv) != 2:
+		print("Gateway IP required")
+		sys.exit(-1)
+
+	g = GatewayClient(sys.argv[1])
 	g.run()

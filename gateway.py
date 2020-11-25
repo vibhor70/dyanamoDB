@@ -254,12 +254,5 @@ class Gateway():
 
         # kmaster.stop_client()
          
-if __name__ == "__main__":
-    import sys
 
-    if len(sys.argv) != 2:
-        print("Gateway ip dedo bhai")
-        sys.exit(-1)
-
-    w = Gateway(sys.argv[1])
    
