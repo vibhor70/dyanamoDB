@@ -74,6 +74,7 @@ class DataNode(object):
 
 	def run_command(self, criteria):
 		logging.info("In run command, with data = " + str(criteria))
+		print("run command", criteria)
 		if criteria["COMMAND"] == "INSERT":
 			self.insertion(criteria)
 		elif criteria["COMMAND"] == "RETRIEVE":
