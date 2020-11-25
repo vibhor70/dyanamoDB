@@ -77,12 +77,15 @@ class DataNode(object):
 		print("run command", criteria)
 		if criteria["COMMAND"] == "INSERT":
 			self.insertion(criteria)
+			self.insert_secondary_index(criteria)
 		elif criteria["COMMAND"] == "RETRIEVE":
 			self.list_all(criteria)
 		elif criteria["COMMAND"] == "REPLACE":
 			self.replace(criteria)
 		elif criteria["COMMAND"] == "DELETE":
 			self.deletion(criteria)
+		elif criteria["COMMAND"] == "LISTCATEGORY":
+			self.list_category(criteria)
 		else:
 			logging.info("No command found")
 
@@ -205,16 +208,24 @@ class DataNode(object):
 	def insert_secondary_index(self, criteria):
 		logging.info("Inserting product secondary index for {}".format(str(criteria)))
 		Product = Query()
-		query = (Product.PRODUCTID == criteria["PRODUCTID"])
+		query = (Product.CATEGORY == criteria["CATEGORY"])
 		product = db.get(query)
 		if product:
-			product["USERIDS"].append(criteria["USERID"])
+			product["CATEGORY"].append(criteria["USERID"])
 			sec_index_db.update(product)
 		else:
 			sec_index_db.insert({
-				"PRODUCT_ID": criteria["PRODUCTID"],
-				"USERIDS": [criteria["USERID"],]
+				"CATEGORY": [criteria["USERID"]]
+				
 			})
+	def list_category(self,criteria):
+		logging.info("Extracting product secondary index for {}".format(str(criteria)))
+		Product = Query()
+		query = (Product.CATEGORY == criteria["CATEGORY"])
+		product = db.get(query)
+		if product:
+			products = json.dumps({"PRODUCT":product})
+			self.reliable_send(products.encode())
 
 
 	def insertion(self, criteria):

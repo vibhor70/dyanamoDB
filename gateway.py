@@ -30,6 +30,10 @@ class Gateway():
         with open("./config/config.json") as fin:
             return json.loads(fin.read())
 
+    def get_crush(self):
+        with open("./config/crushmap.json") as fin:
+            return json.loads(fin.read())
+
     @staticmethod
     def create_hash(user_id:str, pid:str):
         m = hashlib.sha1()
@@ -254,5 +258,32 @@ class Gateway():
 
         # kmaster.stop_client()
          
+    def list_category(self,info:dict):
+        """
+        {
+        Find all the alive nodes and take secondary indexes from them
+        }
+        dict = {
+            info={
+                "CATEGORY":CATEGORY_NUMBER
+            }
+        }
+        }
+        """
+        val = self.get_crush()
+        all_category_info = []
+        for value in len(val["trees"][0]["children"]):
+            name = val["trees"][0]["children"][value]["children"][0]["name"]
+            for node in self.CONFIG["nodes"]:
+                if node["device_id"] == name:
+                    self.mnode.send_command([node["ip"]],   
+                        {"COMMAND":"LISTCATEGORY",
+                        "CATEGORY":info["CATEGORY"]
+                        })
 
-   
+                    
+                    target= self.mnode.targets[self.mnode.ips.index(node["ip"])]
+                    temp = self.mnode.reliable_recv(target)
+                    temp = json.loads(temp)
+                    all_category_info.append(temp)
+     
