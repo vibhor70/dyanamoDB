@@ -41,7 +41,7 @@ app = FastAPI()
 class ListAllQuery(BaseModel):
     userid: str
 
-class ListCategory(BaseModel):
+class ListCategoryQuery(BaseModel):
     category: str
 
 class InsertQuery(BaseModel):
@@ -62,13 +62,14 @@ async def list_all(query: ListAllQuery):
         {"USERID": query.userid, "COMMAND": "LIST_ALL"}
     )
     target = APISOCK.targets[APISOCK.ips.index(GIP)]
+    print(target)
     res = APISOCK.reliable_recv(target)
     res = json.loads(res)
     return {"response": res["data"]}
 
 
-@app.post("/api/list_catgory")
-async def list_all(query: ListCategory):
+@app.post("/api/list_category")
+async def list_category(query: ListCategoryQuery):
     GIP = random.choice(GATEWAY_IPS)
     APISOCK.send_command(
         [GIP,],
@@ -82,7 +83,7 @@ async def list_all(query: ListCategory):
 
 
 @app.post("/api/insert")
-async def insertion_api(query: InsertQuery):
+async def insert_api(query: InsertQuery):
     GIP = random.choice(GATEWAY_IPS)
     data = {
         "USERID": query.userid,
@@ -97,7 +98,7 @@ async def insertion_api(query: InsertQuery):
 
 
 @app.post("/api/delete")
-async def deletion_api(query: DeletionQuery):
+async def delete_api(query: DeletionQuery):
     GIP = random.choice(GATEWAY_IPS)
     data = {
         "USERID": query.userid,

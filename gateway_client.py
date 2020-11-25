@@ -52,6 +52,7 @@ class GatewayClient(object):
     		# list all the products of all the user 
 			# from wherever the products are present
 			res = self.gateway_instance.list_all_products(criteria)
+			print(res, "LISTALL in gateway client")
 			products = json.dumps({"data":res})
 			self.reliable_send(products.encode())
 

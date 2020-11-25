@@ -175,7 +175,7 @@ class Gateway():
         key=""
         maxVersion_replace = []
 
-        device_ip_map = self.device_ip_map()
+        device_ip_map = self.get_device_ip_map()
 
         for i in range(len(to_return)):
             tkey = to_return[i]["key"]

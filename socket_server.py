@@ -41,6 +41,7 @@ class SocketServer(object):
                 print(e)
                 break
         print("end of reliable recv")
+        print("Recieved: ", data)
         return data
 
     def server(self):
@@ -61,14 +62,13 @@ class SocketServer(object):
     def send_command(self, ips_list, data):
         to_send = json.dumps(data).encode()
         to_send = struct.pack('>I', len(to_send))  + to_send
-        # print(ips_list)
         for id_,ip in enumerate(self.ips):
             if ip in ips_list:
                 self.reliable_send(self.targets[id_], self.ips[id_], to_send)
 
 
     def connection_accept(self):
-        print("[+] waiting for Data Nodes to connect")
+        print("[+] waiting for Nodes to connect")
         t1 = threading.Thread(target = self.server)
         t1.start()
         while len(self.ips) == 0:
