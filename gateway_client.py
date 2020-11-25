@@ -42,11 +42,19 @@ class GatewayClient(object):
 		criteria = json.loads(criteria)
 		self.run_command(criteria)
 
+	def reliable_send(self, data):
+		self.sock.sendall(data)
+
 	def run_command(self, criteria):
 		if criteria["COMMAND"] == "INSERT":
 			self.gateway_instance.insert(criteria)
 		if criteria["COMMAND"] == "LIST_ALL":
-			self.gateway_instance.list_all(criteria)
+    		# list all the products of all the user 
+			# from wherever the products are present
+			res = self.gateway_instance.list_all_products(criteria)
+			products = json.dumps({"data":res})
+			self.reliable_send(products.encode())
+
 		if criteria["COMMAND"] == "DELETE":
 			self.gateway_instance.delete(criteria)
 

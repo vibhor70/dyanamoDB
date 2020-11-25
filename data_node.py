@@ -79,7 +79,7 @@ class DataNode(object):
 			self.insertion(criteria)
 			self.insert_secondary_index(criteria)
 		elif criteria["COMMAND"] == "RETRIEVE":
-			self.list_all(criteria)
+			self.retrieve(criteria)
 		elif criteria["COMMAND"] == "REPLACE":
 			self.replace(criteria)
 		elif criteria["COMMAND"] == "DELETE":
@@ -124,8 +124,8 @@ class DataNode(object):
 		db.update({'PRODUCTS': db_products}, User.USERID == userid)
 		return True
 
-	def list_all(self, criteria):
-		logging.info("In list_all, with data = " + str(criteria))
+	def retrieve(self, criteria):
+		logging.info("In retrieve, with data = " + str(criteria))
 		User = Query()
 		userid = criteria["USERID"]
 		user_products = db.get(User["USERID"] == criteria["USERID"])

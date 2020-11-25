@@ -224,11 +224,32 @@ class Gateway():
                         {"COMMAND":"REPLACE","USERID":info["USERID"], 
                         "MAX_PRODUCTID": maxProductid, "UPDATEDLIST":[maxData]})
 
-            latest_data = kmaster.getmap()
         #TO DO CHANGE DATA NODES ALSO
         latest_data = kmaster.getmap()
         kmaster.stop_client()
         return latest_data
+
+    def list_all_products(self, critera):
+        latest_data = self.list_all({"USERID": critera["USERID"]})
+        device_ip_map = {}
+        for node in self.CONFIG["nodes"]:
+            device_ip_map[node["device_id"]] = node["ip"]
+
+        counter = None
+        to_return = []
+        for data in latest_data:
+            if counter != data["key"]:
+                counter = data["key"]
+                self.mnode.send_command([device_ip_map[data["device"]]], {
+                    "COMMAND":"RETRIEVE","USERID":critera["USERID"], 
+                    "PRODUCTID": data["key"]}
+                )
+                target = self.mnode.targets[self.mnode.ips.index(device_ip_map[data["device"]])]
+                prod = self.mnode.reliable_recv(target)
+                prod = json.loads(prod)["PRODUCT"]
+                to_return.append(prod)
+
+        return to_return
 
     def delete(self,info:dict):
         """
