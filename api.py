@@ -1,15 +1,33 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from gateway import Gateway
+from gateway_client import GatewayClient
+from socket_server import SocketServer
+
 import random
 import json
+import threading
 
-def get_config():
-    with open("./config/config.json") as fin:
-        return json.loads(fin.read())
 
-CONFIG = get_config()
-GATEWAY_IPS = CONFIG["gateway_ips"]
+class ConnectGateway(object):
+    def __init__(self):
+        self.GATEWAY_IPS = self.get_config()["gateway_ips"]
+        self.GATEWAY_INSTANCES = []
+
+    def get_config(self):
+        with open("./config/config.json") as fin:
+            return json.loads(fin.read())
+
+    def run(self):
+        for gip in GATEWAY_IPS:
+            # ginstance
+            GATEWAY_INSTANCES.append(gip)
+            gnode = SocketServer(gip)
+            t = threading.Thread(target = self.run_mmnode_thread)
+            t.start()
+
+    def run_mmnode_thread(self):
+        self.mnode.connection_accept()
+
 app = FastAPI()
 
 class ListAllQuery(BaseModel):

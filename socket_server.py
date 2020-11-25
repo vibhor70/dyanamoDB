@@ -6,7 +6,7 @@ import struct
 import sys
 import threading
 
-class MasterNode(object):
+class SocketServer(object):
     def __init__(self, GATEWAY_IP):
         self.ips =[]
         self.targets =[]
@@ -18,11 +18,6 @@ class MasterNode(object):
         self.s.listen(10)
         self.clients = 0
         self.stop_threads = False
-
-    def get_config(self):
-        with open("./config/config.json") as fin:
-            config = json.loads(fin.read())
-            return config["gateway"]["ip"]
 
     def send_all(self, target, data):
         target.sendall(data)
