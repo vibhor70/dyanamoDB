@@ -44,7 +44,6 @@ class ListAllQuery(BaseModel):
 class InsertQuery(BaseModel):
     userid: str
     productid: str
-    operation: str
     price: str
     category: str
 
@@ -67,7 +66,7 @@ async def insertion_api(query: InsertQuery):
     data = {
         "USERID": query.userid,
         "PRODUCTID": query.productid,
-        "OPERATION": query.operation,
+        "OPERATION": "ADD",
         "PRICE":query.price,
         "CATEGORY":query.category,
         "COMMAND":"INSERT"
@@ -82,7 +81,8 @@ async def deletion_api(query: DeletionQuery):
     data = {
         "USERID": query.userid,
         "PRODUCTID": query.productid,
-        "COMMAND":"DELETION"
+        "COMMAND":"DELETE",
+        "OPERATION": "DELETE"
     }
     APISOCK.send_command([GIP,], data)
     return {"response": "Deleted from cart"}
