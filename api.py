@@ -10,48 +10,33 @@ import threading
 
 class ConnectGateway(object):
     def __init__(self):
-        self.GATEWAY_IPS = self.get_config()["gateway_ips"]
+        self.CONFIG = self.get_config()
+        self.GATEWAY_IPS = self.CONFIG["gateway_ips"]
         self.GATEWAY_SOCKS = []
+        self.CONTAINER_IP = self.CONFIG["api_server"]
+        self.APISOCK = SocketServer(self.CONTAINER_IP, 44123)
+        t = threading.Thread(target = self.run_APISOCK_thread)
+        t.start()
 
     @staticmethod
     def get_config():
         with open("./config/config.json") as fin:
             return json.loads(fin.read())
 
-    def run(self):
-        for gip in self.GATEWAY_IPS:
-            # ginstance
-            gnode_sock = SocketServer(gip)
-            self.GATEWAY_SOCKS.append(gnode_sock)
-            t = threading.Thread(target = self.run_mmnode_thread, args=(gnode_sock))
-            t.start()
+    def run_APISOCK_thread(self):
+        self.APISOCK.connection_accept()
 
-    @staticmethod
-    def run_mmnode_thread(gnode_sock):
-        gnode_sock.connection_accept()
-
-    def get_gateway_socks(self):
-        return self.GATEWAY_SOCKS
+    def get_gateway_ips(self):
+        return self.GATEWAY_IPS
 
 
-
-gateways = ConnectGateway()
-gateways.run()
-GSOCKS = gateways.get_gateway_socks()
+api_sock_server = ConnectGateway()
+GATEWAY_IPS = api_sock_server.get_gateway_socks()
 
 app = FastAPI()
 
 class ListAllQuery(BaseModel):
     userid: str
-
-@app.get("/api/list_all")
-async def list_all(query: ListAllQuery):
-    GSOCK = random.choice(GSOCKS)
-    res = GSOCK.send_command({
-        "USERID": query["userid"],
-        "COMMAND": "LIST_ALL"
-    })
-    return {"response": res}
 
 class InsertQuery(BaseModel):
     userid: str
@@ -60,9 +45,22 @@ class InsertQuery(BaseModel):
     price: str
     category: str
 
+class DeletionQuery(BaseModel):
+    userid: str
+    productid: str
+
+@app.get("/api/list_all")
+async def list_all(query: ListAllQuery):
+    GIP = random.choice(GATEWAY_IPS)
+    res = api_sock_server.send_command(
+        [GIP,],
+        {"USERID": query["userid"], "COMMAND": "LIST_ALL"}
+    )
+    return {"response": res}
+
 @app.get("/api/insert")
 async def insertion_api(query: InsertQuery):
-    GSOCK = random.choice(GSOCKS)
+    GIP = random.choice(GATEWAY_IPS)
     data = {
         "USERID": query["userid"],
         "PRODUCTID": query["productid"],
@@ -71,20 +69,17 @@ async def insertion_api(query: InsertQuery):
         "CATEGORY":query["category"],
         "COMMAND":"INSERT"
     }
-    GSOCK.send_command(data)
+    api_sock_server.send_command([GIP,], data)
     return {"response": "Added to cart"}
 
-class DeletionQuery(BaseModel):
-    userid: str
-    productid: str
 
 @app.get("/api/delete")
 async def deletion_api(query: DeletionQuery):
-    GSOCK = random.choice(GSOCKS)
+    GIP = random.choice(GATEWAY_IPS)
     data = {
         "USERID": query["userid"],
         "PRODUCTID": query["productid"],
         "COMMAND":"DELETION"
     }
-    GSOCK.send_command(data)
+    api_sock_server.send_command([GIP,], data)
     return {"response": "Deleted from cart"}

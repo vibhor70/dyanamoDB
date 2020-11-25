@@ -1,10 +1,26 @@
 from gateway import Gateway
 import struct
 import json
+import socket
 
 class GatewayClient(object):
 	def __init__(self, gateway_ip):
 		self.gateway_instance = Gateway(gateway_ip)
+		self.CONFIG = self.get_config()
+		self.API_IP = self.CONFIG["api_server"]
+		self.sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+		self.sock.connect((self.API_IP,44123))
+
+	@staticmethod
+	def get_config():
+		with open("./config/config.json") as fin:
+			return json.loads(fin.read())
+
+	def run(self):
+		while True:
+			print("Listening to device: API SERVER ".format(self.API_IP))
+			data_recv = self.reliable_recv()
+			if not data_recv:	continue
 
 	def recvall(self, n):
 		data = bytearray()

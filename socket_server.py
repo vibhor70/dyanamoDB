@@ -7,14 +7,14 @@ import sys
 import threading
 
 class SocketServer(object):
-    def __init__(self, GATEWAY_IP):
+    def __init__(self, CONTAINER_IP, PORT = 54321):
         self.ips =[]
         self.targets =[]
-        self.GATEWAY_IP = GATEWAY_IP
+        self.CONTAINER_IP = CONTAINER_IP
 
         self.s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
         self.s.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
-        self.s.bind((self.GATEWAY_IP,54321))
+        self.s.bind((self.CONTAINER_IP,PORT))
         self.s.listen(10)
         self.clients = 0
         self.stop_threads = False
