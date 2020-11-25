@@ -49,3 +49,7 @@ class GatewayClient(object):
 			self.gateway_instance.list_all(criteria)
 		if criteria["COMMAND"] == "DELETE":
 			self.gateway_instance.delete(criteria)
+
+if __name__ == "__main__":
+	g = GatewayClient()
+	g.run()
