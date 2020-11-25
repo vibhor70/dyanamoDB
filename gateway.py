@@ -258,6 +258,7 @@ class Gateway():
 
     def list_all_products(self, critera):
         latest_data = self.list_all({"USERID": critera["USERID"]})
+        print(latest_data, "in gateway")
         device_ip_map = {}
         for node in self.CONFIG["nodes"]:
             device_ip_map[node["device_id"]] = node["ip"]
@@ -276,6 +277,7 @@ class Gateway():
                 prod = json.loads(prod)["PRODUCT"]
                 to_return.append(prod)
 
+        print(to_return, "in gateway")
         return to_return
 
     def delete(self,info:dict):
@@ -292,20 +294,14 @@ class Gateway():
         allInfo = self.list_all({"USERID": info["USERID"]})
         print(allInfo)
         for val in range(len(allInfo)):
-            # version = int(allInfo[val]['version'])
             if allInfo[val]["key"]==info["PRODUCTID"]:
-                # path = "/" + info["USERID"] + "/" + allInfo[val]["key"] + "/" + allInfo[val]["device"]
-                # path_rev = "/" + allInfo[val]["device"] + "/" + info["userid"] + "/" + allInfo[val]["key"]
                 for node in self.CONFIG["nodes"]:
                     if node["device_id"] == allInfo[val]["device"]:
                         self.mnode.send_command([node["ip"]],   
                         {"COMMAND":"DELETE", 
                         "USERID":info["USERID"],"PRODUCTID":allInfo[val]["key"]})
-                # kmaster.setVersion(path, version)
-                # kmaster.setVersion(path_rev, version)
 
-        # kmaster.stop_client()
-         
+
     def list_category(self,info:dict):
         """
         {
@@ -334,4 +330,5 @@ class Gateway():
             temp = json.loads(temp)
             all_category_info.append(temp)
 
+        print(all_category_info, "in list_category")
         return all_category_info
