@@ -58,9 +58,27 @@ class Gateway():
         print(device_ids)
         return device_ids
 
+    def update_crush(self, critera):
+        crush_map = self.get_crush()
+        did = int(critera["DEVICE"].strip("_")[-1])
+        if critera["OP"] == "ADD":
+            crush_map["trees"][0]["children"].insert(did-1, {
+                "type": "host", "name": "host{}".format(did-1), "id": -1*did,
+                "children": [
+                    { "id": did, "name": critera["DEVICE"], "weight": 65536 }
+                ]
+            })
+            
+        elif critera["OP"] == "REMOVE":
+            del crush_map["trees"][0]["children"][did-1]
 
+        fout = open("config/crushmap.json", "w")
+        json.dump(crush_map, fout)
+        fout.close()
+        
     def insert(self, data:dict):
         device_ids = list(self.run_crush(data["USERID"], data["PRODUCTID"], self.REPLICATION_COUNT))
+
         device_ip_map = {}
         flag=False
         for node in self.CONFIG["nodes"]:
@@ -71,6 +89,7 @@ class Gateway():
                 self.GATEWAY_IP, "p", "", data["USERID"], 
                 data["PRODUCTID"], data["OPERATION"]
             )
+        
 
         kmaster.start_client()
         for did, ip in device_ip_map.items():
@@ -86,16 +105,21 @@ class Gateway():
                     self.mnode.send_command(device_ip_map[did], data)
             else:
                 flag=False
+                self.update_crush({"OP": "REMOVE","DEVICE": did})
+                #Down update change crush map
+
                 self.Flaged_ip[did]=-1
 
+        for dname,val in self.Flaged_ip.items():
+            path = "/ephemeral_" + dname
+            if kmaster.exist(path) and val == -1:
+                self.update_crush({"OP": "ADD","DEVICE": dname})
+                #UP Update update crush
         kmaster.stop_client()    
         
     def read_repair(self,info:dict):
         """
-        dict={
-            "NODES":[node1,node2,node3]
-        }
-
+        dict={"NODES":[node1,node2,node3]}
         """
         kmaster = kazooMaster(
             self.GATEWAY_IP,"p","","","","",False
@@ -163,9 +187,6 @@ class Gateway():
                 all_dev=[]
                 all_dev.append((tdevice,tversion))
                 latest[key]=all_dev
-                # print("tkey :",tkey," tdevice",tdevice," tversion",tversion)
-                # print(latest[key])
-
             else:
                 all_dev.append((tdevice,tversion))
                 latest[key]=all_dev
@@ -187,7 +208,8 @@ class Gateway():
 
             for node in self.CONFIG["nodes"]:
                 if node["device_id"] == maxDevice:
-                    self.mnode.send_command([node["ip"]], {"COMMAND":"RETRIEVE","USERID":info["USERID"], "PRODUCTID": maxProductid})
+                    self.mnode.send_command([node["ip"]], 
+                        {"COMMAND":"RETRIEVE","USERID":info["USERID"], "PRODUCTID": maxProductid})
                     target= self.mnode.targets[self.mnode.ips.index(node["ip"])]
                     maxData = self.mnode.reliable_recv(target)
                     # GOT THE PRODUCTS
