@@ -217,7 +217,7 @@ class DataNode(object):
 		logging.info("Inserting product secondary index for {}".format(str(criteria)))
 		Product = Query()
 		query = (Product.CATEGORY == criteria["CATEGORY"])
-		product = db.get(query)
+		product = sec_index_db.get(query)
 		print(product, "in insert sec index")
 		if product:
 			product["USERID"].append(criteria["USERID"])
@@ -233,7 +233,7 @@ class DataNode(object):
 		logging.info("Extracting product secondary index for {}".format(str(criteria)))
 		Product = Query()
 		query = (Product.CATEGORY == criteria["CATEGORY"])
-		product = db.get(query)
+		product = sec_index_db.get(query)
 		print(product, "in list category")
 		if product:
 			products = json.dumps({"PRODUCT":product["USERID"]})
