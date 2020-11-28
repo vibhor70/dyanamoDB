@@ -62,7 +62,7 @@ class SocketServer(object):
     def send_command(self, ips_list, data):
         to_send = json.dumps(data).encode()
         to_send = struct.pack('>I', len(to_send))  + to_send
-        for id_,ip in enumerate(self.ips):
+        for id_,ip in enumerate(list(self.targets.keys())):
             if ip in ips_list:
                 self.reliable_send(self.targets[ip], to_send)
 
@@ -71,10 +71,10 @@ class SocketServer(object):
         print("[+] waiting for Nodes to connect")
         t1 = threading.Thread(target = self.server)
         t1.start()
-        while len(self.ips) == 0:
+        while len(self.targets.keys()) == 0:
             # TO DO ADD CONDITION FOR CHECKING DATA NODE CONTAINERS ARE ACTIVE OR NOT
             continue
 
     def get_ips(self):
-        return self.ips
+        return list(self.targets.keys())
         
