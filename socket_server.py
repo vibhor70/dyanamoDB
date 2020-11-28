@@ -9,7 +9,7 @@ import threading
 class SocketServer(object):
     def __init__(self, CONTAINER_IP, PORT = 54321):
         # self.ips =[]
-        self.targets ={}
+        self.targets = dict()
         self.CONTAINER_IP = CONTAINER_IP
 
         self.s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
@@ -50,7 +50,7 @@ class SocketServer(object):
                 break
             self.s.settimeout(1)
             try:
-                target,ip = self.s.accept()
+                target, ip = self.s.accept()
                 self.targets[ip] = target
                 # self.ips.append(ip[0])
                 print(str(ip)+"has connected")
