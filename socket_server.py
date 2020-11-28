@@ -51,9 +51,9 @@ class SocketServer(object):
             self.s.settimeout(1)
             try:
                 target, ip = self.s.accept()
-                self.targets[ip] = target
+                self.targets[ip[0]] = target
                 # self.ips.append(ip[0])
-                print(str(ip)+"has connected", self.targets)
+                print(str(ip[0])+ str(ip[1]) + "has connected", self.targets)
                 # self.clients +=1
             except Exception as e:
                 pass
