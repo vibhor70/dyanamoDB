@@ -218,22 +218,25 @@ class DataNode(object):
 		Product = Query()
 		query = (Product.CATEGORY == criteria["CATEGORY"])
 		product = db.get(query)
-		print(product)
+		print(product, "in insert sec index")
 		if product:
-			product[criteria["CATEGORY"]].append(criteria["USERID"])
+			product["USERID"].append(criteria["USERID"])
 			sec_index_db.update(product)
 		else:
 			sec_index_db.insert({
-				criteria["CATEGORY"]: [criteria["USERID"]]
+				"CATEGORY": criteria["CATEGORY"], 
+				"USERID": [criteria["USERID"]]
 			})
+			
 			
 	def list_category(self,criteria):
 		logging.info("Extracting product secondary index for {}".format(str(criteria)))
 		Product = Query()
 		query = (Product.CATEGORY == criteria["CATEGORY"])
 		product = db.get(query)
+		print(product, "in list category")
 		if product:
-			products = json.dumps({"PRODUCT":product})
+			products = json.dumps({"PRODUCT":product["USERID"]})
 			self.reliable_send(products.encode())
 		else:
 			products = json.dumps({"PRODUCT":[]})
