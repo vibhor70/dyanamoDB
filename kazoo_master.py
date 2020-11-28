@@ -128,11 +128,18 @@ class kazooMaster(object):
     def getmap(self):
         parent = self.userID
         parent = "/"+parent
+
+        if not self.zk.exists(parent):
+            return []
+
         children = self.zk.get_children(parent)
         to_return = []
         for keys in children:
             #print("KEY: ",keys)
             subChildren = parent+"/"+keys
+            if not self.zk.exists(subChildren):
+                continue
+            
             subChild = self.zk.get_children(subChildren)
             for val in subChild:
                 path = subChildren+"/"+val

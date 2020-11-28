@@ -169,6 +169,10 @@ class Gateway():
         )
         kmaster.start_client()
         to_return  = kmaster.getmap()
+
+        if len(to_return) == 0:
+            return []
+
         self.mnode 
         latest=dict()
 
@@ -253,10 +257,12 @@ class Gateway():
 
         #TO DO CHANGE DATA NODES ALSO
         latest_data = kmaster.getmap()
+        if len(latest_data) == 0:
+            return []
         kmaster.stop_client()
         return latest_data
 
-    def list_all_products(self, critera):
+    def list_all_user_products(self, critera):
         latest_data = self.list_all({"USERID": critera["USERID"]})
         print(latest_data, "in gateway")
         device_ip_map = {}
