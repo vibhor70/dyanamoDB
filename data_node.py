@@ -220,8 +220,9 @@ class DataNode(object):
 		product = sec_index_db.get(query)
 		print(product, "in insert sec index")
 		if product:
-			product["USERID"].append(criteria["USERID"])
-			sec_index_db.update(product)
+			if criteria["USERID"] not in product["USERID"]:
+				product["USERID"].append(criteria["USERID"])
+				sec_index_db.update(product)
 		else:
 			sec_index_db.insert({
 				"CATEGORY": criteria["CATEGORY"], 
