@@ -89,32 +89,40 @@ class Gateway():
             if kmaster.exist(path) and val == -1:
                 self.update_crush({"OP": "ADD","DEVICE": dname})
                 #UP Update update crush
-
+        #old
         device_ids = list(self.run_crush(data["USERID"], data["PRODUCTID"], self.REPLICATION_COUNT))
-
         device_ip_map = {}
         for node in self.CONFIG["nodes"]:
             if node["device_id"] in device_ids:
                 device_ip_map[node["device_id"]] = node["ip"]
-
+                
         print(self.Flaged_ip, ":flagged ips")
         kmaster.start_client()
+        flag = False
+
         for did, ip in device_ip_map.items():
             path = "/ephemeral_" + did
             if kmaster.exist(path):
                 if did in self.Flaged_ip.keys() and self.Flaged_ip[did] == -1:
-                    self.mnode.send_command(device_ip_map[did], data)
                     self.read_repair({"NODES":device_ids})
-                    #DO READ REPAIR WHEN DOWN NODE COMES BACK
                     self.Flaged_ip[did]=0
                     del self.Flaged_ip[did]
-                else:
-                    # new initial node starts
-                    self.mnode.send_command(device_ip_map[did], data)
             else:
                 self.update_crush({"OP": "REMOVE","DEVICE": did})
-                #Down update change crush map
+                flag = True
                 self.Flaged_ip[did]=-1
+
+        if flag:
+            device_ids = list(self.run_crush(data["USERID"], data["PRODUCTID"], self.REPLICATION_COUNT))
+            device_ip_map = {}
+            for node in self.CONFIG["nodes"]:
+                if node["device_id"] in device_ids:
+                    device_ip_map[node["device_id"]] = node["ip"]
+
+        for did, ip in device_ip_map.items():
+            path = "/ephemeral_" + did
+            if kmaster.exist(path):
+                self.mnode.send_command(device_ip_map[did], data)
 
         kmaster.stop_client()    
         
