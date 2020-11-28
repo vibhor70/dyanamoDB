@@ -55,10 +55,12 @@ class Gateway():
         device_ids = stdout_value[0].decode()
 
         device_ids = [str(devid).strip() for devid in device_ids.split("\n") if len(devid) > 0]
-        print(device_ids)
+        print(device_ids, "in running crush")
         return device_ids
 
     def update_crush(self, critera):
+        print("Update crush", critera)
+
         crush_map = self.get_crush()
         did = int(critera["DEVICE"].strip("_")[-1])
         if critera["OP"] == "ADD":
@@ -90,7 +92,7 @@ class Gateway():
                 data["PRODUCTID"], data["OPERATION"]
             )
         
-
+        print(self.Flaged_ip, ":flagged ips")
         kmaster.start_client()
         for did, ip in device_ip_map.items():
             path = "/ephemeral_" + did
@@ -100,6 +102,7 @@ class Gateway():
                     self.read_repair({"NODES":device_ids})
                     #DO READ REPAIR WHEN DOWN NODE COMES BACK
                     self.Flaged_ip[did]=0
+                    del self.Flaged_ip[did]
                 else:
                     # new initial node starts
                     self.mnode.send_command(device_ip_map[did], data)
@@ -118,6 +121,7 @@ class Gateway():
         kmaster.stop_client()    
         
     def read_repair(self,info:dict):
+        print("In read repair", info)
         """
         dict={"NODES":[node1,node2,node3]}
         """
