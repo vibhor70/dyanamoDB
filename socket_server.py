@@ -8,8 +8,8 @@ import threading
 
 class SocketServer(object):
     def __init__(self, CONTAINER_IP, PORT = 54321):
-        self.ips =[]
-        self.targets =[]
+        # self.ips =[]
+        self.targets ={}
         self.CONTAINER_IP = CONTAINER_IP
 
         self.s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
@@ -22,7 +22,7 @@ class SocketServer(object):
     def send_all(self, target, data):
         target.sendall(data)
 
-    def reliable_send(self, target,ip,command):
+    def reliable_send(self, target, command):
         target.sendall(command)
 
     def reliable_recv(self, target):
@@ -51,10 +51,10 @@ class SocketServer(object):
             self.s.settimeout(1)
             try:
                 target,ip = self.s.accept()
-                self.targets.append(target)
-                self.ips.append(ip[0])
-                print(str(ips[self.clients])+"has connected")
-                self.clients +=1
+                self.targets[ip] = target
+                # self.ips.append(ip[0])
+                print(str(ip)+"has connected")
+                # self.clients +=1
             except Exception as e:
                 pass
 
@@ -64,7 +64,7 @@ class SocketServer(object):
         to_send = struct.pack('>I', len(to_send))  + to_send
         for id_,ip in enumerate(self.ips):
             if ip in ips_list:
-                self.reliable_send(self.targets[id_], self.ips[id_], to_send)
+                self.reliable_send(self.targets[ip], to_send)
 
 
     def connection_accept(self):

@@ -61,7 +61,7 @@ async def list_all(query: ListAllQuery):
         [GIP,],
         {"USERID": query.userid, "COMMAND": "LIST_ALL"}
     )
-    target = APISOCK.targets[APISOCK.ips.index(GIP)]
+    target = APISOCK.targets[GIP]
     print(target)
     res = APISOCK.reliable_recv(target)
     res = json.loads(res)
@@ -75,7 +75,7 @@ async def list_category(query: ListCategoryQuery):
         [GIP,],
         {"CATEGORY": query.category, "COMMAND": "LIST_CATEGORY"}
     )
-    target = APISOCK.targets[APISOCK.ips.index(GIP)]
+    target = APISOCK.targets[GIP]
     res = APISOCK.reliable_recv(target)
     res = json.loads(res)
     return {"response": res["data"]}

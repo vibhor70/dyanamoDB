@@ -216,7 +216,7 @@ class Gateway():
                 if node["device_id"] == maxDevice:
                     self.mnode.send_command([node["ip"]], 
                         {"COMMAND":"RETRIEVE","USERID":info["USERID"], "PRODUCTID": maxProductid})
-                    target= self.mnode.targets[self.mnode.ips.index(node["ip"])]
+                    target= self.mnode.targets[node["ip"]]
                     maxData = self.mnode.reliable_recv(target)
                     # GOT THE PRODUCTS
                     maxData = json.loads(maxData)["PRODUCT"]
@@ -280,7 +280,7 @@ class Gateway():
                     "COMMAND":"RETRIEVE","USERID":critera["USERID"], 
                     "PRODUCTID": data["key"]}
                 )
-                target = self.mnode.targets[self.mnode.ips.index(device_ip_map[data["device"]])]
+                target = self.mnode.targets[device_ip_map[data["device"]]]
                 prod = self.mnode.reliable_recv(target)
                 prod = json.loads(prod)["PRODUCT"]
                 to_return.append(prod)
@@ -333,7 +333,7 @@ class Gateway():
                 {"COMMAND":"LISTCATEGORY",
                 "CATEGORY":info["CATEGORY"]
                 })
-            target= self.mnode.targets[self.mnode.ips.index(device_ip_map[name])]
+            target= self.mnode.targets[device_ip_map[name]]
             temp = self.mnode.reliable_recv(target)
             temp = json.loads(temp)
             all_category_info.append(temp)
