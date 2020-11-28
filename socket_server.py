@@ -53,7 +53,7 @@ class SocketServer(object):
                 target, ip = self.s.accept()
                 self.targets[ip] = target
                 # self.ips.append(ip[0])
-                print(str(ip)+"has connected")
+                print(str(ip)+"has connected", self.targets)
                 # self.clients +=1
             except Exception as e:
                 pass
@@ -62,6 +62,7 @@ class SocketServer(object):
     def send_command(self, ips_list, data):
         to_send = json.dumps(data).encode()
         to_send = struct.pack('>I', len(to_send))  + to_send
+
         for id_,ip in enumerate(list(self.targets.keys())):
             if ip in ips_list:
                 self.reliable_send(self.targets[ip], to_send)
