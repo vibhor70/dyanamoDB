@@ -235,7 +235,9 @@ class DataNode(object):
 		if product:
 			products = json.dumps({"PRODUCT":product})
 			self.reliable_send(products.encode())
-
+		else:
+			products = json.dumps({"PRODUCT":[]})
+			self.reliable_send(products.encode())
 
 	def insertion(self, criteria):
 		User = Query()
