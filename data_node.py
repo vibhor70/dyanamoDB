@@ -134,8 +134,9 @@ class DataNode(object):
 		if not user_products:
 			products = json.dumps({"PRODUCT":{}})	
 			self.reliable_send(products.encode())
+			return
+
 		productID = criteria["PRODUCTID"]
-		
 		for product in user_products["PRODUCTS"]:
 			if productID  == product["ID"]:
 				products = json.dumps({"PRODUCT":product})
