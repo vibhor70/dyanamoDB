@@ -79,19 +79,24 @@ class Gateway():
         fout.close()
         
     def insert(self, data:dict):
-        device_ids = list(self.run_crush(data["USERID"], data["PRODUCTID"], self.REPLICATION_COUNT))
-
-        device_ip_map = {}
-        flag=False
-        for node in self.CONFIG["nodes"]:
-            if node["device_id"] in device_ids:
-                device_ip_map[node["device_id"]] = node["ip"]
-        #before inserting check if node exits or not than remove that IP
         kmaster = kazooMaster(
                 self.GATEWAY_IP, "p", "", data["USERID"], 
                 data["PRODUCTID"], data["OPERATION"]
             )
-        
+
+        for dname,val in self.Flaged_ip.items():
+            path = "/ephemeral_" + dname
+            if kmaster.exist(path) and val == -1:
+                self.update_crush({"OP": "ADD","DEVICE": dname})
+                #UP Update update crush
+
+        device_ids = list(self.run_crush(data["USERID"], data["PRODUCTID"], self.REPLICATION_COUNT))
+
+        device_ip_map = {}
+        for node in self.CONFIG["nodes"]:
+            if node["device_id"] in device_ids:
+                device_ip_map[node["device_id"]] = node["ip"]
+
         print(self.Flaged_ip, ":flagged ips")
         kmaster.start_client()
         for did, ip in device_ip_map.items():
@@ -107,17 +112,10 @@ class Gateway():
                     # new initial node starts
                     self.mnode.send_command(device_ip_map[did], data)
             else:
-                flag=False
                 self.update_crush({"OP": "REMOVE","DEVICE": did})
                 #Down update change crush map
-
                 self.Flaged_ip[did]=-1
 
-        for dname,val in self.Flaged_ip.items():
-            path = "/ephemeral_" + dname
-            if kmaster.exist(path) and val == -1:
-                self.update_crush({"OP": "ADD","DEVICE": dname})
-                #UP Update update crush
         kmaster.stop_client()    
         
     def read_repair(self,info:dict):

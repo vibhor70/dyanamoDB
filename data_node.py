@@ -37,6 +37,7 @@ class DataNode(object):
 		try:
 			self.kmaster.create("/ephemeral_{}".format(self.DEVICE), "e")
 		except Exception as e:
+			print("exception", e)
 			logging.error("Error in creating ephermeral node" + str(e))
 
 	def reliable_send(self, data):
