@@ -35,7 +35,7 @@ class ConnectGateway(object):
 api_sock_server = ConnectGateway()
 GATEWAY_IPS = api_sock_server.get_gateway_ips()
 APISOCK = api_sock_server.get_sock()
-
+Flaged_ip = {}
 app = FastAPI()
 
 class ListAllQuery(BaseModel):
@@ -54,6 +54,23 @@ class DeletionQuery(BaseModel):
     userid: str
     productid: str
 
+'''
+{
+      "ID": "5",
+      "PRICE": "1",
+      "CATEGORY": "1",
+      "LATEST_VERSION_VECTOR": "0",
+      "OPERATIONS": [
+        {
+          "OPERATION": "ADD",
+          "VERSION_VECTOR": "0"
+        }
+      ]
+    }
+}
+'''
+
+
 @app.post("/api/list_all")
 async def list_all(query: ListAllQuery):
     GIP = random.choice(GATEWAY_IPS)
@@ -62,10 +79,25 @@ async def list_all(query: ListAllQuery):
         {"USERID": query.userid, "COMMAND": "LIST_ALL"}
     )
     target = APISOCK.targets[GIP]
-    print(target)
     res = APISOCK.reliable_recv(target)
     res = json.loads(res)
-    return {"response": res["data"]}
+    response = []
+    for r in res:
+        qty = 0
+        for op in r["OPERATIONS"]:
+            if op["OPERATION"] == "ADD":
+                qty+=1
+            elif op["OPERATION"] == "DELETE":
+                qty-=1
+
+        response.append({
+            "name": r["ID"],
+            "price": r["PRICE"],
+            "category": r["CATEGORY"],
+            "qty": qty
+        })
+
+    return {"response": response}
 
 
 @app.post("/api/list_category")
@@ -84,16 +116,37 @@ async def list_category(query: ListCategoryQuery):
 
 @app.post("/api/insert")
 async def insert_api(query: InsertQuery):
+    global Flaged_ip
+    
+    def get_crush():
+        with open("./config/crushmap.json") as fin:
+            return json.loads(fin.read())
+
+    def update_crush(crush_map):
+        fout = open("config/crushmap.json", "w")
+        json.dump(crush_map, fout)
+        fout.close()
+
     GIP = random.choice(GATEWAY_IPS)
+    crush_map = get_crush()
     data = {
         "USERID": query.userid,
         "PRODUCTID": query.productid,
         "OPERATION": "ADD",
         "PRICE":query.price,
         "CATEGORY":query.category,
-        "COMMAND":"INSERT"
+        "COMMAND":"INSERT",
+        "crush_map": crush_map,
+        "Flaged_ip": Flaged_ip
     }
+    target = APISOCK.targets[GIP]
     APISOCK.send_command([GIP,], data)
+    res = APISOCK.reliable_recv(target)
+    res = json.loads(res)
+    Flaged_ip = res["Flaged_ip"]
+    if res["updated"] == True:
+        update_crush(res["crush_map"])
+
     return {"response": "Added to cart"}
 
 

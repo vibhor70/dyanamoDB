@@ -33,7 +33,7 @@
     ],
     "production": true,
     "REPLICATION_COUNT": 2,
-    "gateway_ips": ["172.17.0.8"],
+    "gateway_ips": ["172.17.0.8", "172.17.0.9"],
     "api_server": "172.17.0.10",
     "version": 1.0
 }
