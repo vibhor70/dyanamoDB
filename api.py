@@ -148,8 +148,8 @@ async def insert_api(query: InsertQuery):
     }
     target = APISOCK.targets[GIP]
     APISOCK.send_command([GIP,], data)
-    res = APISOCK.reliable_recv(target)
-    res = json.loads(res)
+    # res = APISOCK.reliable_recv(target)
+    # res = json.loads(res)
     inventory_mgmt.add(query.item_name)
     return {"response": "Added to cart"}
 
@@ -170,6 +170,7 @@ async def delete_api(query: DeletionQuery):
     }
     target = APISOCK.targets[GIP]
     APISOCK.send_command([GIP,], data)
-    res = APISOCK.reliable_recv(target)
+    # res = APISOCK.reliable_recv(target)
+    
     inventory_mgmt.delete(query.item_name)
     return {"response": "Deleted from cart"}

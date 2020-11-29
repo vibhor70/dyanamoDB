@@ -48,8 +48,8 @@ class GatewayClient(object):
 	def run_command(self, criteria):
 		if criteria["COMMAND"] == "INSERT":
 			response = self.gateway_instance.insert(criteria)
-			result_json = json.dumps({"success": True})
-			self.reliable_send(result_json.encode())
+			# result_json = json.dumps({"success": True})
+			# self.reliable_send(result_json.encode())
 
 		if criteria["COMMAND"] == "LIST_ALL":
     		# list all the products of all the user 
@@ -62,8 +62,8 @@ class GatewayClient(object):
 		if criteria["COMMAND"] == "DELETE":
 			self.gateway_instance.delete(criteria)
 			print("Delete in gateway client")
-			response = json.dumps({"success": True})
-			self.reliable_send(response.encode())
+			# response = json.dumps({"success": True})
+			# self.reliable_send(response.encode())
 
 		if criteria["COMMAND"] == "LIST_CATEGORY":
 			res = self.gateway_instance.list_category(criteria)
