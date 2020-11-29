@@ -96,13 +96,15 @@ async def list_all(query: ListAllQuery):
     response = []
     for r in res["data"]:
         qty = 0
-        if bool(r): continue
-        for op in r["OPERATIONS"]:
-            if op["OPERATION"] == "ADD":
-                qty+=1
-            elif op["OPERATION"] == "DELETE":
-                qty-=1
-
+        try:
+            for op in r["OPERATIONS"]:
+                if op["OPERATION"] == "ADD":
+                    qty+=1
+                elif op["OPERATION"] == "DELETE":
+                    qty-=1
+        except:
+            pass
+        
         response.append({
             "name": r["ID"],
             "price": r["PRICE"],
@@ -126,9 +128,11 @@ async def list_category(query: ListCategoryQuery):
     users = set()
     print(res, "result json loads")
     for r in res["data"]:
-        if bool(r): continue
-        for u in r["PRODUCT"]:
-            users.add(u)
+        try:
+            for u in r["PRODUCT"]:
+                users.add(u)
+        except:
+            pass
     return {"response": list(users)}
 
 
