@@ -36,7 +36,7 @@ class InventoryManagement(object):
             return qty, category, price
         else:
             return None
-            
+
 class ConnectGateway(object):
     def __init__(self):
         self.CONFIG = self.get_config()
@@ -123,7 +123,8 @@ async def list_category(query: ListCategoryQuery):
     res = APISOCK.reliable_recv(target)
     res = json.loads(res)
     users = set()
-    for r in res:
+    print(res)
+    for r in res["data"]:
         for u in r["PRODUCT"]:
             users.add(u)
     return {"response": list(users)}
