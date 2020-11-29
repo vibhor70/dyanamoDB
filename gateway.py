@@ -94,7 +94,10 @@ class Gateway():
                 cmap_updated = True
                 #UP Update update crush
         #old
-        device_ids = list(self.run_crush(data["USERID"], data["PRODUCTID"], self.REPLICATION_COUNT))
+        device_ids = list(self.run_crush(
+            data["USERID"], data["PRODUCTID"], self.REPLICATION_COUNT, crush_map)
+        )
+        
         device_ip_map = {}
         for node in self.CONFIG["nodes"]:
             if node["device_id"] in device_ids:
@@ -118,7 +121,9 @@ class Gateway():
                 Flaged_ip[did]=-1
 
         if flag:
-            device_ids = list(self.run_crush(data["USERID"], data["PRODUCTID"], self.REPLICATION_COUNT))
+            device_ids = list(
+                self.run_crush(data["USERID"], data["PRODUCTID"], self.REPLICATION_COUNT, crush_map)
+            )
             device_ip_map = {}
             for node in self.CONFIG["nodes"]:
                 if node["device_id"] in device_ids:
