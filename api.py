@@ -125,6 +125,7 @@ async def list_category(query: ListCategoryQuery):
     users = set()
     print(res)
     for r in res["data"]:
+        print(r)
         for u in r["PRODUCT"]:
             users.add(u)
     return {"response": list(users)}
