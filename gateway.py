@@ -117,7 +117,7 @@ class Gateway():
                     Flaged_ip[did]=0
                     del Flaged_ip[did]
             else:
-                crush_map = self.update_crush({"OP": "REMOVE","DEVICE": did})
+                crush_map = self.update_crush({"OP": "REMOVE","DEVICE": did}, crush_map)
                 cmap_updated = True
                 flag = True
                 Flaged_ip[did]=-1
