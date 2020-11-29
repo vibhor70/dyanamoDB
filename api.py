@@ -134,7 +134,7 @@ async def list_category(query: ListCategoryQuery):
 @app.post("/api/insert")
 async def insert_api(query: InsertQuery):
     GIP = random.choice(GATEWAY_IPS)
-    inventory_item = inventory_mgmt.get_item_or_none(query.productid)
+    inventory_item = inventory_mgmt.get_item_or_none(query.item_name)
     if not inventory_item:
         return {"response": "No such item exists in inventory"}
     qty, category, price = inventory_item
@@ -150,14 +150,14 @@ async def insert_api(query: InsertQuery):
     APISOCK.send_command([GIP,], data)
     res = APISOCK.reliable_recv(target)
     res = json.loads(res)
-    inventory_mgmt.add(query.productid)
+    inventory_mgmt.add(query.item_name)
     return {"response": "Added to cart"}
 
 
 @app.post("/api/delete")
 async def delete_api(query: DeletionQuery):
     GIP = random.choice(GATEWAY_IPS)
-    inventory_item = inventory_mgmt.get_item_or_none(query.productid)
+    inventory_item = inventory_mgmt.get_item_or_none(query.item_name)
     if not inventory_item:
         return {"response": "No such item exists in inventory"}
     qty, category, price = inventory_item
@@ -171,5 +171,5 @@ async def delete_api(query: DeletionQuery):
     target = APISOCK.targets[GIP]
     APISOCK.send_command([GIP,], data)
     res = APISOCK.reliable_recv(target)
-    inventory_mgmt.delete(query.productid)
+    inventory_mgmt.delete(query.item_name)
     return {"response": "Deleted from cart"}
