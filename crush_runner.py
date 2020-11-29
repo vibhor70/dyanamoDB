@@ -23,10 +23,5 @@ def run_crush():
     return devices
 
 devices = run_crush()
-count = 5
-
-while len(devices) > 5 and count > 0:
-    devices = run_crush()
-    count -= 1
 
 print("\n".join([str(device) for device in devices]))

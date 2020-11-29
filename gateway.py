@@ -51,8 +51,9 @@ class Gateway():
                                 stdin=subprocess.PIPE,
                             )
         stdout_value = proc.communicate()
+        print(stdout_value)
         device_ids = stdout_value[0].decode()
-
+        print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n\n\n")
         device_ids = [str(devid).strip() for devid in device_ids.split("\n") if len(devid) > 0]
         print(device_ids, "in running crush")
             
