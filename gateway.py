@@ -5,8 +5,6 @@ import os
 import subprocess
 import threading
 import time
-import pickle
-import binascii
 
 from kazoo.exceptions import NoNodeError
 
@@ -16,6 +14,7 @@ from socket_server import SocketServer
 
 class Gateway():
     def __init__(self, gateway_ip):
+        self.Flaged_ip=dict()
         self.CONFIG = self.get_config()
         self.REPLICATION_COUNT = self.CONFIG["REPLICATION_COUNT"]
         self.GATEWAY_IP = gateway_ip
@@ -31,9 +30,9 @@ class Gateway():
         with open("./config/config.json") as fin:
             return json.loads(fin.read())
 
-    # def get_crush(self):
-    #     with open("./config/crushmap.json") as fin:
-    #         return json.loads(fin.read())
+    def get_crush(self):
+        with open("./config/crushmap.json") as fin:
+            return json.loads(fin.read())
 
     @staticmethod
     def create_hash(user_id:str, pid:str):
@@ -45,26 +44,24 @@ class Gateway():
         # decoded = binascii.unhexlify(str(encoded).encode()).decode()
         return digest_int
 
-    def run_crush(self, user_id:str, pid:str, rcount:int, crushmap:dict):
+    def run_crush(self, user_id:str, pid:str, rcount:int):
         val = self.create_hash(user_id, pid)
-        crushmap_pickle = binascii.hexlify(pickle.dumps(crushmap, protocol=2)).decode()
-        print(crushmap_pickle, "pickle")
-        proc = subprocess.Popen(['python2', 'crush_runner.py', str(val), str(rcount), crushmap_pickle], 
+        proc = subprocess.Popen(['python2', 'crush_runner.py', str(val), str(rcount)], 
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE,
                                 stdin=subprocess.PIPE,
                             )
         stdout_value = proc.communicate()
-        print(stdout_value, "stdout")
         device_ids = stdout_value[0].decode()
 
         device_ids = [str(devid).strip() for devid in device_ids.split("\n") if len(devid) > 0]
         print(device_ids, "in running crush")
         return device_ids
 
-    def update_crush(self, critera, crush_map):
+    def update_crush(self, critera):
         print("Update crush", critera)
 
+        crush_map = self.get_crush()
         did = int(critera["DEVICE"].strip("_")[-1])
         if critera["OP"] == "ADD":
             crush_map["trees"][0]["children"].insert(did-1, {
@@ -77,55 +74,46 @@ class Gateway():
         elif critera["OP"] == "REMOVE":
             del crush_map["trees"][0]["children"][did-1]
 
-        return crush_map
+        fout = open("config/crushmap.json", "w")
+        json.dump(crush_map, fout)
+        fout.close()
         
     def insert(self, data:dict):
-        crush_map = data["crush_map"]
-        Flaged_ip = data["Flaged_ip"]
-
-        cmap_updated = False
         kmaster = kazooMaster(
                 self.GATEWAY_IP, "p", "", data["USERID"], 
                 data["PRODUCTID"], data["OPERATION"]
             )
 
-        for dname,val in Flaged_ip.items():
+        for dname,val in self.Flaged_ip.items():
             path = "/ephemeral_" + dname
             if kmaster.exist(path) and val == -1:
-                crush_map = self.update_crush({"OP": "ADD","DEVICE": dname}, crush_map)
-                cmap_updated = True
+                self.update_crush({"OP": "ADD","DEVICE": dname})
                 #UP Update update crush
         #old
-        device_ids = list(self.run_crush(
-            data["USERID"], data["PRODUCTID"], self.REPLICATION_COUNT, crush_map)
-        )
-        
+        device_ids = list(self.run_crush(data["USERID"], data["PRODUCTID"], self.REPLICATION_COUNT))
         device_ip_map = {}
         for node in self.CONFIG["nodes"]:
             if node["device_id"] in device_ids:
                 device_ip_map[node["device_id"]] = node["ip"]
                 
-        print(Flaged_ip, ":flagged ips")
+        print(self.Flaged_ip, ":flagged ips")
         kmaster.start_client()
         flag = False
 
         for did, ip in device_ip_map.items():
             path = "/ephemeral_" + did
             if kmaster.exist(path):
-                if did in Flaged_ip.keys() and Flaged_ip[did] == -1:
+                if did in self.Flaged_ip.keys() and self.Flaged_ip[did] == -1:
                     self.read_repair({"NODES":device_ids})
-                    Flaged_ip[did]=0
-                    del Flaged_ip[did]
+                    self.Flaged_ip[did]=0
+                    del self.Flaged_ip[did]
             else:
-                crush_map = self.update_crush({"OP": "REMOVE","DEVICE": did}, crush_map)
-                cmap_updated = True
+                self.update_crush({"OP": "REMOVE","DEVICE": did})
                 flag = True
-                Flaged_ip[did]=-1
+                self.Flaged_ip[did]=-1
 
         if flag:
-            device_ids = list(
-                self.run_crush(data["USERID"], data["PRODUCTID"], self.REPLICATION_COUNT, crush_map)
-            )
+            device_ids = list(self.run_crush(data["USERID"], data["PRODUCTID"], self.REPLICATION_COUNT))
             device_ip_map = {}
             for node in self.CONFIG["nodes"]:
                 if node["device_id"] in device_ids:
@@ -137,10 +125,7 @@ class Gateway():
                 self.mnode.send_command(device_ip_map[did], data)
 
         kmaster.stop_client()    
-        if cmap_updated:
-            return crush_map, Flaged_ip
-        else:
-            return None, Flaged_ip
+        return True
         
     def read_repair(self,info:dict):
         print("In read repair", info)
@@ -247,7 +232,6 @@ class Gateway():
                     maxData = json.loads(maxData)["PRODUCT"]
                     """
                     HUGE DOUBT IF SEND WILL I RECIVE USING RELIABLE RECV
-
                     """
             for i in range(len(List)):
                 x,y = List[i]

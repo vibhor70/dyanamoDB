@@ -116,19 +116,7 @@ async def list_category(query: ListCategoryQuery):
 
 @app.post("/api/insert")
 async def insert_api(query: InsertQuery):
-    global Flaged_ip
-
-    def get_crush():
-        with open("./config/crushmap.json") as fin:
-            return json.loads(fin.read())
-
-    def update_crush(crush_map):
-        fout = open("config/crushmap.json", "w")
-        json.dump(crush_map, fout)
-        fout.close()
-
     GIP = random.choice(GATEWAY_IPS)
-    crush_map = get_crush()
     data = {
         "USERID": query.userid,
         "PRODUCTID": query.productid,
@@ -136,17 +124,11 @@ async def insert_api(query: InsertQuery):
         "PRICE":query.price,
         "CATEGORY":query.category,
         "COMMAND":"INSERT",
-        "crush_map": crush_map,
-        "Flaged_ip": Flaged_ip
     }
     target = APISOCK.targets[GIP]
     APISOCK.send_command([GIP,], data)
     res = APISOCK.reliable_recv(target)
     res = json.loads(res)
-    Flaged_ip = res["Flaged_ip"]
-    if res["update"] == True:
-        update_crush(res["crush_map"])
-
     return {"response": "Added to cart"}
 
 
