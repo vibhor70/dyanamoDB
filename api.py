@@ -126,6 +126,7 @@ async def list_category(query: ListCategoryQuery):
     users = set()
     print(res, "result json loads")
     for r in res["data"]:
+        if bool(r): continue
         for u in r["PRODUCT"]:
             users.add(u)
     return {"response": list(users)}
