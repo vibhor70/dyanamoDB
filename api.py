@@ -76,11 +76,11 @@ class ListCategoryQuery(BaseModel):
 
 class InsertQuery(BaseModel):
     userid: str
-    productid: str
+    item_name: str
 
 class DeletionQuery(BaseModel):
     userid: str
-    productid: str
+    item_name: str
 
 
 @app.post("/api/list_all")
@@ -125,7 +125,6 @@ async def list_category(query: ListCategoryQuery):
     users = set()
     print(res)
     for r in res["data"]:
-        print(r)
         for u in r["PRODUCT"]:
             users.add(u)
     return {"response": list(users)}
@@ -141,7 +140,7 @@ async def insert_api(query: InsertQuery):
     qty, category, price = inventory_item
     data = {
         "USERID": query.userid,
-        "PRODUCTID": query.productid,
+        "PRODUCTID": query.item_name,
         "OPERATION": "ADD",
         "PRICE": price,
         "CATEGORY":category,
@@ -165,7 +164,7 @@ async def delete_api(query: DeletionQuery):
 
     data = {
         "USERID": query.userid,
-        "PRODUCTID": query.productid,
+        "PRODUCTID": query.item_name,
         "COMMAND":"DELETE",
         "OPERATION": "DELETE"
     }
