@@ -47,7 +47,7 @@ class Gateway():
 
     def run_crush(self, user_id:str, pid:str, rcount:int, crushmap:dict):
         val = self.create_hash(user_id, pid)
-        crushmap_pickle = binascii.hexlify(pickle.dumps(crushmap, 2)).decode()
+        crushmap_pickle = binascii.hexlify(pickle.dumps(crushmap, protocol=2)).decode()
         print(crushmap_pickle, "pickle")
         proc = subprocess.Popen(['python2', 'crush_runner.py', str(val), str(rcount), crushmap_pickle], 
                                 stdout=subprocess.PIPE,
