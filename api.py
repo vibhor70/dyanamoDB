@@ -94,6 +94,7 @@ async def list_all(query: ListAllQuery):
     res = APISOCK.reliable_recv(target)
     res = json.loads(res)
     response = []
+    print(res, "api")
     for r in res["data"]:
         qty = 0
         try:
@@ -126,7 +127,7 @@ async def list_category(query: ListCategoryQuery):
     res = APISOCK.reliable_recv(target)
     res = json.loads(res)
     users = set()
-    print(res, "result json loads")
+    print(res, "result json loads api")
     for r in res["data"]:
         try:
             for u in r["PRODUCT"]:

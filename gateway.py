@@ -55,6 +55,10 @@ class Gateway():
 
         device_ids = [str(devid).strip() for devid in device_ids.split("\n") if len(devid) > 0]
         print(device_ids, "in running crush")
+
+        if len(device_ids) > int(self.CONFIG["REPLICATION_COUNT"]):
+            run_crush(user_id, pid, rcount)
+            
         return device_ids
 
     def update_crush(self, critera):
