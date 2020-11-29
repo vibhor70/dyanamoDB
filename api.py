@@ -110,7 +110,11 @@ async def list_category(query: ListCategoryQuery):
     target = APISOCK.targets[GIP]
     res = APISOCK.reliable_recv(target)
     res = json.loads(res)
-    return {"response": res["data"]}
+    users = set()
+    for r in res:
+        for u in r["PRODUCT"]:
+            users.add(u)
+    return {"response": list(users)}
 
 
 
