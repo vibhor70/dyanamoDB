@@ -12,11 +12,21 @@ if len(sys.argv) != 3:
     raise Exception("Provide 3 arguements: ip, node name, node val")
     sys.exit(0)
 
-value = sys.argv[1]
-rcount = sys.argv[2]
-crushmap = open("./config/crushmap.json", "r").read()
+def run_crush():
+    value = sys.argv[1]
+    rcount = sys.argv[2]
+    crushmap = open("./config/crushmap.json", "r").read()
 
-c = Crush()
-c.parse(json.loads(crushmap))
-devices = c.map(rule="data", value=int(value), replication_count=int(rcount))
+    c = Crush()
+    c.parse(json.loads(crushmap))
+    devices = c.map(rule="data", value=int(value), replication_count=int(rcount))
+    return devices
+
+devices = run_crush()
+count = 5
+
+while len(devices) > 5 and count > 0:
+    devices = run_crush()
+    count -= 1
+
 print("\n".join([str(device) for device in devices]))
