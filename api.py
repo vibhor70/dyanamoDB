@@ -144,7 +144,7 @@ async def insert_api(query: InsertQuery):
     res = APISOCK.reliable_recv(target)
     res = json.loads(res)
     Flaged_ip = res["Flaged_ip"]
-    if res["updated"] == True:
+    if res["update"] == True:
         update_crush(res["crush_map"])
 
     return {"response": "Added to cart"}
