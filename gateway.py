@@ -89,34 +89,33 @@ class Gateway():
                 self.update_crush({"OP": "ADD","DEVICE": dname})
                 #UP Update update crush
         #old
-        device_ids = list(self.run_crush(data["USERID"], data["PRODUCTID"], self.REPLICATION_COUNT))
-        device_ip_map = {}
-        for node in self.CONFIG["nodes"]:
-            if node["device_id"] in device_ids:
-                device_ip_map[node["device_id"]] = node["ip"]
-                
-        print(self.Flaged_ip, ":flagged ips")
-        kmaster.start_client()
-        flag = False
-
-        for did, ip in device_ip_map.items():
-            path = "/ephemeral_" + did
-            if kmaster.exist(path):
-                if did in self.Flaged_ip.keys() and self.Flaged_ip[did] == -1:
-                    self.read_repair({"NODES":device_ids})
-                    self.Flaged_ip[did]=0
-                    del self.Flaged_ip[did]
-            else:
-                self.update_crush({"OP": "REMOVE","DEVICE": did})
-                flag = True
-                self.Flaged_ip[did]=-1
-
-        if flag:
+        MAX_loop_checker = 5
+        while MAX_loop_checker > 0:
+            MAX_loop_checker -= 1
+            down_devices = False
             device_ids = list(self.run_crush(data["USERID"], data["PRODUCTID"], self.REPLICATION_COUNT))
             device_ip_map = {}
             for node in self.CONFIG["nodes"]:
                 if node["device_id"] in device_ids:
                     device_ip_map[node["device_id"]] = node["ip"]
+                    
+            print(self.Flaged_ip, ":flagged ips")
+            kmaster.start_client()
+
+            for did, ip in device_ip_map.items():
+                path = "/ephemeral_" + did
+                if kmaster.exist(path):
+                    if did in self.Flaged_ip.keys() and self.Flaged_ip[did] == -1:
+                        self.read_repair({"NODES":device_ids})
+                        self.Flaged_ip[did]=0
+                        del self.Flaged_ip[did]
+                else:
+                    self.update_crush({"OP": "REMOVE","DEVICE": did})
+                    self.Flaged_ip[did]=-1
+                    down_devices = True
+
+            if not down_devices:
+                break
 
         for did, ip in device_ip_map.items():
             path = "/ephemeral_" + did
