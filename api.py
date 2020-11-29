@@ -102,15 +102,15 @@ async def list_all(query: ListAllQuery):
                     qty+=1
                 elif op["OPERATION"] == "DELETE":
                     qty-=1
+
+            response.append({
+                "name": r["ID"],
+                "price": r["PRICE"],
+                "category": r["CATEGORY"],
+                "qty": qty
+            })
         except:
             pass
-        
-        response.append({
-            "name": r["ID"],
-            "price": r["PRICE"],
-            "category": r["CATEGORY"],
-            "qty": qty
-        })
 
     return {"response": response}
 
