@@ -6,8 +6,31 @@ from socket_server import SocketServer
 import random
 import json
 import threading
+from tinydb import Query, TinyDB
 
+class InventoryManagement(object):
+    def __init__(self):
+        self.db = TinyDB('db/inventory.json', indent=4, separators=(',', ': '))
 
+    def add(self, item_name):
+        item = self.db.get({"item": item_name})
+        if item:
+            qty = item["qty"]
+            item.update({"qty":qty+1, "item": item})
+
+    def delete(self, item_name):
+        item = self.db.get({"item": item_name})
+        if item:
+            qty = item["qty"]
+            item.update({"qty":qty-1, "item": item})
+
+    def get_qty_or_none(self, item_name):
+        item = self.db.get({"item": item_name})
+        if item:
+            qty = item["qty"]
+            return qty
+        else:
+            return None
 class ConnectGateway(object):
     def __init__(self):
         self.CONFIG = self.get_config()
@@ -37,6 +60,7 @@ GATEWAY_IPS = api_sock_server.get_gateway_ips()
 APISOCK = api_sock_server.get_sock()
 Flaged_ip = {}
 app = FastAPI()
+inventory_mgmt = InventoryManagement()
 
 class ListAllQuery(BaseModel):
     userid: str
@@ -53,22 +77,6 @@ class InsertQuery(BaseModel):
 class DeletionQuery(BaseModel):
     userid: str
     productid: str
-
-'''
-{
-      "ID": "5",
-      "PRICE": "1",
-      "CATEGORY": "1",
-      "LATEST_VERSION_VECTOR": "0",
-      "OPERATIONS": [
-        {
-          "OPERATION": "ADD",
-          "VERSION_VECTOR": "0"
-        }
-      ]
-    }
-}
-'''
 
 
 @app.post("/api/list_all")
@@ -121,6 +129,10 @@ async def list_category(query: ListCategoryQuery):
 @app.post("/api/insert")
 async def insert_api(query: InsertQuery):
     GIP = random.choice(GATEWAY_IPS)
+    qty = inventory_mgmt.get_qty_or_none(query.productid)
+    if not qty:
+        return {"response": "No such item exists in inventory"}
+
     data = {
         "USERID": query.userid,
         "PRODUCTID": query.productid,
@@ -133,17 +145,25 @@ async def insert_api(query: InsertQuery):
     APISOCK.send_command([GIP,], data)
     res = APISOCK.reliable_recv(target)
     res = json.loads(res)
+    inventory_mgmt.add(query.productid)
     return {"response": "Added to cart"}
 
 
 @app.post("/api/delete")
 async def delete_api(query: DeletionQuery):
     GIP = random.choice(GATEWAY_IPS)
+    qty = inventory_mgmt.get_qty_or_none(query.productid)
+    if not qty:
+        return {"response": "No such item exists in inventory"}
+
     data = {
         "USERID": query.userid,
         "PRODUCTID": query.productid,
         "COMMAND":"DELETE",
         "OPERATION": "DELETE"
     }
+    target = APISOCK.targets[GIP]
     APISOCK.send_command([GIP,], data)
+    res = APISOCK.reliable_recv(target)
+    inventory_mgmt.delete(query.productid)
     return {"response": "Deleted from cart"}

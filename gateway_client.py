@@ -61,6 +61,9 @@ class GatewayClient(object):
 
 		if criteria["COMMAND"] == "DELETE":
 			self.gateway_instance.delete(criteria)
+			print("Delete in gateway client")
+			response = json.dumps({"success": True})
+			self.reliable_send(response.encode())
 
 		if criteria["COMMAND"] == "LIST_CATEGORY":
 			res = self.gateway_instance.list_category(criteria)
