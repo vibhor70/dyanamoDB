@@ -3,152 +3,152 @@
         "1": {
             "item": "pork",
             "total_qty": 5,
-            "category": 1,
-            "price": 61
+            "category": "2",
+            "price": 15
         },
         "2": {
             "item": "soap",
-            "total_qty": 1,
-            "category": 1,
-            "price": 36
+            "total_qty": 3,
+            "category": "2",
+            "price": 100
         },
         "3": {
             "item": "soda",
             "total_qty": 1,
-            "category": 3,
-            "price": 21
+            "category": "1",
+            "price": 18
         },
         "4": {
             "item": "toilet paper",
-            "total_qty": 5,
-            "category": 3,
-            "price": 39
+            "total_qty": 4,
+            "category": "1",
+            "price": 95
         },
         "5": {
             "item": "dinner rolls",
-            "total_qty": 5,
-            "category": 3,
-            "price": 87
+            "total_qty": 4,
+            "category": "3",
+            "price": 73
         },
         "6": {
             "item": "waffles",
             "total_qty": 3,
-            "category": 2,
-            "price": 15
+            "category": "2",
+            "price": 24
         },
         "7": {
             "item": "all- purpose",
-            "total_qty": 4,
-            "category": 3,
-            "price": 91
+            "total_qty": 1,
+            "category": "3",
+            "price": 64
         },
         "8": {
             "item": "aluminum foil",
             "total_qty": 2,
-            "category": 1,
-            "price": 38
+            "category": "1",
+            "price": 77
         },
         "9": {
             "item": "shampoo",
-            "total_qty": 3,
-            "category": 1,
-            "price": 28
+            "total_qty": 2,
+            "category": "1",
+            "price": 71
         },
         "10": {
             "item": "ice cream",
             "total_qty": 2,
-            "category": 2,
-            "price": 80
+            "category": "2",
+            "price": 81
         },
         "11": {
             "item": "vegetables",
             "total_qty": 2,
-            "category": 3,
-            "price": 81
+            "category": "2",
+            "price": 97
         },
         "12": {
             "item": "sandwich bags",
-            "total_qty": 1,
-            "category": 1,
-            "price": 37
+            "total_qty": 5,
+            "category": "1",
+            "price": 19
         },
         "13": {
             "item": "dishwashing liquid/detergent",
-            "total_qty": 2,
-            "category": 1,
-            "price": 77
+            "total_qty": 5,
+            "category": "3",
+            "price": 34
         },
         "14": {
             "item": "milk",
             "total_qty": 4,
-            "category": 1,
-            "price": 37
+            "category": "1",
+            "price": 18
         },
         "15": {
             "item": "mixes",
-            "total_qty": 2,
-            "category": 2,
-            "price": 75
+            "total_qty": 4,
+            "category": "1",
+            "price": 24
         },
         "16": {
             "item": "hand soap",
             "total_qty": 3,
-            "category": 3,
-            "price": 46
+            "category": "1",
+            "price": 39
         },
         "17": {
             "item": "individual meals",
-            "total_qty": 2,
-            "category": 1,
-            "price": 83
+            "total_qty": 5,
+            "category": "3",
+            "price": 82
         },
         "18": {
             "item": "cheeses",
-            "total_qty": 4,
-            "category": 1,
-            "price": 12
+            "total_qty": 2,
+            "category": "1",
+            "price": 16
         },
         "19": {
             "item": "flour",
             "total_qty": 5,
-            "category": 2,
-            "price": 43
+            "category": "3",
+            "price": 62
         },
         "20": {
             "item": "butter",
-            "total_qty": 4,
-            "category": 2,
-            "price": 56
+            "total_qty": 5,
+            "category": "1",
+            "price": 60
         },
         "21": {
             "item": "tortillas",
-            "total_qty": 3,
-            "category": 1,
-            "price": 63
+            "total_qty": 2,
+            "category": "3",
+            "price": 24
         },
         "22": {
             "item": "lunch meat",
-            "total_qty": 2,
-            "category": 1,
-            "price": 25
+            "total_qty": 1,
+            "category": "3",
+            "price": 67
         },
         "23": {
             "item": "cereals",
-            "total_qty": 5,
-            "category": 1,
-            "price": 57
+            "total_qty": 4,
+            "category": "3",
+            "price": 69
         },
         "24": {
             "item": "laundry detergent",
-            "total_qty": 3,
-            "category": 3,
-            "price": 73
+            "total_qty": 4,
+            "category": "1",
+            "price": 19
         },
         "25": {
             "item": "yogurt",
             "total_qty": 1,
-            "category": 3,
-            "price": 53
+            "category": "2",
+            "price": 28
         }
     }
 }

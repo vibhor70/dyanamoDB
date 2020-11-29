@@ -154,7 +154,7 @@ class DataNode(object):
 					{
 						"ID": criteria["PRODUCTID"],
 						"PRICE": criteria["PRICE"],
-						"CATEGORY": criteria["CATEGORY"],
+						"CATEGORY": str(criteria["CATEGORY"]),
 						"LATEST_VERSION_VECTOR": version,
 						"OPERATIONS": [
 							{
@@ -216,7 +216,7 @@ class DataNode(object):
 	def insert_secondary_index(self, criteria):
 		logging.info("Inserting product secondary index for {}".format(str(criteria)))
 		Product = Query()
-		query = (Product.CATEGORY == criteria["CATEGORY"])
+		query = (Product.CATEGORY == str(criteria["CATEGORY"]))
 		product = sec_index_db.get(query)
 		print(product, "in insert sec index")
 		if product:
@@ -225,7 +225,7 @@ class DataNode(object):
 				sec_index_db.update(product)
 		else:
 			sec_index_db.insert({
-				"CATEGORY": criteria["CATEGORY"], 
+				"CATEGORY": str(criteria["CATEGORY"]), 
 				"USERID": [criteria["USERID"]]
 			})
 			
@@ -233,7 +233,7 @@ class DataNode(object):
 	def list_category(self,criteria):
 		logging.info("Extracting product secondary index for {}".format(str(criteria)))
 		Product = Query()
-		query = (Product.CATEGORY == criteria["CATEGORY"])
+		query = (Product.CATEGORY == str(criteria["CATEGORY"]))
 		product = sec_index_db.get(query)
 		print(product, "in list category")
 		if product:
