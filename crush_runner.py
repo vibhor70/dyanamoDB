@@ -1,7 +1,7 @@
 import json
 from crush import Crush
 import sys
-import pickle
+import cPickle
 import binascii
 #1: CREATE CRUSH CLASS 
 #2:(METHOD )TAKE INPUT VALUES USERID , PRODUCTID AND MAP IT INTO DEVICES,RETURN (USERID,PRODUCTID,DEVICE),...
@@ -15,7 +15,7 @@ if len(sys.argv) != 4:
 
 value = sys.argv[1]
 rcount = sys.argv[2]
-crushmap = pickle.loads(binascii.unhexlify(sys.argv[3].encode()))
+crushmap = cPickle.loads(binascii.unhexlify(sys.argv[3].encode()))
 
 c = Crush()
 c.parse(crushmap)
