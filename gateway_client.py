@@ -48,11 +48,13 @@ class GatewayClient(object):
 	def run_command(self, criteria):
 		if criteria["COMMAND"] == "INSERT":
 			crush_map, Flaged_ip = self.gateway_instance.insert(criteria)
-			response = {"crush_map":crush_map, 
-				"update": True, "Flaged_ip": Flaged_ip}
+			response = {
+				"crush_map": crush_map, 
+				"update": True, "Flaged_ip": Flaged_ip
+			}
 			if crush_map is None:
-				res["update"] = False
-				res["data"] = {}
+				response["update"] = False
+				response["data"] = {}
 
 			result_json = json.dumps(response)
 			self.reliable_send(result_json.encode())
