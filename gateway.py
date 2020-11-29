@@ -48,12 +48,14 @@ class Gateway():
     def run_crush(self, user_id:str, pid:str, rcount:int, crushmap:dict):
         val = self.create_hash(user_id, pid)
         crushmap_pickle = binascii.hexlify(pickle.dumps(crushmap)).decode()
+        print(crushmap_pickle, "pickle")
         proc = subprocess.Popen(['python2', 'crush_runner.py', str(val), str(rcount), crushmap_pickle], 
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE,
                                 stdin=subprocess.PIPE,
                             )
         stdout_value = proc.communicate()
+        print(stdout_value, "stdout")
         device_ids = stdout_value[0].decode()
 
         device_ids = [str(devid).strip() for devid in device_ids.split("\n") if len(devid) > 0]
