@@ -112,7 +112,7 @@ class Gateway():
         for did, ip in device_ip_map.items():
             path = "/ephemeral_" + did
             if kmaster.exist(path):
-                if did in Flaged_ip.keys() and self.Flaged_ip[did] == -1:
+                if did in Flaged_ip.keys() and Flaged_ip[did] == -1:
                     self.read_repair({"NODES":device_ids})
                     Flaged_ip[did]=0
                     del Flaged_ip[did]
