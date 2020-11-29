@@ -67,7 +67,7 @@ class GatewayClient(object):
 
 		if criteria["COMMAND"] == "LIST_CATEGORY":
 			res = self.gateway_instance.list_category(criteria)
-			print(res)
+			print(res, "IN GATEWAY CLIENT")
 			products = json.dumps({"data":res})
 			self.reliable_send(products.encode())
 

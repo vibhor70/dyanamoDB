@@ -17,14 +17,14 @@ class InventoryManagement(object):
         item = self.db.get(Item.item == item_name)
         if item:
             qty = item["total_qty"]
-            item.update({"total_qty":qty+1, "item": item})
+            item.update({"total_qty":qty-1, "item": item})
 
     def delete(self, item_name):
         Item = Query()
         item = self.db.get(Item.item == item_name)
         if item:
             qty = item["total_qty"]
-            item.update({"total_qty":qty-1, "item": item})
+            item.update({"total_qty":qty+1, "item": item})
 
     def get_item_or_none(self, item_name):
         Item = Query()
@@ -123,7 +123,7 @@ async def list_category(query: ListCategoryQuery):
     res = APISOCK.reliable_recv(target)
     res = json.loads(res)
     users = set()
-    print(res)
+    print(res, "result json loads")
     for r in res["data"]:
         for u in r["PRODUCT"]:
             users.add(u)
@@ -138,6 +138,8 @@ async def insert_api(query: InsertQuery):
     if not inventory_item:
         return {"response": "No such item exists in inventory"}
     qty, category, price = inventory_item
+    if qty == 0:
+        return {"response": "Item is not longer available to add"} 
     data = {
         "USERID": query.userid,
         "PRODUCTID": query.item_name,
@@ -171,6 +173,6 @@ async def delete_api(query: DeletionQuery):
     target = APISOCK.targets[GIP]
     APISOCK.send_command([GIP,], data)
     # res = APISOCK.reliable_recv(target)
-    
+
     inventory_mgmt.delete(query.item_name)
     return {"response": "Deleted from cart"}

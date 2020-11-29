@@ -11,7 +11,6 @@ from kazoo.exceptions import NoNodeError
 from kazoo_master import kazooMaster
 from socket_server import SocketServer
 
-
 class Gateway():
     def __init__(self, gateway_ip):
         self.Flaged_ip=dict()
