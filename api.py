@@ -15,20 +15,22 @@ class InventoryManagement(object):
     def add(self, item_name):
         item = self.db.get({"item": item_name})
         if item:
-            qty = item["qty"]
-            item.update({"qty":qty+1, "item": item})
+            qty = item["total_qty"]
+            item.update({"total_qty":qty+1, "item": item})
 
     def delete(self, item_name):
         item = self.db.get({"item": item_name})
         if item:
-            qty = item["qty"]
-            item.update({"qty":qty-1, "item": item})
+            qty = item["total_qty"]
+            item.update({"total_qty":qty-1, "item": item})
 
-    def get_qty_or_none(self, item_name):
+    def get_item_or_none(self, item_name):
         item = self.db.get({"item": item_name})
         if item:
-            qty = item["qty"]
-            return qty
+            qty = item["total_qty"]
+            category = item["category"]
+            price = item["price"]
+            return qty, category, price
         else:
             return None
 class ConnectGateway(object):
@@ -71,8 +73,6 @@ class ListCategoryQuery(BaseModel):
 class InsertQuery(BaseModel):
     userid: str
     productid: str
-    price: str
-    category: str
 
 class DeletionQuery(BaseModel):
     userid: str
@@ -129,16 +129,16 @@ async def list_category(query: ListCategoryQuery):
 @app.post("/api/insert")
 async def insert_api(query: InsertQuery):
     GIP = random.choice(GATEWAY_IPS)
-    qty = inventory_mgmt.get_qty_or_none(query.productid)
-    if not qty:
+    inventory_item = inventory_mgmt.get_item_or_none(query.productid)
+    if not inventory_item:
         return {"response": "No such item exists in inventory"}
-
+    qty, category, price = inventory_item
     data = {
         "USERID": query.userid,
         "PRODUCTID": query.productid,
         "OPERATION": "ADD",
-        "PRICE":query.price,
-        "CATEGORY":query.category,
+        "PRICE": price,
+        "CATEGORY":category,
         "COMMAND":"INSERT",
     }
     target = APISOCK.targets[GIP]
@@ -152,9 +152,10 @@ async def insert_api(query: InsertQuery):
 @app.post("/api/delete")
 async def delete_api(query: DeletionQuery):
     GIP = random.choice(GATEWAY_IPS)
-    qty = inventory_mgmt.get_qty_or_none(query.productid)
-    if not qty:
+    inventory_item = inventory_mgmt.get_item_or_none(query.productid)
+    if not inventory_item:
         return {"response": "No such item exists in inventory"}
+    qty, category, price = inventory_item
 
     data = {
         "USERID": query.userid,
