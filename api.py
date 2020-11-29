@@ -82,7 +82,7 @@ async def list_all(query: ListAllQuery):
     res = APISOCK.reliable_recv(target)
     res = json.loads(res)
     response = []
-    for r in res:
+    for r in res["data"]:
         qty = 0
         for op in r["OPERATIONS"]:
             if op["OPERATION"] == "ADD":
@@ -117,7 +117,7 @@ async def list_category(query: ListCategoryQuery):
 @app.post("/api/insert")
 async def insert_api(query: InsertQuery):
     global Flaged_ip
-    
+
     def get_crush():
         with open("./config/crushmap.json") as fin:
             return json.loads(fin.read())
