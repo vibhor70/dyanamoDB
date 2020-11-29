@@ -96,6 +96,7 @@ async def list_all(query: ListAllQuery):
     response = []
     for r in res["data"]:
         qty = 0
+        if bool(r): continue
         for op in r["OPERATIONS"]:
             if op["OPERATION"] == "ADD":
                 qty+=1
