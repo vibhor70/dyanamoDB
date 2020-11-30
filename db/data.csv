@@ -1,98 +1,98 @@
-User,Node,Operation,Item
-U4,N1,ADD,yogurt
-U7,N5,ADD,pork
-U7,N5,DELETE,pork
-U9,N2,ADD,sandwich bags
-U9,N2,DELETE,sandwich bags
-U9,N2,ADD,lunch meat
-U2,N4,ADD,all- purpose
-U2,N4,DELETE,all- purpose
-ADMIN,N3,LISTALL,
-U5,N1,ADD,flour
-U4,N1,DELETE,yogurt
-U5,N1,DELETE,flour
-U10,N4,ADD,soda
-U10,N4,DELETE,soda
-U8,N1,ADD,butter
-U7,N2,ADD,vegetables
-U7,N2,DELETE,vegetables
-ADMIN,N5,LISTALL,
-U1,N2,ADD,aluminum foil
-U1,N2,DELETE,aluminum foil
-U7,N4,ADD,all- purpose
-U7,N4,DELETE,all- purpose
-U2,N2,ADD,dinner rolls
-ADMIN,N4,LISTALL,
-U9,N3,ADD,shampoo
-U6,N2,ADD,all- purpose
-ADMIN,N2,LISTALL,
-U3,N1,ADD,mixes
-U3,N1,DELETE,mixes
-U9,N4,ADD,soap
-U9,N4,DELETE,soap
-U2,N4,ADD,laundry detergent
-ADMIN,N3,LISTALL,
-U2,N4,DELETE,laundry detergent
-U10,N4,ADD,ice cream
-U10,N4,DELETE,ice cream
-U1,N1,ADD,dinner rolls
-U1,N1,DELETE,dinner rolls
-ADMIN,N4,LISTALL,
-U6,N2,ADD,toilet paper
-U6,N2,DELETE,toilet paper
-U3,N5,ADD,shampoo
-U3,N5,DELETE,shampoo
-U2,N5,ADD,hand soap
-ADMIN,N5,LISTALL,
-U4,N5,ADD,waffles
-U7,N3,ADD,vegetables
-ADMIN,N5,LISTALL,
-U3,N1,ADD,cheeses
-U3,N2,ADD,mixes
-U3,N2,DELETE,mixes
-U7,N4,ADD,milk
-ADMIN,N3,LISTALL,
-U7,N4,DELETE,milk
-U1,N3,ADD,sandwich bags
-U1,N3,DELETE,sandwich bags
-U6,N5,ADD,laundry detergent
-U6,N5,DELETE,laundry detergent
-ADMIN,N1,LISTALL,
-U2,N4,ADD,dishwashing liquid/detergent
-U2,N4,DELETE,dishwashing liquid/detergent
-U5,N2,ADD,waffles
-U5,N2,DELETE,waffles
-U2,N2,ADD,individual meals
-ADMIN,N5,LISTALL,
-U7,N2,ADD,hand soap
-U1,N2,ADD,vegetables
-ADMIN,N3,LISTALL,
-U5,N3,ADD,individual meals
-U5,N3,DELETE,individual meals
-U1,N4,ADD,yogurt
-U1,N4,DELETE,yogurt
-U7,N5,ADD,cereals
-U7,N5,DELETE,cereals
-U2,N5,ADD,shampoo
-U2,N5,DELETE,shampoo
-U7,N3,ADD,vegetables
-U7,N3,DELETE,vegetables
-ADMIN,N4,LISTALL,
-U9,N1,ADD,aluminum foil
-U9,N1,DELETE,aluminum foil
-U6,N5,ADD,tortillas
-U6,N5,DELETE,tortillas
-U8,N2,ADD,mixes
-ADMIN,N5,LISTALL,
-U8,N2,DELETE,mixes
-U4,N3,ADD,soda
-U7,N1,ADD,pork
-ADMIN,N5,LISTALL,
-U8,N1,ADD,soap
-U5,N3,ADD,ice cream
-U1,N4,ADD,toilet paper
-ADMIN,N4,LISTALL,
-U1,N4,DELETE,toilet paper
-U7,N3,ADD,dinner rolls
-U7,N3,DELETE,dinner rolls
-ADMIN,N4,LISTALL,
+User,Operation,Item
+U4,ADD,yogurt
+U7,ADD,pork
+U7,DELETE,pork
+U9,ADD,sandwich bags
+U9,DELETE,sandwich bags
+U9,ADD,lunch meat
+U2,ADD,all- purpose
+U2,DELETE,all- purpose
+ADMIN,LISTALL,
+U5,ADD,flour
+U4,DELETE,yogurt
+U5,DELETE,flour
+U10,ADD,soda
+U10,DELETE,soda
+U8,ADD,butter
+U7,ADD,vegetables
+U7,DELETE,vegetables
+ADMIN,LISTALL,
+U1,ADD,aluminum foil
+U1,DELETE,aluminum foil
+U7,ADD,all- purpose
+U7,DELETE,all- purpose
+U2,ADD,dinner rolls
+ADMIN,LISTALL,
+U9,ADD,shampoo
+U6,ADD,all- purpose
+ADMIN,LISTALL,
+U3,ADD,mixes
+U3,DELETE,mixes
+U9,ADD,soap
+U9,DELETE,soap
+U2,ADD,laundry detergent
+ADMIN,LISTALL,
+U2,DELETE,laundry detergent
+U10,ADD,ice cream
+U10,DELETE,ice cream
+U1,ADD,dinner rolls
+U1,DELETE,dinner rolls
+ADMIN,LISTALL,
+U6,ADD,toilet paper
+U6,DELETE,toilet paper
+U3,ADD,shampoo
+U3,DELETE,shampoo
+U2,ADD,hand soap
+ADMIN,LISTALL,
+U4,ADD,waffles
+U7,ADD,vegetables
+ADMIN,LISTALL,
+U3,ADD,cheeses
+U3,ADD,mixes
+U3,DELETE,mixes
+U7,ADD,milk
+ADMIN,LISTALL,
+U7,DELETE,milk
+U1,ADD,sandwich bags
+U1,DELETE,sandwich bags
+U6,ADD,laundry detergent
+U6,DELETE,laundry detergent
+ADMIN,LISTALL,
+U2,ADD,dishwashing liquid/detergent
+U2,DELETE,dishwashing liquid/detergent
+U5,ADD,waffles
+U5,DELETE,waffles
+U2,ADD,individual meals
+ADMIN,LISTALL,
+U7,ADD,hand soap
+U1,ADD,vegetables
+ADMIN,LISTALL,
+U5,ADD,individual meals
+U5,DELETE,individual meals
+U1,ADD,yogurt
+U1,DELETE,yogurt
+U7,ADD,cereals
+U7,DELETE,cereals
+U2,ADD,shampoo
+U2,DELETE,shampoo
+U7,ADD,vegetables
+U7,DELETE,vegetables
+ADMIN,LISTALL,
+U9,ADD,aluminum foil
+U9,DELETE,aluminum foil
+U6,ADD,tortillas
+U6,DELETE,tortillas
+U8,ADD,mixes
+ADMIN,LISTALL,
+U8,DELETE,mixes
+U4,ADD,soda
+U7,ADD,pork
+ADMIN,LISTALL,
+U8,ADD,soap
+U5,ADD,ice cream
+U1,ADD,toilet paper
+ADMIN,LISTALL,
+U1,DELETE,toilet paper
+U7,ADD,dinner rolls
+U7,DELETE,dinner rolls
+ADMIN,LISTALL,
