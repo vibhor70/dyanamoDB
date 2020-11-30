@@ -227,4 +227,4 @@ We are running 9 containers each having different IP’s
 - 2 gateway server
 - 1 API server
 
-
+![screenshots/terminals.png](screenshots/terminals.png)
